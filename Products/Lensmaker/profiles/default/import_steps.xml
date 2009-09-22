@@ -1,0 +1,34 @@
+<?xml  version="1.0"?>
+<import-steps>
+  <import-step id="create-lenscatalog" version="20090922-01"
+      handler="Products.Lensmaker.exportimport.catalog.createCatalog"
+      title="Create Lens Catalog">
+    Create the Lens Catalog
+  </import-step>
+  <import-step id="config-lenscatalog" version="20090922-01"
+      handler="Products.Lensmaker.exportimport.catalog.importCatalog"
+      title="Configure Lens Catalog">
+    <dependency step="create-lenscatalog" />
+    Configure the Lens catalog
+  </import-step>
+  <import-step id="setcatalog" version="20090922-01"
+      handler="Products.Lensmaker.exportimport.catalog.setCatalog"
+      title="Set types that use the lens catalog">
+    <dependency step="create-lenscatalog" />
+    <dependency step="types" />
+    Set types that use the lens catalog
+  </import-step>
+  <import-step id="createcontent" version="20090922-01"
+      handler="Products.Lensmaker.exportimport.content.createContent"
+      title="Create content">
+    <dependency step="types" />
+    Create content
+  </import-step>
+  <import-step id="reorderactions" version="20090922-01"
+      handler="Products.Lensmaker.exportimport.actions.reorderActions"
+      title="Reorder Actions">
+    <dependency step="types" />
+    <dependency step="toolset" />
+    Reorder Actions
+  </import-step>
+</import-steps>

@@ -1,8 +1,17 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
            xmlns:five="http://namespaces.zope.org/five">
 
   <include package=".browser" />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="Products.Lensmaker"
+      directory="profiles/default"
+      description="Extension profile for Products.Lensmaker."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
  
   <subscriber
       for=".ContentSelectionLens.ContentSelectionLens

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="Endorser"/>
+  </roles>
+  <permissions>
+    <permission name="Add lens selected content" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+  </permissions>
+</rolemap>

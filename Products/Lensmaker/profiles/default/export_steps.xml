@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<export-steps>
+  <export-step id="config-lenscatalog" title="Export Lens catalog"
+      handler="Products.Lensmaker.exportimport.catalog.exportCatalog">
+    Export Lens catalog configuration
+  </export-step>
+</export-steps>
+

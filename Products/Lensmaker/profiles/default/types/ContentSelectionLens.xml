@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<object name="ContentSelectionLens" meta_type="Factory-based Type Information"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <property name="title">Content Selection Lens</property>
+ <property
+    name="description">List of entries that select a set of content.</property>
+ <property name="content_icon">lenses.gif</property>
+ <property name="content_meta_type">ContentSelectionLens</property>
+ <property name="product">Lensmaker</property>
+ <property name="factory">addContentSelectionLens</property>
+ <property name="immediate_view">base_edit</property>
+ <property name="global_allow">True</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+  <element value="SelectedContent"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <alias from="(Default)" to="lens_view"/>
+ <alias from="contents" to="lens_content_view"/>
+ <alias from="edit" to="lens_edit"/>
+ <alias from="view" to="lens_view"/>
+ <action title="Edit lens contents" action_id="contents" category="object"
+    condition_expr="" url_expr="string:${object_url}/lens_content_view"
+    visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/lens_view" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Edit lens properties" action_id="edit" category="object"
+    condition_expr="" url_expr="string:${object_url}/lens_edit"
+    visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Properties" action_id="metadata" category="object"
+    condition_expr="" url_expr="string:${object_url}/base_metadata"
+    visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="References" action_id="references" category="object"
+    condition_expr="object/archetype_tool/has_graphviz"
+    url_expr="string:${object_url}/reference_graph" visible="True">
+  <permission value="Modify portal content"/>
+  <permission value="Review portal content"/>
+ </action>
+ <action title="Folder Listing" action_id="folderlisting" category="folder"
+    condition_expr="object/isPrincipiaFolderish"
+    url_expr="string:${folder_url}/view" visible="False">
+  <permission value="View"/>
+ </action>
+ <action title="Tag vocabularies" action_id="tagnamespaces" category="object"
+    condition_expr="object/isOpen"
+    url_expr="string:${object_url}/lens_tagnamespaces_view" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Reviewers" action_id="reviewers" category="object"
+    condition_expr="object/isOpen"
+    url_expr="string:${object_url}/lens_reviewers" visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Preview lens" action_id="preview" category="object"
+    condition_expr="" url_expr="string:${object_url}/lens_preview"
+    visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+</object>

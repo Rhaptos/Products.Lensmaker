@@ -13,8 +13,6 @@ from Products.Archetypes.public import process_types, listTypes
 from Products.CMFCore import utils
 from Products.CMFCore.DirectoryView import registerDirectory
 
-from Products.GenericSetup import EXTENSION
-from Products.GenericSetup import profile_registry
 from Products.CMFPlone.interfaces.siteroot import IPloneSiteRoot
 
 from config import SKINS_DIR, GLOBALS, PROJECTNAME
@@ -78,12 +76,6 @@ def initialize(context):
                     icon='tool.gif'
                     ).initialize(context)
 
-    profile_registry.registerProfile('default',
-                                     'Lensmaker',
-                                     'Extension profile for Lensmaker',
-                                     'profiles/default',
-                                     'Lensmaker',
-                                     EXTENSION)
 
 from Extensions import Install  # check syntax on startup
 del Install
