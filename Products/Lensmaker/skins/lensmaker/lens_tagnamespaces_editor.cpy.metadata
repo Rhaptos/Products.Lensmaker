@@ -1,0 +1,4 @@
+[actions]
+action.success=traverse_to:string:lens_tagnamespaces_view
+action.success.button.save=traverse_to:string:lens_tagnamespaces_view
+action.failure=traverse_to:string:lens_tagnamespaces_edit

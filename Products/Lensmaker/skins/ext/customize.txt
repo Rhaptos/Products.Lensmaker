@@ -1,0 +1,5 @@
+extjs 2 has a few custom changes:
+ * resources/css/ext-all.css has the CSS-reset code removed
+ * resources/images/default/window has non-opaque images for the windows
+
+ - Philip Schatz, phil@cnx.org

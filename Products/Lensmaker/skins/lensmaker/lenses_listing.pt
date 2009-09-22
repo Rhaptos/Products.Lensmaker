@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <body>
+    <metal:css fill-slot="css_slot">
+      <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+    </metal:css>
+    <metal:left fill-slot="column_one_slot"/>
+
+    <div metal:fill-slot="main"
+         tal:define="ltool context/lens_tool | nothing;
+                     showonly context/getCategory | nothing;">
+      <span id="lens_feed_icon" metal:define-macro="lensfeedicon">
+        <a tal:attributes="href string:${context/absolute_url}/atom;">
+          <img src="/feed-icon.png" alt="Lens Feed" i18n:attributes="alt text_lens_icon" />
+        </a></span>
+      <h1>
+        <img src="/lenses.gif" alt="Lenses Icon" i18n:attributes="alt text_lenses_icon" />
+        <span i18n:translate="heading_content_lenses" tal:omit-tag="">Public Lenses</span>
+      </h1>
+
+      <div class="documentDescription" i18n:translate="text_content_lenses_desc">
+          Lists of content selected by an organization or individual
+      </div>
+
+      <tal:comment replace="nothing">Featured Lenses: currently only Siyavula, future add additional count
+      defs and extend the haveFeatured flagi as well as a new li</tal:comment>
+      <tal:featured-defs tal:define="siyavulaLensCnt context/@@siyavula-lens-count | python:0;
+                                     haveFeatured siyavulaLensCnt">
+        <tal:show tal:condition="python:not showonly and haveFeatured">
+          <h3 i18n:translate="heading_featured_lenses">Featured lenses</h3>
+          <ul class="lens_listing">
+              <li tal:condition="siyavulaLensCnt">
+                <img
+                   tal:define="portrait python:mtool.getPersonalPortrait('siyavula');"
+                   tal:condition="python:portrait.getId() != 'defaultUser.gif'"
+                   tal:replace="structure python:portrait.tag(style='float: right; margin: 0 0 5px 1em;')" />
+                <a href="#" tal:attributes="href string:${context/portal_url}/lenses/siyavula">
+                  <span i18n:translate="text_siyavula_lenses">Siyavula Lenses</span></a>
+                <p><b i18n:translate="text_lenses_by">Lenses by:</b> Siyavula</p>
+                <p>
+                  <b i18n:translate="text_content_count">Content:</b>
+                  <tal:data content="siyavulaLensCnt | string:?">303</tal:data>
+                  <span tal:omit-tag="">lenses</span>
+                </p>
+              </li>
+          </ul>
+        </tal:show>
+      </tal:featured-defs>
+
+      <tal:show tal:condition="python:not showonly or showonly=='Endorsement'">
+        <h3 i18n:translate="heading_endorsement_lenses">Endorsement lenses</h3>
+        <p i18n:translate="text_endorsement_lenses">
+          Selections of content that have been carefully checked for quality by the lens maker
+        </p>
+        <ul tal:define="list python:ltool.getListsBy(category='Endorsement', inclzero=False)" class="lens_listing">
+          <li metal:define-macro="lenslist" tal:repeat="lens list">
+            <img style="float: right; margin: 0 0 5px 1em;" src="logo_thumb"
+                 tal:condition="lens/hasLogo | nothing"
+                 tal:attributes="src string:${lens/getURL}/logo_thumb">
+              <a href="#" tal:content="lens/Title" tal:attributes="href lens/getURL">I'm a lens!</a>
+              <img src="/private.gif" tal:condition="python:lens.review_state=='private'" tal:replace="structure context/private.gif">
+              <tal:around tal:define="allowed lens/allowedRolesAndUsers;
+                                      editable python:'user:%s' % member.getId() in allowed"
+                          tal:condition="editable">
+                (<a tal:attributes="href string:${lens/getURL}/contents">edit</a>)
+              </tal:around>
+            <p>
+              <b i18n:translate="text_lens_by">Lens by:</b>
+              <tal:data content="lens/getCreatorName | string:?">George Washington</tal:data>
+            </p>
+            <p>
+              <b i18n:translate="text_content_count">Content:</b>
+              <tal:data content="lens/getCount | string:?">303</tal:data>
+              <span tal:omit-tag="">modules and/or collections</span>
+            </p>
+          </li>
+        </ul>
+      </tal:show>
+
+      <tal:show tal:condition="python:not showonly or showonly=='Affiliation'">
+        <h3 i18n:translate="heading_affiliation_lenses">Affiliation lenses</h3>
+        <p i18n:translate="text_affiliation_lenses">
+          Selections of content that are affiliated with a particular organization
+        </p>
+        <ul tal:define="list python:ltool.getListsBy(category='Affiliation', inclzero=False)" class="lens_listing">
+          <li metal:use-macro="template/macros/lenslist">
+            ...
+          </li>
+        </ul>
+      </tal:show>
+
+  
+      <tal:show tal:condition="python:not showonly or showonly=='List'">
+        <h3 i18n:translate="heading_member_lists">Member lists</h3>
+        <p i18n:translate="text_member_lists">
+          Selections of content for any purpose
+        </p>
+        <ul tal:define="list python:ltool.getListsBy(category='List', inclzero=False)" class="lens_listing">
+          <li metal:use-macro="template/macros/lenslist">
+            ...
+          </li>
+        </ul>
+      </tal:show>
+      
+      <p id="lens_feed_links">
+      <strong>Feeds: </strong><a tal:attributes="href string:${context/absolute_url}/atom;" >Subscribe to this feed</a> |
+      <a tal:attributes="href string:/help/AvailableFeeds" >All Connexions Feeds</a> |
+      <a tal:attributes="href string:/help/FeedHelp" >About RSS Feeds</a>
+      </p>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+Warning: the monkey patch in SimpleHtmlValidator sometimes causes problems with refresh.

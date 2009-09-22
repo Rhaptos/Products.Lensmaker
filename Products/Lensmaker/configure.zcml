@@ -1,0 +1,17 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <include package=".browser" />
+ 
+  <subscriber
+      for=".ContentSelectionLens.ContentSelectionLens
+          zope.app.container.interfaces.IObjectModifiedEvent"
+      handler=".events.onContentSelectionLensModified"/>  
+
+  <subscriber
+      for="Products.RhaptosModuleStorage.ModuleVersionFolder.ModuleVersionStub
+           Products.RhaptosModuleStorage.interfaces.event.IModuleRatedEvent"
+      handler=".events.onModuleRated"/>
+
+</configure>

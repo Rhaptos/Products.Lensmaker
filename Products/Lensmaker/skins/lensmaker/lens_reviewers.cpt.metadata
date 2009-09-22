@@ -1,0 +1,12 @@
+[default]
+title=Workgroup Membership
+
+[security]
+View=0:Authenticated
+
+[validators]
+validators = validate_reviewers
+
+[actions]
+action.success=traverse_to:string:prefs_lens_reviewers_edit
+action.failure=traverse_to:string:lens_reviewers

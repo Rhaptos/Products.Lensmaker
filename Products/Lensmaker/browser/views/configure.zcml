@@ -1,0 +1,37 @@
+<configure xmlns="http://namespaces.zope.org/zope" 
+           xmlns:browser="http://namespaces.zope.org/browser" 
+           xmlns:five="http://namespaces.zope.org/five"> 
+  
+  <browser:page
+        for="*"
+        name="lensmaker.reviewlist"
+        class=".reviewlist.ReviewList"
+        template="reviewlist.pt"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="lensmaker.reviewlist.modules"
+        class=".reviewlist.ReviewList"
+        attribute="modules"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="lensmaker.reviewlist.lenses"
+        class=".reviewlist.ReviewList"
+        attribute="lenses"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="lensmaker.reviewlist.approve"
+        class=".reviewlist.ReviewList"
+        attribute="approve"
+        permission="zope2.View"
+        />
+
+</configure>

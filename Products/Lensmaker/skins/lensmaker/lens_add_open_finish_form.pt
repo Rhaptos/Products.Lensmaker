@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <tal:head metal:fill-slot="head_slot"
+            tal:define="dummy python:request.set('disable_border',1)">
+  </tal:head>
+
+  <body>
+    <div metal:fill-slot="main">
+
+      <h1 i18n:translate="module_added_to_lenses_heading">Module added to lens</h1>
+      <p i18n:translate="module_added_to_lenses">
+      The module has been added to this lens:
+      </p>
+      <ul>
+        <li tal:repeat="pth request/lens_paths">
+          <a tal:define="lens python:context.restrictedTraverse(pth)"
+             tal:content="lens/pretty_title_or_id"
+             tal:attributes="href lens/absolute_url"></a>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

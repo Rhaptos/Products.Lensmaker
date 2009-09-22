@@ -1,0 +1,3 @@
+[actions]
+action.success=traverse_to_action:string:tagnamespaces
+action.failure=traverse_to_action:string:tagnamespaces

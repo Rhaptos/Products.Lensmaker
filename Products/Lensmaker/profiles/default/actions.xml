@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<object name="portal_actions" meta_type="Plone Actions Tool">
+ <action-provider name="portal_actions">
+  <!-- no state tab on lens objects -->
+  <action title="State" action_id="content_status_history"
+     category="object_tabs"
+     condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode()) and object.Type() not in ('Content Selection Lens', 'Favorites Lens')"
+     url_expr="string:${object_url}/portal_form/content_status_history"
+     visible="True">
+   <permission>View</permission>
+  </action>
+
+  <!-- Highlight mycnx portal tab when editing lenses; highlight Lenses tab when otherwise in lens area.
+       MyCNX tab cooperates with other actions in RhaptosSite and elsewhere.
+       see https://trac.rhaptos.org/trac/rhaptos/ticket/8813 for details -->
+  <action title="MyCNX" action_id="lenses" category="portal_tabs"
+     condition_expr="python:'lenses' in folder.getPhysicalPath() and object.inLensEdit()"
+     url_expr="string:$portal_url/mycnx" visible="True">
+   <permission>View</permission>
+  </action>
+  <action title="MyCNX" action_id="lenses-unhighlight" category="portal_tabs"
+     condition_expr="python:'lenses' in folder.getPhysicalPath() and not object.inLensEdit()"
+     url_expr="string:$portal_url/mycnx" visible="True">
+   <permission>View</permission>
+  </action>
+  <action title="Lenses" action_id="lensestab-viewing" category="portal_tabs"
+     condition_expr="python:not 'lenses' in folder.getPhysicalPath() or not object.inLensEdit()"
+     url_expr="string:$portal_url/lenses" visible="True">
+   <permission>View</permission>
+  </action>
+  <action title="Lenses" action_id="lensestab-editing" category="portal_tabs"
+     condition_expr="python:'lenses' in folder.getPhysicalPath() and object.inLensEdit()"
+     url_expr="string:$portal_url/lenses" visible="True">
+   <permission>View</permission>
+  </action>
+
+ </action-provider>
+</object>

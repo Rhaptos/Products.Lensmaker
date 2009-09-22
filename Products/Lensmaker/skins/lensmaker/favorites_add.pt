@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <tal:comment replace="nothing">
+    see also lens_add
+  </tal:comment>
+
+  <tal:head metal:fill-slot="head_slot"
+            tal:define="dummy python:request.set('disable_border',1)">
+  </tal:head>
+
+  <metal:css fill-slot="css_slot">
+    <style type="text/css">
+      legend{
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+    </style>
+  </metal:css>
+
+  <body>
+    <div metal:fill-slot="main"
+         tal:define="errors python:request.get('errors', {});">
+
+      <h1 i18n:translate="heading_add_to_favorites">Add to My Favorites</h1>
+      <metal:heart define-macro="inner"
+                   tal:define="contentId options/contentId | request/contentId | nothing;
+                               version options/version | request/version | nothing;
+                               hasdata python: contentId and version;
+                               isAnon context/portal_membership/isAnonymousUser;">
+        <tal:anon condition="isAnon" metal:use-macro="context/lens_add/macros/anon">
+          anon handler
+        </tal:anon>
+
+        <tal:auth condition="not:isAnon">
+          <tal:data condition="not:hasdata">
+            <p i18n:translate="text_no_lens_data"><strong>Error!</strong> Cannot determine content information.</p>
+          </tal:data>
+          <tal:data condition="hasdata">
+            <h3 i18n:translate="heading_add_content_favorites">
+              Add "<span i18n:name="title"
+                        tal:define="obj python:context.content.getRhaptosObject(contentId, version)"
+                        tal:replace="obj/Title">[content title]</span>" to My Favorites
+            </h3>
+            <form class="cnx_lens_form"
+                  method="post" action="lensAdd" id="cnx_lens_form-favorites"
+                  tal:define="l context/favorites_get;
+                              lobj nocall:l">
+              <tal:inner define="entry python:lobj is not None and getattr(lobj, contentId, None)">
+                <input type="hidden" name="lensPath" tal:attributes="value python:'/'.join(l.getPhysicalPath())" />
+                <input type="hidden" name="contentId" tal:attributes="value contentId" />
+                <input type="hidden" name="version" tal:attributes="value version" />
+                <input type="hidden" name="returnTo" tal:attributes="value request/returnTo | request/URL1" />
+                <fieldset metal:use-macro="context/lens_add/macros/fieldset"></fieldset>
+    
+                <div id="cnx_lens_add_button">
+                  <input id="cnx_lens_submit-favorites"
+                        type="submit" name="submit" class="context" value="Add to My Favorites"
+                        tal:condition="not:entry" />
+                  <input id="cnx_lens_submit-favorites"
+                        type="submit" name="submit" class="context" value="Update"
+                        tal:condition="entry" />
+                </div>
+              </tal:inner>
+            </form>
+          </tal:data>
+        </tal:auth>
+      </metal:heart>
+    </div>
+  </body>
+</html>

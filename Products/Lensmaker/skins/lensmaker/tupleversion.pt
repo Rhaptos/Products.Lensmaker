@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+
+<tal:comment>
+ Derived from AT widget/selection.
+</tal:comment>
+
+  <head><title></title></head>
+  <body>
+
+    <!-- Tuple Version Widgets -->
+    <metal:view_macro define-macro="view"
+                      tal:define="vocab python:field.Vocabulary(here);
+                                  value accessor;
+                                  value python:value and '.'.join([str(x) for x in value]) or value;
+                                  display python:here.displayValue(vocab, value)"
+                      tal:replace="structure display" />
+
+    <metal:define define-macro="edit">
+      <metal:use use-macro="here/widgets/selection/macros/edit">
+      </metal:use>
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/widgets/selection/macros/edit">
+      </div>
+    </div>
+
+  </body>
+
+</html>

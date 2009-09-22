@@ -1,0 +1,11 @@
+[default]
+title=Edit Lens Tag Namespaces
+
+[security]
+View=0:Authenticated
+
+[actions]
+action.success=traverse_to:string:lens_tagnamespaces_edit_dispatch
+action.success..edit=traverse_to:string:lens_tagnamespaces_edit_dispatch
+action.success..delete=traverse_to:string:lens_tagnamespaces_del
+action.success..add=traverse_to:string:lens_tagnamespaces_add_dispatch

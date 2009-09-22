@@ -1,0 +1,5 @@
+[default]
+title=Prefill Lens Data
+
+[actions]
+action.success=traverse_to_action:string:edit

@@ -1,0 +1,208 @@
+<tal:comment condition="nothing">
+Present UI to edit multiple TagNamespace instances at once.
+</tal:comment>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <metal:css fill-slot="css_slot">
+    <style type="text/css">
+      fieldset {
+        padding-top: 1em;
+        background-color: #f5f7f8;
+      }
+      .lens_edit_title{
+        color: #369 !important;
+        font-size: 1.2em;
+      }
+    </style>
+  </metal:css>
+
+  <metal:fill fill-slot="head_slot">
+    <tal:def define="global template_id python:'lens_tagnamespaces_view'"/>
+  </metal:fill>
+
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+    
+    <div metal:fill-slot="main"
+         tal:define="errors options/state/getErrors | python:{};
+                     batch  here/@@getTagNamespaceEditBatch;">
+
+        <p tal:condition="not:batch"><em>No items selected for editing.</em></p>
+        <form name="edit" method="post" action="." tal:attributes="action template/getId" tal:condition="batch">
+
+        <tal:loop repeat="i batch">
+          <input tal:attributes="value i/getId"
+                 name="selected_ids:list"
+                 type="hidden"/>
+        </tal:loop>
+        <input type="hidden" name="new_id" value="#"
+             tal:condition="request/new_id|nothing"
+             tal:attributes="value request/new_id" />
+
+        <input class="context"
+               type="submit"
+               name="form.button.save"
+               value="Save changes"
+               i18n:attributes="value"
+               style="margin: 1em 0 0;" />
+
+        <input type="hidden" name="b_start:int" value="#"
+               tal:define="b_start request/b_start | nothing"
+               tal:condition="b_start"
+               tal:attributes="value b_start" />
+
+        <input type="hidden" name="b_size:int" value="#"
+               tal:define="b_size request/b_size | nothing"
+               tal:condition="b_size"
+               tal:attributes="value b_size" />
+
+        <div tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                            getRelativeContentURL nocall:utool/getRelativeContentURL">
+            <tal:comment replace="nothing">
+                Somewhat Plone 2.5 'folder_contents' derived, but *heavily* modified.
+            </tal:comment>
+
+            <tal:loop tal:repeat="item batch">
+                <fieldset tal:define="
+                                item_id              item/getId;
+                                item_url             item/getURL|item/absolute_url;
+                                item_path            item/getPath|python:'/'.join(item.getPhysicalPath());
+                                item_type            item/portal_type;
+                                item_folderish       nothing;
+                                item_use_view        python:item_type in use_view_action;
+                                item_title_or_id     item/Title;
+                                hasGetUrl            python:hasattr(item.aq_explicit, 'getURL');
+                                item_rel_url         python:hasGetUrl and item.getURL(relative=1) or getRelativeContentURL(item);
+                              ">
+                  <input type="hidden" name="obj_ids:list" value="#"
+                         tal:attributes="value item_id" />
+                  <input type="hidden" name="obj_paths:list" value="#"
+                         tal:attributes="value item_path" />
+                  <div class="field">
+                      <a href="#" class="lens_edit_title"
+                         tal:attributes="href  string:$item_url">
+                          <strong tal:content="item_title_or_id">
+                            Item Title
+                          </strong></a>
+                  </div>
+
+                  <!-- title -->
+                  <div class="field" 
+                       tal:define="widget python:item.getField('title').widget;
+                                   error python:errors.get(item_id+'-title')"
+                       tal:attributes="class python:test(error, 'field error', 'field')">
+
+                      <label for="title"
+                             tal:attributes="for string:$item_id-title"
+                             tal:content="widget/label">Title</label>
+                      
+                      <span class="fieldRequired" style="color: #f5f7f8;" title="Required"
+                                  i18n:attributes="title title_required;"
+                                  i18n:translate="label_required">(Required)</span>
+
+                      <div class="formHelp" id="title_help" tal:content="widget/description">
+                          Add words you...
+                      </div>
+
+                      <div tal:content="error">Validation error output</div>
+
+                      <div>
+                        <input name="title" 
+                               size="75"
+                               type="text"
+                               tal:define="name string:$item_id-title"
+                               tal:attributes="name name;
+                                               value python:request.get(name, item.Title())"/>
+                      </div>
+                  </div>
+
+                  <!-- prefix -->
+                  <div class="field" 
+                       tal:define="widget python:item.getField('prefix').widget;
+                                   error python:errors.get(item_id+'-prefix')"
+                       tal:attributes="class python:test(error, 'field error', 'field')">
+
+                      <label for="prefix"
+                             tal:attributes="for string:$item_id-prefix"
+                             tal:content="widget/label">Prefix</label>
+                      
+                      <span class="fieldRequired" style="color: #f5f7f8;" title="Required"
+                                  i18n:attributes="title title_required;"
+                                  i18n:translate="label_required">(Required)</span>
+
+                      <div class="formHelp" id="prefix_help" tal:content="widget/description">
+                          Add words you...
+                      </div>
+
+                      <div tal:content="error">Validation error output</div>
+
+                      <div>
+                        <input name="prefix" 
+                               size="75"
+                               type="tex"
+                               tal:define="name string:$item_id-prefix"
+                               tal:attributes="name name;
+                                               value python:request.get(name, item.getPrefix())"/>
+                      </div>
+                  </div>
+
+                  <!-- tags -->
+                  <div class="field" 
+                       tal:define="widget python:item.getField('tags').widget;
+                                  error python:errors.get(item_id+'-tags')"
+                       tal:attributes="class python:test(error, 'field error', 'field')">
+
+                      <label for="tags"
+                             tal:attributes="for string:$item_id-tags"
+                             tal:content="widget/label">Tags</label>
+
+                      <span class="fieldRequired" style="color: #f5f7f8;" title="Required"
+                                  i18n:attributes="title title_required;"
+                                  i18n:translate="label_required">(Required)</span>
+
+                      <div class="formHelp" id="tags_help" tal:content="widget/description">
+                          Add words you...
+                      </div>
+
+                      <div tal:content="error">Validation error output</div>
+
+                      <div>
+                        <textarea size="75"
+                                  rows="8"
+                                  tal:define="name string:$item_id-tags"
+                                  tal:attributes="name string:$name:lines"
+                                  tal:content="python:'\n'.join(request.get(name, item.getTags()))"></textarea>
+                      </div>
+                  </div>
+                  
+                </fieldset>
+            </tal:loop>
+        </div>
+        <input class="context"
+               type="submit"
+               name="form.button.save"
+               value="Save changes"
+               i18n:attributes="value" />
+        <input class="context"
+               type="submit"
+               name="form.button.cancel"
+               value="Cancel"
+               i18n:attributes="value" />
+
+        <input type="hidden" name="form.submitted" value="1" />
+       </form>
+    </div>
+  </body>
+</html>

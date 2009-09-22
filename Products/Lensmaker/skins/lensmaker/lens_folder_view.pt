@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<tal:border define="is_editable python:request.set('disable_border', 1)" />
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <body>
+    <metal:css fill-slot="css_slot">
+      <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+    </metal:css>
+
+    <td id="portal-column-one" metal:fill-slot="column_one_slot">
+      <div class="visualPadding">
+        <metal:block metal:use-macro="context/workspaces_slot/macros/portlet" />
+      </div>
+    </td>
+
+    <div metal:fill-slot="main"
+         tal:define="ltool context/lens_tool | nothing;
+                     mine options/mine | request/mine | nothing;
+                     path python:'/'.join(context.getPhysicalPath());
+                     listmacro context/lenses_listing/macros/lenslist;
+                     showonly request/getCategory | context/getCategory | nothing;
+                     global lensCount python:int(0);
+                     creatorName context/getOwnerName | python:mine and member.getProperty('fullname') or '?'">
+
+      <span metal:use-macro="here/lenses_listing/macros/lensfeedicon" />
+
+      <h1>
+        <span i18n:translate="heading_content_lenses" tal:omit-tag="">
+          Lenses by <span i18n:name="name" tal:omit-tag="" tal:content="creatorName">Me!</span>
+        </span>
+      </h1>
+
+      <div>
+        <span style="float: right">(<a i18n:translate="label_more_about_lenses" href="/help/lens_what">More about Lenses</a>)</span>
+        <tal:block tal:condition="mine">
+          <metal:macro metal:define-macro="newlens">
+            <a href="/lenses/create_lens" i18n:translate="link_create_lens"
+                tal:attributes="href string:$portal_url/lenses/create_lens">Create a new lens</a>
+            <a href="/lenses/create_lens"
+                tal:attributes="href string:$portal_url/lenses/create_lens">
+              <img src="/lenses.gif"
+                    alt=""
+                    tal:attributes="src string:$portal_url/lenses.gif" />
+            </a>
+          </metal:macro>
+        </tal:block>
+      </div>
+
+      <tal:show tal:condition="python:mine and not showonly or showonly=='Favorites'">
+          <tal:block tal:define="global lensCount python:lensCount + 1;" />
+          <h3 i18n:translate="heading_my_favorites">My Favorites</h3>
+          <p i18n:translate="text_favorites_info">
+            Lens to bookmark favorite or often-used content
+          </p>
+          <ul class="lens_listing">
+            <li tal:define="l_tool context/lens_tool | nothing;
+                            fav python:l_tool.getIndividualFolder(create=False);
+                            fav nocall:fav/favorites | nothing;">
+              <a href="/go_favorites"  i18n:translate="link_my_favorites"
+                 tal:attributes="href string:$portal_url/go_favorites/view">
+                My Favorites
+              </a>
+              (<a tal:attributes="href string:$portal_url/go_favorites/contents">edit</a>)
+              <p>
+                <b i18n:translate="text_content_count">Content:</b>
+                <tal:data content="fav/getCount | string:0">303</tal:data>
+                <span tal:omit-tag="">modules and/or collections</span>
+              </p>
+            </li>
+          </ul>
+      </tal:show>
+
+      <tal:show tal:condition="python:not showonly or showonly=='Endorsement'">
+        <tal:inner tal:define="list python:ltool.getListsBy(category='Endorsement', path=path, all=True, inclzero=True)"
+                   tal:condition="list">
+          <tal:block tal:define="global lensCount python:lensCount + len(list);" />
+          <h3 i18n:translate="heading_endorsement_lenses">Endorsement lenses</h3>
+          <p i18n:translate="text_endorsement_lenses">
+            Selections of content that have been carefully checked for quality by the lens maker
+          </p>
+          <ul class="lens_listing">
+            <li metal:use-macro="listmacro">
+              ...
+            </li>
+          </ul>
+        </tal:inner>
+      </tal:show>
+
+      <tal:show tal:condition="python:not showonly or showonly=='Affiliation'">
+        <tal:inner tal:define="list python:ltool.getListsBy(category='Affiliation', path=path, all=True, inclzero=True)"
+                   tal:condition="list">
+          <tal:block tal:define="global lensCount python:lensCount + len(list);" />
+          <h3 i18n:translate="heading_affiliation_lenses">Affiliation lenses</h3>
+          <p i18n:translate="text_affiliation_lenses">
+            Selections of content that are affiliated with a particular organization
+          </p>
+          <ul class="lens_listing">
+            <li metal:use-macro="listmacro">
+              ...
+            </li>
+          </ul>
+        </tal:inner>
+      </tal:show>
+
+      <tal:show tal:condition="python:not showonly or showonly=='List'">
+        <tal:inner tal:define="list python:ltool.getListsBy(category='List', path=path, all=True, inclzero=True)"
+                   tal:condition="list">
+          <tal:block tal:define="global lensCount python:lensCount + len(list);" />
+          <h3 i18n:translate="heading_member_lists">Member lists</h3>
+          <p i18n:translate="text_member_lists">
+            Selections of content for any purpose
+          </p>
+          <ul class="lens_listing">
+            <li metal:use-macro="listmacro">
+              ...
+            </li>
+          </ul>
+        </tal:inner>
+      </tal:show>
+
+       <tal:comment replace="nothing">
+         Workflow wise, the user should never be directed to this page, if no lenses will be displayed
+         and there is nothing to see.  A user could get here via a saved bookmark (or by hacking the URL).
+       </tal:comment>
+       <p><em tal:condition="python:lensCount== 0">There are no lenses to display.</em></p>
+
+      <div tal:condition="mine">
+        <metal:macro metal:use-macro="template/macros/newlens"/>
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <tal:comment replace="nothing">
+    see also favorites_add
+  </tal:comment>
+
+  <tal:head metal:fill-slot="head_slot"
+            tal:define="dummy python:request.set('disable_border',1)">
+  </tal:head>
+
+  <metal:css fill-slot="css_slot">
+    <style type="text/css">
+      legend{
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+    </style>
+  </metal:css>
+
+  <body>
+    <div metal:fill-slot="main"
+         tal:define="errors python:request.get('errors', {});">
+
+      <h1 i18n:translate="heading_add_to_lens">Add to a lens</h1>
+
+      <metal:heart define-macro="inner"
+                   tal:define="ltool context/lens_tool;
+                               lenses python:ltool.getListsOwned(review_state=['private','published']);
+                               newlens python:{'getPath':'__new__', 'getId':'__new__',
+                                               'getDisplayName':'Create a new lens...'};
+                               lenses python:list(lenses) + [newlens];
+                               contentId options/contentId | request/contentId | nothing;
+                               version options/version | request/version | nothing;
+                               hasdata python: contentId and version;
+                               isAnon context/portal_membership/isAnonymousUser;">
+
+        <tal:anon condition="isAnon" metal:define-macro="anon"
+                  tal:define="actions python:context.portal_actions.listFilteredActionsFor(context);
+                              checkPermission nocall:context/portal_membership/checkPermission;
+                              portal_url nocall:context/portal_url;
+                              Iterator python:modules['Products.CMFPlone'].IndexIterator;
+                              tabindex python:Iterator(pos=30000, mainSlot=False)">
+          <h2 i18n:translate="heading_login_required">Login Required</h2>
+          <p i18n:translate="text_login_required_lens">
+            This feature requires you to be logged in.
+          </p>
+          <div class="nakedPortlet">
+            <tal:comment replace="nothing">
+              Reuse login portlet. Note that popup.js looks at this, so if this is changed,
+              it needs to be too.
+            </tal:comment>
+            <metal:portlet use-macro="context/portlet_login/macros/portlet" />
+          </div>
+          <div id="cnx_lens_add_button"></div>
+        </tal:anon>
+
+        <tal:auth condition="not:isAnon">
+        <tal:data condition="not:hasdata">
+          <p i18n:translate="text_no_lens_data"><strong>Error!</strong> Cannot determine content information.</p>
+        </tal:data>
+        <tal:data condition="hasdata">
+
+          <h3 i18n:translate="heading_add_content_lens">
+            Add "<span i18n:name="title"
+                       tal:define="obj python:context.content.getRhaptosObject(contentId, version)"
+                       tal:replace="obj/Title">[content title]</span>" to a lens
+          </h3>
+          <form name="dummy" method="get" action="." id="cnx_lens_switch" style="display:none">
+            <label for="cnx_switch_inner">Choose lens:</label>
+            <select id="cnx_switch_inner" name="switch">
+              <option tal:repeat="l lenses" value="form-1"
+                      tal:attributes="value string:cnx_lens_form-${l/getId};
+                                      selected python:repeat['l'].start and 'selected' or None"
+                      tal:content="l/getDisplayName">My lens is awesome</option>
+            </select>
+            <tal:siyavula condition="context/@@siyavula|nothing">
+              <a tal:attributes="href string:${context/absolute_url}/lens_add_open_select"><span i18n:translate="choose_open_lens">Choose Open Lens</span></a>
+            </tal:siyavula>
+          </form>
+
+          <form tal:repeat="l lenses" class="cnx_lens_form"
+                method="post" action="lensAdd" id="cnx_lens_form-1"
+                tal:attributes="id string:cnx_lens_form-${l/getId};
+                                class python:not repeat['l'].start and 'cnx_lens_form cnx_lens_form_hidden' or default;">
+            <tal:inner define="lobj l/getObject | nothing;
+                               entry python:lobj is not None and getattr(lobj, contentId, None) or None">
+              <input type="hidden" name="lensPath" tal:attributes="value l/getPath" />
+              <input type="hidden" name="contentId" tal:attributes="value contentId" />
+              <input type="hidden" name="version" tal:attributes="value version" />
+              <input type="hidden" name="returnTo" tal:attributes="value request/returnTo | request/URL1" />
+    <!--
+              <p tal:content="l/Description"
+                tal:attributes="displayName l/getDisplayName;
+                                title l/Title;
+                                shortname l/getId;
+                                path l/getPath;">
+                Lorem ipsum dolor sit amet.
+              </p>
+    -->
+            <fieldset metal:define-macro="fieldset">
+              <legend tal:content="string: Lens: ${l/getDisplayName}">This Lens</legend>
+              
+              <!-- tags -->
+              <div class="field">
+                <label for="tags" i18n:translate="label_tags">Tags</label>
+                <div class="formHelp" id="tags_help">
+                    Add words you associate with this content. Separate each tag with a space.
+                </div>
+                <div>
+                  <input type="text" name="tags" class="cnx_tags_input" size="75"
+                        tal:define="tags entry/getTags | nothing"
+                        tal:attributes="id string:cnx_lens_tags-${l/getId};
+                                        value python:tags and ' '.join(tags) or nothing" />
+                </div>
+              </div>
+              <!-- comments -->
+              <div class="field">
+                <label for="comment" i18n:translate="label_comments">Comments</label>
+                <div class="formHelp" id="comment_help">
+                </div>
+                <div>
+                  <textarea name="comment" rows="3" cols="30" class="cnx_comments_input"
+                            tal:attributes="id string:cnx_lens_comment-${l/getId}"
+                            tal:content="entry/getPlainComment | nothing"></textarea>
+                </div>
+              </div>
+
+            </fieldset>
+    
+            <div tal:attributes="id python:repeat['l'].start and 'cnx_lens_add_button' or nothing"
+                 tal:define="first python:l is newlens;
+                             update python:not first and (entry is not None);
+                             add python:not first and (entry is None)">
+                  <input id="submit" type="submit" name="submit" class="context" value="Continue"
+                         tal:condition="first"
+                         tal:attributes="id string:cnx_lens_submit-${l/getId}" />
+                  <input id="submit" type="submit" name="submit" class="context" value="Add to lens"
+                         tal:condition="add"
+                         tal:attributes="id string:cnx_lens_submit-${l/getId}" />
+                  <input id="submit" type="submit" name="submit" class="context" value="Update"
+                         tal:condition="update"
+                         tal:attributes="id string:cnx_lens_submit-${l/getId}" />
+            </div>
+            </tal:inner>
+          </form>
+        </tal:data>
+        </tal:auth>
+      </metal:heart>
+
+    </div>
+  </body>
+</html>

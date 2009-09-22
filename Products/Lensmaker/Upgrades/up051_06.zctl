@@ -1,0 +1,10 @@
+from Products.CMFCore.tests.base.security import AnonymousUser, OmnipotentUser
+from AccessControl.SecurityManagement import newSecurityManager
+user = OmnipotentUser().__of__(app)
+#user = app.acl_users.getUser('jcc')
+newSecurityManager(None, user)
+
+app.plone.portal_quickinstaller.reinstallProducts(['Lensmaker'])
+
+import transaction
+transaction.commit()

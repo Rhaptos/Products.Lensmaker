@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <metal:css fill-slot="css_slot">
+    <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+  </metal:css>
+
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+
+    <div metal:fill-slot="main">
+      <metal:import metal:use-macro="context/lens_content_view/macros/body">
+        <tal:block metal:fill-slot="logo" />
+        <div metal:fill-slot="description">
+          <p i18n:translate="text_favorites_desc">
+            The My Favorites lens is a private lens that can only be seen when logged in.
+          </p>
+        </div>
+        <tal:block metal:fill-slot="url" />
+        <tal:block metal:fill-slot="state" />
+        <tal:block metal:fill-slot="delete" />
+<!--         <div metal:fill-slot="" /> -->
+      </metal:import>
+    </div>
+  </body>
+</html>

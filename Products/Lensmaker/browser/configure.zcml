@@ -1,0 +1,55 @@
+<configure xmlns="http://namespaces.zope.org/zope" 
+           xmlns:browser="http://namespaces.zope.org/browser" 
+           xmlns:five="http://namespaces.zope.org/five"> 
+  
+  <browser:page
+        for="*"
+        name="objectifyTagNamespaceList"
+        class=".misc.MiscView"
+        attribute="objectifyTagNamespaceList"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="getPrintableTags"
+        class=".misc.MiscView"
+        attribute="getPrintableTags"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="getNamespaceTagTerm"
+        class=".misc.MiscView"
+        attribute="getNamespaceTagTerm"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="getNamespaceTagLabel"
+        class=".misc.MiscView"
+        attribute="getNamespaceTagLabel"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="getTagNamespaceEditBatch"
+        class=".misc.MiscView"
+        attribute="getTagNamespaceEditBatch"
+        permission="zope2.View"
+        />
+
+  <browser:page
+        for="*"
+        name="getLensContentTypeBreakdown"
+        class=".misc.MiscView"
+        attribute="getLensContentTypeBreakdown"
+        permission="zope2.View"
+        />
+
+  <include package=".views" />
+
+</configure>

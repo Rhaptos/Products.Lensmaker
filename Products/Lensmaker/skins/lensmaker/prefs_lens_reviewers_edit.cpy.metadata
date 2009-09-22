@@ -1,0 +1,6 @@
+[default]
+title=Edit Group Members
+
+[actions]
+action.success = traverse_to:string:lens_reviewers
+action.delete = traverse_to:string:lens_reviewers_delete_form

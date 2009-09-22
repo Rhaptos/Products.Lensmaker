@@ -1,0 +1,7 @@
+[default]
+title=Lens Edit Script
+proxy=Manager,Anonymous
+
+[actions]
+action.success=traverse_to:string:lens_prefill
+action.choose=traverse_to:string:lens_chooser

@@ -1,0 +1,3 @@
+[actions]
+#action.success=traverse_to:string:lens_content_view
+action.failure=traverse_to:string:lens_content_edit
