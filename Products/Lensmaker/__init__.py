@@ -77,5 +77,3 @@ def initialize(context):
                     ).initialize(context)
 
 
-from Extensions import Install  # check syntax on startup
-del Install
