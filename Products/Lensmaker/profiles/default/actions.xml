@@ -5,7 +5,7 @@
   <action title="State" action_id="content_status_history"
      category="object_tabs"
      condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode()) and object.Type() not in ('Content Selection Lens', 'Favorites Lens')"
-     url_expr="string:content_status_history:method"
+     url_expr="string:content_status_history"
      visible="True">
    <permission>View</permission>
   </action>
