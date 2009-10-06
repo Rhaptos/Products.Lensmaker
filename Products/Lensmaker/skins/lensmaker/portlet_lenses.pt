@@ -18,18 +18,26 @@
           </dt>
 
           <dd class="portletItem odd">
-              <a href="/lenses" i18n:translate="text_lenses_all">All lenses</a>
+              <a href="/lenses" 
+                 tal:attributes="href string:$portal_url/lenses;"
+                 i18n:translate="text_lenses_all">All lenses</a>
               <ul>
                 <li>
-                  <a href="/endorsements" i18n:translate="text_lenses_endorsement">Endorsements</a>
+                  <a href="/endorsements" 
+                     tal:attributes="href string:$portal_url/endorsements;"
+                     i18n:translate="text_lenses_endorsement">Endorsements</a>
                   (<span tal:replace="python:len(ltool.getListsBy(category='Endorsement', inclzero=False))">45</span>)
                 </li>
                 <li>
-                  <a href="/affiliations" i18n:translate="text_lenses_affiliation">Affiliations</a>
+                  <a href="/affiliations" 
+                     tal:attributes="href string:$portal_url/affiliations;"
+                     i18n:translate="text_lenses_affiliation">Affiliations</a>
                   (<span tal:replace="python:len(ltool.getListsBy(category='Affiliation', inclzero=False))">45</span>)
                 </li>
                 <li>
-                  <a href="/memberlists" i18n:translate="text_lenses_lists">Member lists</a>
+                  <a href="/memberlists"
+                     tal:attributes="href string:$portal_url/memberlists;"
+                     i18n:translate="text_lenses_lists">Member lists</a>
                   (<span tal:replace="python:len(ltool.getListsBy(category='List', inclzero=False))">45</span>)
                 </li>
               </ul>
