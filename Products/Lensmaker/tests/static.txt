@@ -1,0 +1,19 @@
+Static Implementation Tests
+===========================
+ 	
+Let's just make sure that our static views are working as expected.
+	
+The first thing we need to do is to make sure the interfaces are
+being correctly implemented::
+ 	
+    >>> from Products.Lensmaker.browser.interfaces import IAfterTransitionEvent
+    >>> from Products.Lensmaker.events import AfterTransitionEvent
+    >>> from zope.interface.verify import verifyClass
+    >>> verifyClass(IAfterTransitionEvent, AfterTransitionEvent)
+    True
+
+    >>> from Products.Lensmaker.FavoritesLens import FavoritesLens
+    >>> FavoritesLens.archetype_name == 'Favorites Lens'
+    True
+    >>> FavoritesLens.content_icon == 'star.png'
+    True
