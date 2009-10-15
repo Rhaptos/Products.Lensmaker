@@ -11,14 +11,14 @@
   </action>
 
   <!-- Highlight mycnx portal tab when editing lenses; highlight Lenses tab when otherwise in lens area.
-       MyCNX tab cooperates with other actions in RhaptosSite and elsewhere.
+       MyRhaptos tab cooperates with other actions in RhaptosSite and elsewhere.
        see https://trac.rhaptos.org/trac/rhaptos/ticket/8813 for details -->
-  <action title="MyCNX" action_id="lenses" category="portal_tabs"
+  <action title="MyRhaptos" action_id="lenses" category="portal_tabs"
      condition_expr="python:'lenses' in folder.getPhysicalPath() and object.inLensEdit()"
      url_expr="string:$portal_url/mycnx" visible="True">
    <permission>View</permission>
   </action>
-  <action title="MyCNX" action_id="lenses-unhighlight" category="portal_tabs"
+  <action title="MyRhaptos" action_id="lenses-unhighlight" category="portal_tabs"
      condition_expr="python:'lenses' in folder.getPhysicalPath() and not object.inLensEdit()"
      url_expr="string:$portal_url/mycnx" visible="True">
    <permission>View</permission>
