@@ -8,5 +8,14 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="Add quality lens" acquire="True">
+      <role name="Manager"/>
+      <role name="Endorser"/>
+    </permission>
+    <permission name="Lensmaker: Approve Selected Content" acquire="True">
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Reviewer"/>
+    </permission>
   </permissions>
 </rolemap>

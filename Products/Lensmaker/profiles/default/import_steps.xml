@@ -31,4 +31,9 @@
     <dependency step="toolset" />
     Reorder Actions
   </import-step>
+  <import-step id="addroles" version="20091016-01"
+      handler="Products.Lensmaker.setuphandlers.addRoles"
+      title="Add Roles">
+    Add Roles
+  </import-step>
 </import-steps>
