@@ -7,7 +7,8 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n">
   <body>
     <metal:css fill-slot="css_slot">
-      <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+    <link rel="stylesheet" type="text/css" href="/content_browse.css" 
+          tal:attributes="string:$portal_url/content_browse.css;"/>
     </metal:css>
     <metal:left fill-slot="column_one_slot"/>
 
