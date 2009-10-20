@@ -8,7 +8,7 @@
   <body>
     <metal:css fill-slot="css_slot">
     <link rel="stylesheet" type="text/css" href="/content_browse.css" 
-          tal:attributes="string:$portal_url/content_browse.css;"/>
+          tal:attributes="href string:$portal_url/content_browse.css;"/>
     </metal:css>
     <metal:left fill-slot="column_one_slot"/>
 
@@ -17,10 +17,10 @@
                      showonly context/getCategory | nothing;">
       <span id="lens_feed_icon" metal:define-macro="lensfeedicon">
         <a tal:attributes="href string:${context/absolute_url}/atom;">
-          <img src="/feed-icon.png" alt="Lens Feed" i18n:attributes="alt text_lens_icon" />
+          <img src="/feed-icon.png" alt="Lens Feed" i18n:attributes="alt text_lens_icon" tal:attributes="src string:$portal_url/feed-icon.png;"/>
         </a></span>
       <h1>
-        <img src="/lenses.gif" alt="Lenses Icon" i18n:attributes="alt text_lenses_icon" />
+        <img src="/lenses.gif" tal:attributes="src string:$portal_url/lenses.gif" alt="Lenses Icon" i18n:attributes="alt text_lenses_icon" />
         <span i18n:translate="heading_content_lenses" tal:omit-tag="">Public Lenses</span>
       </h1>
 
