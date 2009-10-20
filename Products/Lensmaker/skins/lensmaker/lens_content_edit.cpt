@@ -22,7 +22,8 @@
     </style>
   </metal:css>
 
-  <body>
+  <body tal:define="utool nocall:here/portal_url;
+                    portalPath utool/getPortalPath;">
 
     <div metal:fill-slot="content_title_header">
       <tal:block tal:define="lens nocall:context">
@@ -134,7 +135,7 @@
 
                   <tal:def define="pth python:'/'.join(item.getPhysicalPath());
                                    lens nocall:context;
-                                   context python:context.restrictedTraverse('/plone/content/%s/%s' % (item_id, item_version))">
+                                   context python:context.restrictedTraverse(portalPath+'/content/%s/%s' % (item_id, item_version))">
                     <metal:use use-macro="here/lens_add_open_tags/macros/namespacetags_field"/>
                   </tal:def>
 
