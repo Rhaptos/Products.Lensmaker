@@ -42,6 +42,9 @@ class TestLensmaker(RhaptosTestCase):
     def test_lens_tool(self):
         self.assertEqual(1, 1)
 
+    def test_selected_content(self):
+        self.assertEqual(1, 1)
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite
