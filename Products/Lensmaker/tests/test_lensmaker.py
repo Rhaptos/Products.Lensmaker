@@ -26,17 +26,21 @@ $Id: $
 
 import Products.Lensmaker
 
-from Products.RhaptosTest import base
+from Products.RhaptosTest.base import RhaptosTestCase
 
 
-base.PRODUCTS_TO_LOAD_ZCML = [('configure.zcml', Products.Lensmaker),]
-base.PRODUCTS_TO_INSTALL = ['Products.Lensmaker',]
+class TestLensmaker(RhaptosTestCase):
 
+    products_to_load_zcml = [('configure.zcml', Products.Lensmaker),]
 
-class TestLensmaker(base.RhaptosTestCase):
+    def setUp(self):
+        RhaptosTestCase.setUp(self)
 
-    def test_pass(self):
-        assert 1 == 1
+    def test_content_selection_lens(self):
+        self.assertEqual(1, 1)
+
+    def test_lens_tool(self):
+        self.assertEqual(1, 1)
 
 
 def test_suite():
