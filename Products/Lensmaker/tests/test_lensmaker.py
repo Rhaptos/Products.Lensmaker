@@ -24,17 +24,21 @@ $Id: $
 """
 
 
+from Products.RhaptosTest import config
 import Products.Lensmaker
+config.products_to_load_zcml = [('configure.zcml', Products.Lensmaker),]
+config.products_to_install = ['Lensmaker']
 
-from Products.RhaptosTest.base import RhaptosTestCase
+from Products.RhaptosTest import base
 
 
-class TestLensmaker(RhaptosTestCase):
+class TestLensmaker(base.RhaptosTestCase):
 
-    products_to_load_zcml = [('configure.zcml', Products.Lensmaker),]
+    def afterSetUp(self):
+        pass
 
-    def setUp(self):
-        RhaptosTestCase.setUp(self)
+    def beforeTearDown(self):
+        pass
 
     def test_content_selection_lens(self):
         self.assertEqual(1, 1)
