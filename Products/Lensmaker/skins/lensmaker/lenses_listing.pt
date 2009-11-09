@@ -14,7 +14,8 @@
 
     <div metal:fill-slot="main"
          tal:define="ltool context/lens_tool | nothing;
-                     showonly context/getCategory | nothing;">
+                     showonly context/getCategory | nothing;
+                     portal context/portal_url/getPortalObject;">
       <span id="lens_feed_icon" metal:define-macro="lensfeedicon">
         <a tal:attributes="href string:${context/absolute_url}/atom;">
           <img src="/feed-icon.png" alt="Lens Feed" i18n:attributes="alt text_lens_icon" tal:attributes="src string:$portal_url/feed-icon.png;"/>
@@ -47,6 +48,20 @@
                   <b i18n:translate="text_content_count">Content:</b>
                   <tal:data content="siyavulaLensCnt | string:?">303</tal:data>
                   <span tal:omit-tag="">lenses</span>
+                </p>
+              </li>
+              <li tal:define="featured nocall:portal/lenses/cnxorg/featured | nothing"
+                  tal:condition="featured">
+                <img
+                   tal:define="portrait python:mtool.getPersonalPortrait('cnxorg');"
+                   tal:replace="structure python:portrait.tag(style='float: right; margin: 0 0 5px 1em;')" />
+                <a href="#" tal:attributes="href string:${context/portal_url}/lenses/cnxorg/featured">
+                  <span i18n:translate="text_cnx_featured_content">Connexions Featured Content</span></a>
+                <p><b i18n:translate="text_lenses_by">Lens by:</b> Connexions</p>
+                <p>
+                  <b i18n:translate="text_content_count">Content:</b>
+                  <tal:data content="python:str(featured.getCount()) or '?'">303</tal:data>
+                  <span tal:omit-tag="">modules and/or collections</span>
                 </p>
               </li>
           </ul>
@@ -110,8 +125,10 @@
       
       <p id="lens_feed_links">
       <strong>Feeds: </strong><a tal:attributes="href string:${context/absolute_url}/atom;" >Subscribe to this feed</a> |
-      <a tal:attributes="href string:/help/AvailableFeeds" >All Connexions Feeds</a> |
-      <a tal:attributes="href string:/help/FeedHelp" >About RSS Feeds</a>
+      <tal:help tal:define="help nocall:portal/help/viewing/feeds | nothing" tal:condition="nocall:help">
+        <a tal:attributes="href string:${help/absolute_url}#availablefeeds" >All Connexions Feeds</a> |
+        <a tal:attributes="href help/absolute_url" >About RSS Feeds</a>
+      </tal:help>
       </p>
 
     </div>

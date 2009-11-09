@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="rhaptos">
+
+  <body>
+
+    <!-- Like String Widgets -->
+    <span class="field" metal:define-macro="view">
+     <metal:block define-slot="widget_label">
+     </metal:block>
+
+     <tal:block tal:condition="python:'view' in widget.modes and 'r' in field.mode and field.checkPermission('r',here)"
+                tal:omit-tag="">
+        <tal:block condition="use_label|nothing">
+          <span class="label" tal:content="python:widget.Label(here) + ':'">Field</span>
+          <span tal:condition="field/workflowable|nothing" tal:omit-tag="">
+             (<a href="#"
+                 tal:define="wf_tool here/portal_workflow;
+                             lang master_language | nothing;
+                             obj python:lang and accessor(lang=lang) or accessor();
+                             review_state python:wf_tool.getInfoFor(obj, 'review_state', '')"
+                 tal:attributes="href string:${obj/absolute_url}/portal_form/content_status_history;
+                                 class python:test(review_state, review_state, 'private')"
+                 tal:content="review_state" i18n:translate="">
+                     review_state
+              </a>)
+          </span>
+        </tal:block>
+        <span tal:replace="structure accessor"/>
+     </tal:block>
+
+    </span>
+
+    <metal:define define-macro="edit">
+      <metal:use use-macro="field_macro | here/widgets/field/macros/edit">
+        <div metal:fill-slot="widget_body">
+
+          #
+          <input type="text"
+               size="6"
+               tal:attributes="name fieldName;
+               id fieldName;
+               value value;
+               maxlength widget/maxlength;
+               tabindex tabindex/next;
+               onchange string:Refresh.Web.ColorPicker.extjsUpdatePreview(this.value,'$fieldName-preview');"
+               />
+           <a href="javascript:colorchooserPopup(this.previousSibling);"
+               tal:attributes="href string:javascript:Refresh.Web.ColorPicker.extjsPopupHelper('$fieldName');"
+             ><img src="/colorchooser-resources/button.png" /></a>
+
+            <a href="javascript:colorchooserPopup($(''));"
+                tal:attributes="href string:javascript:Refresh.Web.ColorPicker.extjsPopupHelper('$fieldName');"
+              >color chooser</a>
+
+            <span style="margin-left: 2em;
+                         padding: .3em .5em;
+                         vertical-align: middle;
+                         border: 1px dashed #888;
+                         border-collapse: separate;
+                         font-size: .9em;"
+                tal:attributes="id python:fieldName+'-preview';">
+              branding banner color preview
+            </span>
+
+            <script type="text/javascript"
+              tal:content="string:Refresh.Web.ColorPicker.extjsUpdatePreview('$value','$fieldName-preview');" />
+        </div>
+      </metal:use>
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/macros/edit">
+      </div>
+    </div>
+
+  </body>
+
+</html>

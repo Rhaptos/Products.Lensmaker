@@ -45,6 +45,8 @@ schema['title'].write_permission = EditHiddenFields
 schema['description'].write_permission = EditHiddenFields
 
 schema['logo'].write_permission = EditHiddenFields
+schema['banner'].write_permission = EditHiddenFields
+schema['bannerColor'].write_permission = EditHiddenFields
 
 schema['url'].write_permission = EditHiddenFields
 

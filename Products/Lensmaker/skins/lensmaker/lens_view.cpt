@@ -12,6 +12,12 @@
     <link rel="stylesheet" type="text/css" href="/tagcloud.css" />
   </metal:css>
 
+  <metal:head fill-slot="javascript_head_slot">
+    <script type="text/javascript" src="/extjs/ext.js"
+            tal:attributes="href string:$portal_url/extjs/ext.js"></script>
+    <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js"></script>
+  </metal:head>
+
   <body>
 
     <div metal:fill-slot="column_one_slot">
@@ -29,6 +35,115 @@
     <div metal:fill-slot="column_two_slot"/>
 
     <div metal:fill-slot="main">
+      <tal:banner tal:condition='context/banner | nothing'>
+        <tal:comment tal:replace="nothing">tal can not parameterize the interior of a script node, but can parameterie the script node itself; thus, the trickiness.</tal:comment>
+        <tal:comment tal:replace="nothing">Either there is a banner color or not. I just made 2 exclusive cases</tal:comment>
+        <script type="text/javascript" 
+            tal:condition="python:context['bannerColor']"
+            tal:content="string:var bannerColor='${context/bannerColor}';"></script>
+        <script type="text/javascript"
+            tal:define="hasColor python:context['bannerColor']"
+            tal:condition="not:hasColor"
+            tal:content="string:var bannerColor='';"></script>
+        <script type="text/javascript" tal:content="string:var bannerTitle=&quot;${context/Title}&quot;;"></script>
+        <script type="text/javascript" 
+                tal:define="logo context/getLogo;
+                            flag nocall:logo"
+                tal:condition="flag"
+                tal:content="string:var hasLogo=true;"></script>
+        <script type="text/javascript" 
+                tal:define="logo context/getLogo;
+                            flag nocall:logo"
+                tal:condition="not:flag"
+                tal:content="string:var hasLogo=false;"></script>
+        <script type="text/javascript"
+                tal:define="lensPath context/absolute_url_path;"
+                tal:content="string:var lensPath='${lensPath}';"></script>
+        <tal:script tal:define="cat context/getCategory;
+                                isEndorsement python:'Endorsement' in cat;
+                                isAffiliation python:'Affiliation' in cat;
+                                isMemberList  python:'List' in cat;">
+          <script type="text/javascript" tal:condition="isEndorsement" tal:content="string:var lensCategory='Endorsement';"/>
+          <script type="text/javascript" tal:condition="isAffiliation" tal:content="string:var lensCategory='Affiliation';"/>
+          <script type="text/javascript" tal:condition="isMemberList"  tal:content="string:var lensCategory='List';"/>
+          <script type="text/javascript" tal:condition="python:not isEndorsement and not isAffiliation and not isMemberList"
+                                              tal:content="string:var lensCategory='';"/>
+        </tal:script>
+        <script type="text/javascript">
+        //<![CDATA[
+
+          (function() {
+            //Store a list of lenses so if the user visits more
+            // than one lens, it will show up.
+
+            //read cookie (defined in rhaptosutils.js)
+            var rawCookie = readCookie('lenses');
+            var lenses = [];
+            if(rawCookie) {
+              lenses = rawCookie.split('|');
+            }
+            //Remove the lens if it already exists (to push it to the top of the stack)
+            for(var i=0; i < lenses.length; i++) {
+              if(unescape(lenses[i].split('#')[0]) == lensPath) {
+                lenses.splice(i, 1);
+                i--;//break; //Keep cleaning
+              }
+            }
+
+            var fgColor = findBestTextColor(bannerColor);
+            var lensString = [escape(lensPath), bannerColor, fgColor, escape(bannerTitle), hasLogo, lensCategory].join('#');
+
+            //set it.
+            lenses.push(lensString);
+
+            //save the cookie (defined in rhaptosutils.js)
+            createCookie('lenses', lenses.join('|'), 365/*days*/);
+
+            //-----------------------------------------
+
+            //Render the banner on this page
+            //Copy-pasted from lightweight-branding-banner.js
+            var bgColor = bannerColor;
+            var title = bannerTitle;
+
+            var portalTop = Ext.get('portal-top'); //inconsistency. different for collections/modules.... they use cnx_portal_top
+
+            //TODO: Use the lens url (endsWith) to know which message to use
+            var bannerMessage = '';
+            if ( lensCategory == 'Endorsement' ) {
+                bannerMessage = 'Content endorsed by: ';
+            }
+            else if ( lensCategory == 'Affiliation' ) {
+                bannerMessage = 'Content affiliated with: ';
+            }
+            else if ( lensCategory == 'List' ) {
+                bannerMessage = 'Content included in lens: ';
+            }
+
+            var linkStyle = ''; //'text-decoration:none;';
+            var bannerStyle = '';
+            if ('' != bgColor) {
+              bannerStyle = 'background-color: #' + bgColor + ';';
+              bannerStyle += ' color:#'+fgColor+';';
+              linkStyle += ' color:#'+fgColor+';';
+            } else {
+              bannerStyle = 'color:#ffffff;'; //for the message preceding the link
+              linkStyle += ' color:#ffffff;';
+            }
+            Ext.DomHelper.append(portalTop,
+             { tag:'div', id:'cnx_branding_banner', style:bannerStyle,
+               children:[
+                 bannerMessage,
+                 { tag:'a', href:lensPath, style:linkStyle, children:[title]}
+               ]
+             }
+            );
+          }) ();
+
+        //]]>
+        </script>
+      </tal:banner>
+
       <tal:inner metal:define-macro="viewguts"
          tal:define="param options/tag | nothing;
                      viewinfo python:context.lens_view_view(tag=param);
@@ -55,7 +170,9 @@
       <h1>
       <img src="/lenses.gif" alt="Lens" i18n:attributes="alt text_lens_icon"
              tal:attributes="src string:$portal_url/${context/getIcon}"/>
-        <tal:dacct content="context/Title">Great Stuff Here</tal:dacct>
+        <span id="cnx_lens-title">
+          <tal:dacct content="context/Title">Great Stuff Here</tal:dacct>
+        </span>
         <span class="normal-text-in-header" tal:condition="python:user.has_permission('Modify portal content', context)">
            <span tal:condition="not:is_editable" >(<a href="contents"  >edit lens</a>)</span>
            <span  tal:condition="is_editable" >(<a href="view" >full view</a>)</span>
@@ -206,8 +323,10 @@
       </div>
       <p id="lens_feed_links">
       <strong>Feeds: </strong><a tal:attributes="href string:${context/absolute_url}/atom;" >Subscribe to this feed</a> |
-      <a tal:attributes="href string:/help/AvailableFeeds" >All Connexions Feeds</a> |
-      <a tal:attributes="href string:/help/FeedHelp" >About RSS Feeds</a>
+      <tal:help tal:define="help nocall:portal/help/viewing/feeds | nothing" tal:condition="nocall:help">
+        <a tal:attributes="href string:${help/absolute_url}#availablefeeds" >All Connexions Feeds</a> |
+        <a tal:attributes="href help/absolute_url" >About RSS Feeds</a>
+      </tal:help>
       </p>
     </tal:inner>
     </div>

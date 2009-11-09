@@ -41,8 +41,10 @@ from AccessControl.PermissionRole import rolesForPermissionOn
 from Products.CMFCore.utils import _mergedLocalRoles
 
 from LensPermissions import AddQualityLens
+from LensPermissions import BrandContent
 
 from config import LENS_TYPES, TAGNAMESPACE_DELIMITER
+from widgets import ColorWidget
 
 LEVELS = 5
 
@@ -70,7 +72,7 @@ shortname = StringField('id',        # overrides default
 displaynamedesc = """An abbreviated name of this lens or your organization. This will be displayed on
 content pages and may be used to generate part of the URL for the lens."""
 displayname = StringField('displayName',
-                          schemata="display",
+                          schemata='basic',
                           required=1,
                           searchable=1,
                           index="lens_catalog/:brains",
@@ -110,7 +112,7 @@ desc = TextField('description',         # overrides default
 logodesc = """To add or change the logo: click the \"Browse\" button and select an image.
 Maximum dimensions are 150 pixels wide by 150 pixels tall. Your image will be resized if it is too large."""
 logo = ImageField('logo',
-                schemata='basic',
+                schemata='branding',
                 searchable=0,
                 #swallowResizeExceptions=1,  # important for issue in next line
                 # TODO: image validator, to take the place of hacky try/except in lens_editor.cpy
@@ -131,6 +133,25 @@ hasLogo= ComputedField('haslogo',
                 expression='context.getLogo() and True or False',
                 widget=StringWidget(modes=()),
                 )
+
+banner = BooleanField('banner',
+                schemata='branding',
+                searchable=0,
+                default=0,
+                write_permission=BrandContent,
+                widget=BooleanWidget(label="Place a branding banner on pages in my lens.",
+                                              description="Do you want to display an identification banner on pages inside this lens?")
+                       )
+
+bannerColor = StringField('bannerColor',
+                         schemata='branding',
+                         validators=('isHexColor',),
+                         write_permission=BrandContent,
+                         widget=ColorWidget(label="Branding Banner Color",
+                                            description="Use the color chooser to select a color value for the branding elements.",
+                                            i18n_domain="rhaptos")
+                         )
+
 
 urldesc= "Add a Web page you would like readers of your lens to visit, e.g. http://cnx.org/aboutus"
 url = StringField('url',
@@ -275,9 +296,14 @@ reviewers= LinesField('reviewers',
                 )
 
 schema = OrderedBaseFolderSchema.copy()
-schema.delField('language')  # for ordering purposes... language is a default field
-schema = schema +  Schema((shortname, displayname, title, desc, masterlanguage, language,
-                                      logo, hasLogo, url, urltext, category, rights,
+
+# for ordering purposes... language et al are default fields
+schema.delField('language')
+schema.delField('title')
+schema.delField('description')
+
+schema = schema +  Schema((shortname, title, displayname, desc, masterlanguage, language,
+                                      logo, hasLogo, banner, bannerColor, url, urltext, category, rights,
                                       notifyOfChanges, noTagCloud,
                                       count, creatorName, review_state, allowedRolesAndUsers, reviewers))
 
@@ -705,3 +731,4 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
         return len(self.objectIds('SelectedContent'))
 
 registerType(ContentSelectionLens)
+

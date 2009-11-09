@@ -184,7 +184,8 @@
                                     tal:content="python: v and v or default">all future</option>
                         </select>
                         <a href="" 
-                          tal:attributes="href string:/content/$item_id/latest/content_info#cnx_history_section;"
+                          tal:define="item_latest_version python:item.moduleVersions().keys()[0];"
+                          tal:attributes="href string:/content/$item_id/$item_latest_version/content_info#cnx_history_section;"
                           i18n:translate="label_see_version_history">See this content's version history</a>
                       </div>
                   </div>

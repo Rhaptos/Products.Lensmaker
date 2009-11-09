@@ -19,6 +19,12 @@
     </tal:block>
   </metal:head>
 
+
+    <metal:block metal:fill-slot="css_slot">
+      <link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all.css"
+            tal:attributes="href string:$portal_url/extjs/resources/css/ext-all.css"/>
+    </metal:block>
+
   <metal:head fill-slot="javascript_head_slot">
  <div tal:define="allowed context/checkEditLens;
                   schema context/Schema;
@@ -45,10 +51,18 @@
               tal:attributes="src string:$portal_url/$item">
       </script>
     </tal:js>
+        <script type="text/javascript" src="/extjs/ext.js"
+                tal:attributes="href string:$portal_url/extjs/ext.js"></script>
+        <script type="text/javascript" src="/eip/prototype.js" ></script>
+        <script type="text/javascript" src="/colorchooser-resources/colormethods.js" ></script>
+        <script type="text/javascript" src="/colorchooser-resources/colorvaluepicker.js" ></script>
+        <script type="text/javascript" src="/colorchooser-resources/slider.js" ></script>
+        <script type="text/javascript" src="/colorchooser-resources/colorpicker.js" ></script>
+        <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js" ></script>
   </div>
   
   <script type="text/javascript">
-<!--
+//<![CDATA[
 window.onload = function(e) {
     initialSettings();
 }
@@ -56,6 +70,8 @@ window.onload = function(e) {
 var expander;
 var hider;
 var advcontent;
+var nodeBannerCheckboxInput;
+var nodeColorChooserDiv;
 
 function setExpand() {
     advcontent.style.display = "block";
@@ -70,6 +86,7 @@ function setHide() {
 }
 
 function initialSettings() {
+   // Advanced setting show/hide magic:
    expander = document.getElementById('adv_expand');
    hider = document.getElementById('adv_hide');
    advcontent = document.getElementById('adv_content');
@@ -77,11 +94,47 @@ function initialSettings() {
    stayopen= document.getElementById('adv_open');
 
    advhidden.style.display = "inline";
-  
+
    if (stayopen) {
       setExpand();
    } else {
       setHide();
+   }
+
+   // branding color chooser show/hide magic
+   nodeBannerCheckboxInput = document.getElementById('banner');
+   nodeColorChooserDiv = document.getElementById('archetypes-fieldname-bannerColor');
+   if ( nodeBannerCheckboxInput ) {
+      // node is only present with the owner of the lens has the "branding" role
+      // checkbox is used to turn on branding for a given lens.
+      // set the initial display state of the color chooser, i.e show or hide it
+      if ( !nodeBannerCheckboxInput.checked ) {
+          nodeColorChooserDiv.style.display = 'none';
+      }
+      // set the onclick handler for the banner checkbox input
+      //nodeBannerCheckboxInput.onclick = function(event){toggleColorChooser();return false;};
+      Ext.get('banner').on('click', toggleColorChooser, document);
+   }
+
+   // make the conditionally required Branding Banner Color look required
+   var divColorField;
+   var i;
+   var nodeChild;
+   divColorField = document.getElementById('archetypes-fieldname-bannerColor');
+   for ( i = 0; i < divColorField.childNodes.length; i++ ) {
+     nodeChild = divColorField.childNodes[i];
+     if ( nodeChild.nodeType == 1 /*Node.ELEMENT_NODE*/ &&
+          nodeChild.nodeName.toLowerCase() == 'label' ) {
+       var nodeLabel = nodeChild;
+       // &lt;span class="fieldRequired" title="Required">(Required)&lt;/span>
+       var nodeSpan = document.createElement('span');
+       nodeSpan.className = 'fieldRequired';
+       nodeSpan.setAttribute('title', 'Required');
+       nodeSpan.innerHTML = '\n(Required)\n';
+       if ( nodeLabel.nextSibling ) divColorField.insertBefore(nodeSpan, nodeLabel.nextSibling);
+       else                         divColorField.appendChild(nodeSpan);
+       break;
+     }
    }
 }
 
@@ -92,7 +145,16 @@ function toggleAdvanced() {
     setHide();
   }
 }
-  //-->
+
+function toggleColorChooser() {
+   if ( nodeColorChooserDiv.style.display == 'none' ) {
+      nodeColorChooserDiv.style.display = '';
+   } else {
+      nodeColorChooserDiv.style.display = 'none';
+   }
+}
+
+//]]>
   </script>
 
   </metal:head>
@@ -130,9 +192,9 @@ function toggleAdvanced() {
           </tal:fields>
         </fieldset>
 
-        <fieldset tal:define="fields python:schematas['display'].editableFields(context);"
+        <fieldset tal:define="fields python:schematas['branding'].editableFields(context);"
                   tal:condition="fields">
-          <legend i18n:translate="label_lens_enhancements">Display Name</legend>
+          <legend i18n:translate="label_basic_info">Lens Branding</legend>
           <tal:fields repeat="field fields">
             <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
           </tal:fields>

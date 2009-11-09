@@ -17,11 +17,13 @@ allow_module('Products.Lensmaker.LensPermissions')
 AddQualityLens = 'Add quality lens'
 EditHiddenFields = 'Lensmaker: Edit Hidden Fields'
 ApproveSelectedContent = 'Lensmaker: Approve Selected Content'
+BrandContent = 'Brand content'
 
 # Set up default roles for permissions
 setDefaultRoles(AddQualityLens, ('Manager', 'Endorser'))
 setDefaultRoles(EditHiddenFields, ('Manager',))
 setDefaultRoles(ApproveSelectedContent, ('Manager','Owner','Reviewer'))
+setDefaultRoles(BrandContent, ('Manager', 'Branding'))
 
 # allow some other permissions from Zope
 from zExceptions import BadRequest

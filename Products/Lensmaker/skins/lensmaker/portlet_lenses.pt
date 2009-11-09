@@ -41,8 +41,9 @@
                   (<span tal:replace="python:len(ltool.getListsBy(category='List', inclzero=False))">45</span>)
                 </li>
               </ul>
-              <p><a href="/help/lens_what" i18n:translate="text_what_lens"
-                    tal:attributes="href string:$portal_url/help/lens_what">What's a Lens?</a></p>
+              <p tal:define="help nocall:portal/help/viewing/lenses | nothing" tal:condition="nocall:help">
+                <a href="/help/viewing/lenses" i18n:translate="text_what_lens"
+                    tal:attributes="href help/absolute_url">What's a Lens?</a></p>
           </dd>
 
        </dl>

@@ -36,7 +36,8 @@
       </h1>
 
       <div>
-        <span style="float: right">(<a i18n:translate="label_more_about_lenses" href="/help/lens_what">More about Lenses</a>)</span>
+        <span tal:define="help nocall:portal/help/viewing/lenses | nothing" tal:condition="nocall:help"
+              style="float: right">(<a i18n:translate="label_more_about_lenses" href="/help/viewing/lenses" tal:attributes="href help/absolute_url">More about Lenses</a>)</span>
         <tal:block tal:condition="mine">
           <metal:macro metal:define-macro="newlens">
             <a href="/lenses/create_lens" i18n:translate="link_create_lens"

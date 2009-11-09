@@ -1,3 +1,39 @@
+Lensmaker-0.14
+  -light-weight-branding (30 Oct 2009)
+    - Added color picker widget
+    - created a new Branding role.
+    - make the PAS User Folder grok the new Branding role.
+    - Viewing a lens page now sets (or updates) a cookie with a unique list
+      of lenses visited. Then, content_render.xsl has javascript that detects
+      if this module is in one of the lenses in the cookie (by navigating
+      the DOM tree) and displays an ugly banner
+    - Banner colors, title, and whether a logo exists are stored in the cookie
+      and (aside from the logo) rendered.
+    - branding bar message needs to change based on lens category:
+      {Endorsement, Affiliation}.
+    - Updated Colorpicker to show previews on the edit page and inside the widget
+      (updates foreground and background colors).
+    - Fixing up banner creation to store the foreground color in the cookie too.
+    - add Connexions Featured Content lens to Featured lenses in the lens listing page.
+    - Added dashed gray border around color preview.
+    - branding should not be turned on by default, during lens creation.
+    - make branding hidden while editing the My Favorites lens.
+    - conditionally display the branding color picker for lens edit.
+    - added logic, after a lens edit properties save, to check for a stale branding cookie.
+    - move Display Name up one field as seen in lens_edit.
+    - need validate the *input* fields
+    - associate an error message with the invalid banner color.
+    - when the logo does not exists (get this from the cookie), we do not
+      add an <img> node which a nonworking @src (which IE7/8 was mangling).
+    - Renaming colorpicker to colorchooser
+    - Restricted what is a valid color from 3 or 6-digit hex to just 6-digit hex because
+      IE 7 does not allow 3-digits and added validation when the chooser initially pops up.
+
+Lensmaker-0.13
+  - collection-structure-redesign-1 (Oct. 22, 2009)
+    - change and (mostly) make dynamic help links for new help area structure
+    - remove copy/paste license info about transmenus that shouldn't be here
+
 Lensmaker-0.12
   - content-actions-move (17 Aug 2009)
     - allow specified returnTos in lens_add and favorites_add so we can call them
