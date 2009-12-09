@@ -4,3 +4,5 @@ def addRoles(context):
         return
     portal = context.getSite()
     portal.acl_users.addRole('Endorser')
+    portal.acl_users.addRole('Branding')
+
