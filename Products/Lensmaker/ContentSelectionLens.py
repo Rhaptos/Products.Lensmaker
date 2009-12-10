@@ -406,11 +406,10 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
       """Return a dictionary with the needed information from this lens for content display.
       TODO: we can probably automate this, though I don't know if it's worth it.
       """
-      portal_url = getToolByName(self, 'portal_url')
       wf_tool = getToolByName(self, 'portal_workflow')
       return {
           'id':self.getId(),
-          'location':'/'+'/'.join(portal_url.getRelativeContentPath(self)),
+          'location':self.absolute_url(),
           'displayName':self.getDisplayName(),
           'creatorName':self.getCreatorName(),
           'title':self.Title(),
