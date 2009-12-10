@@ -13,7 +13,7 @@ Refresh.Web.DefaultSliderSettings = {
 	xMaxValue: 100,
 	yMinValue: 0,
 	yMaxValue: 100,
-	arrowImage: '/colorchooser-resources/images/rangearrows.gif'
+	arrowImage: portal_url+'/colorchooser-resources/images/rangearrows.gif'
 }
 
 

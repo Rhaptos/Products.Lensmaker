@@ -9,7 +9,7 @@ if (!Refresh.Web) Refresh.Web = {};
 Refresh.Web.DefaultColorPickerSettings = {
 	startMode:'h',
 	startHex:'ff0000',
-	clientFilesPath: '/colorchooser-resources/images/'
+	clientFilesPath: portal_url+'/colorchooser-resources/images/'
 };
 
 Refresh.Web.ColorPicker = Class.create();
