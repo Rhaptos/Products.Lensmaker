@@ -6,7 +6,7 @@
      category="object_tabs"
      condition_expr="python:object and portal.portal_workflow.getTransitionsFor(object, object.getParentNode()) and object.Type() not in ('Content Selection Lens', 'Favorites Lens')"
      url_expr="string:content_status_history"
-     visible="True">
+     visible="False">
    <permission>View</permission>
   </action>
 
