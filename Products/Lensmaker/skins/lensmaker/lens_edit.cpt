@@ -66,8 +66,6 @@
                 tal:attributes="src  string:$portal_url/colorchooser-resources/colorpicker.js"></script>
         <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js" 
                 tal:attributes="src  string:$portal_url/lightweight-branding-foreground-calculator.js"></script>
-        <script type="text/javascript" language="Javascript"
-                tal:content="string:var portal_url='${context/portal_url}';"></script>
   </div>
   
   <script type="text/javascript">
