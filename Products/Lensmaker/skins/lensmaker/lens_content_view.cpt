@@ -275,7 +275,7 @@
                               <img src="icon" tal:attributes="src item/getInnerIcon;
                                                               alt item/getInnerType" />
                           </a>
-                          <a href="#" tal:attributes="href  string:/content/$item_id/$item_version/;">
+                          <a href="#" tal:attributes="href  string:$portal_url/content/$item_id/$item_version/;">
                               <span tal:content="item_title_or_id">
                                 Item Title
                               </span></a>
