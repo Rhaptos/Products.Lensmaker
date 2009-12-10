@@ -51,14 +51,21 @@
               tal:attributes="src string:$portal_url/$item">
       </script>
     </tal:js>
-        <script type="text/javascript" src="/extjs/ext.js"
-                tal:attributes="href string:$portal_url/extjs/ext.js"></script>
-        <script type="text/javascript" src="/eip/prototype.js" ></script>
-        <script type="text/javascript" src="/colorchooser-resources/colormethods.js" ></script>
-        <script type="text/javascript" src="/colorchooser-resources/colorvaluepicker.js" ></script>
-        <script type="text/javascript" src="/colorchooser-resources/slider.js" ></script>
-        <script type="text/javascript" src="/colorchooser-resources/colorpicker.js" ></script>
-        <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js" ></script>
+        <script type="text/javascript" src="/extjs/ext.js" href=""
+                tal:attributes="href string:$portal_url/extjs/ext.js;
+                                src  string:$portal_url/extjs/ext.js"></script>
+        <script type="text/javascript" src="/eip/prototype.js" 
+                tal:attributes="src  string:$portal_url/eip/prototype.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/colormethods.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/colormethods.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/colorvaluepicker.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/colorvaluepicker.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/slider.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/slider.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/colorpicker.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/colorpicker.js"></script>
+        <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js" 
+                tal:attributes="src  string:$portal_url/lightweight-branding-foreground-calculator.js"></script>
   </div>
   
   <script type="text/javascript">
