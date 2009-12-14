@@ -407,11 +407,16 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
       TODO: we can probably automate this, though I don't know if it's worth it.
       """
       wf_tool = getToolByName(self, 'portal_workflow')
+      try:
+          creatorName = self.getCreatorName()
+      except AttributeError:
+          # XXX shield : fall back on CMF default method.
+          creatorName = self.Creator()
       return {
           'id':self.getId(),
           'location':self.absolute_url(),
           'displayName':self.getDisplayName(),
-          'creatorName':self.getCreatorName(),
+          'creatorName':creatorName,
           'title':self.Title(),
           #'description':self.Description(),
           'logo':self.getLogo() and 'true' or None,
