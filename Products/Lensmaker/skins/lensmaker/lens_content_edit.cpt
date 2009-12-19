@@ -2,7 +2,9 @@
 
 <tal:block xmlns:tal="http://xml.zope.org/namespaces/tal"
            xmlns:metal="http://xml.zope.org/namespaces/metal"
-           tal:define="default_tab string:contents">
+           tal:define="default_tab string:contents;
+                       utool nocall:here/portal_url;
+                       portalPath utool/getPortalPath;">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
       metal:use-macro="here/main_template/macros/master"
@@ -22,8 +24,7 @@
     </style>
   </metal:css>
 
-  <body tal:define="utool nocall:here/portal_url;
-                    portalPath utool/getPortalPath;">
+  <body>
 
     <div metal:fill-slot="content_title_header">
       <tal:block tal:define="lens nocall:context">
