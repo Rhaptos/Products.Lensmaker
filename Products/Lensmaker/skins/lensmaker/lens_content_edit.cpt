@@ -137,7 +137,7 @@
                   <tal:def define="pth python:'/'.join(item.getPhysicalPath());
                                    lens nocall:context;
                                    context python:context.restrictedTraverse(portalPath+'/content/%s/%s' % (item_id, item_version))">
-                    <metal:use use-macro="here/lens_add_open_tags/macros/namespacetags_field"/>
+                    <metal:use use-macro="here/lens_add_tags/macros/namespacetags_field"/>
                   </tal:def>
 
                   <!-- comments -->

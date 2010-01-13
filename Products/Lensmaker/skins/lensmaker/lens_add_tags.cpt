@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ 
+  <tal:head metal:fill-slot="head_slot"
+            tal:define="dummy python:request.set('disable_border',1)">
+  </tal:head>
+  <tal:head metal:fill-slot="style_slot">
+    <style type="text/css">
+      .lens_tags h1 {
+        font-weight:Bold;
+        font-size:160%;
+      }
+
+    </style>  
+  </tal:head>
+
+  <body>
+    <div metal:fill-slot="main" class="lens_tags">
+    <metal:main define-macro="main">
+
+      <h1> 
+        <tal:block replace="structure python:getattr(here, here.getIcon(1))"/>
+        <span tal:replace="context/pretty_title_or_id"/>:
+        <span i18n:translate="heading_add_tags_to_lens">Select tags</span>
+      </h1>
+
+      <form name="edit_form" action="." method="post" 
+            tal:attributes="action template/getId"
+            tal:define="errors options/state/getErrors">
+        <input tal:attributes="value request/cancel_url|request/HTTP_REFERER"
+               type="hidden"
+               name="cancel_url"/>
+        <tal:loop repeat="pth request/lens_paths|python:[]">
+          <input tal:attributes="value pth"
+                 type="hidden"
+                 name="lens_paths:list" />
+
+          <fieldset tal:define="lens python:context.restrictedTraverse(pth)">
+            <legend tal:content="lens/pretty_title_or_id"></legend>
+
+            <metal:namespacetags_field define-macro="namespacetags_field">
+            <div tal:define="error python:errors.get(pth+'-namespaceTags');
+                             entry python:getattr(lens, getattr(context, 'objectId', None) or getattr(context, 'id', None), None);
+                             namespaceTags python:request.get(pth+'-namespaceTags', getattr(entry, 'getNamespaceTags', lambda:[])());
+                             tag_namespaces python:lens.getTagNamespaces(full_objects=True)"
+                 tal:condition="tag_namespaces"
+                 tal:attributes="class python:test(error, 'field error', 'field')">
+              <div class="formHelp"
+                   i18n:translate="help_namespaces_tags">
+                Select the tags that apply to the content.
+              </div>
+
+              <tal:norender condition="nothing">
+                  <metal:taginput define-macro="taginput">                  
+                  <tal:if condition="tag" tal:define="aview nocall:portal/@@getNamespaceTagTerm;
+                  prefixed_tag python:aview(tag_namespace.getPrefix(), tag);
+                  label python:portal.restrictedTraverse('@@getNamespaceTagLabel')(tag);
+                  term python:prefixed_tag.split('::')[-1];" >
+                     <td>
+                       <input class="noborder" tal:attributes="value prefixed_tag;
+                                             checked python:prefixed_tag in namespaceTags;
+                                             name python:pth+'-namespaceTags:list'"
+                                             type="checkbox"/>
+                     </td>
+                     <td>
+                       <b tal:content="python:term != label and '%s:' % term or term"></b>
+                       <span tal:condition="python:term != label" tal:replace="label"/>
+                    </td>
+                    </tal:if>
+                  </metal:taginput>
+              </tal:norender>
+
+              <tal:loop tal:repeat="tag_namespace tag_namespaces">
+                <div class="field">
+                  <label tal:content="tag_namespace/pretty_title_or_id"></label>
+                  <div tal:define="tags tag_namespace/getTags"
+                       tal:condition="tags">
+                    <table class="lens_tag_table" width="100%">                           
+                      <tr>
+                        <td class="tag-column">
+                          <table> 
+                            <tr tal:repeat="idx python:range(0, (len(tags) / 2) + 1)">
+                                <tal:def define="tag python:tags[idx]">
+                                  <metal:use use-macro="here/lens_add_tags/macros/taginput"/>
+                                </tal:def>
+                            </tr> 
+                          </table>
+                        </td>
+                        <td class="tag-column right">
+                          <table> 
+                            <tr tal:repeat="idx python:range((len(tags) / 2) + 1, len(tags))">
+                                <tal:def define="tag python:tags[idx]">
+                                  <metal:use use-macro="here/lens_add_tags/macros/taginput"/>
+                                </tal:def>
+                            </tr> 
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </tal:loop>
+            </div>
+            </metal:namespacetags_field>
+
+          </fieldset>
+        </tal:loop>
+        
+        <input type="submit"
+               class="context"
+               name="form.button.save"
+               tal:attributes="tabindex tabindex/next;"
+               i18n:attributes="value value_save"
+               value="Save" />
+
+        <input type="submit"
+               class="standalone"
+               name="form.button.cancel"
+               tal:attributes="tabindex tabindex/next;"
+               i18n:attributes="value value_cancel"
+               value="Cancel" />
+
+        <input type="hidden" name="form.submitted" value="1" />
+      </form>
+
+    </metal:main>
+    </div>
+  </body>
+</html>

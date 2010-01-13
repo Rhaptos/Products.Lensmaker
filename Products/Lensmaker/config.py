@@ -33,3 +33,9 @@ LENS_TYPES = QUALITY_LENSES + DisplayList(( ("List","List"),))
 LENS_TYPES_OR_NONE = DisplayList(((NO_CAT_TOKEN,'--'),)) + LENS_TYPES
 
 TAGNAMESPACE_DELIMITER = '::'
+
+TAG_SCHEMES = DisplayList ((
+        ('FreeForm','Freeform Tags'), 
+        ('Vocabulary', 'Tag Vocabularies'),
+        ))
+

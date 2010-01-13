@@ -24,7 +24,12 @@ class MiscView(BrowserView):
         di = {}
         processed = []
         for item in li:
-            splitted = item.split(TAGNAMESPACE_DELIMITER)
+            # We split the namespace tags to get a prefix and term. The list
+            # comprehension and trimming protects us from breaking if
+            # delimiters are used in the prefix or term parts, which should not
+            # happen after the validation steps.
+            splitted = [part for part in item.split(TAGNAMESPACE_DELIMITER) if
+                        part][:2]
             if len(splitted) == 1:
                 continue
             prefix, term = splitted
@@ -35,6 +40,7 @@ class MiscView(BrowserView):
              )
             if not brains:
                 continue
+
             obj = brains[0].getObject()
             if obj not in processed:
                 processed.append(obj)
@@ -47,8 +53,9 @@ class MiscView(BrowserView):
                 if term == l_term:
                     tag = l_tag
                     break
-
-            di[obj].append(tag)
+            # Display only where tag is both available for lens and in li parameter
+            if tag:
+              di[obj].append(tag)
 
         if return_dictionary:
             return di
@@ -95,7 +102,7 @@ class MiscView(BrowserView):
 
     def getNamespaceTagLabel(self, tag):
         term, label = self._getNamespaceTagTokens(tag)
-        return label
+        return label.lstrip()
 
     def getTagNamespaceEditBatch(self):
         """
@@ -129,3 +136,17 @@ class MiscView(BrowserView):
             output += '%d %s and ' % (breakdown[k], betterk)
         return output[:-5]
 
+    def makeTagsDictFromTagsInUse(self, tags_in_use):
+        return_di = {}
+        
+        if tags_in_use:
+          for namespace in tags_in_use:
+              ns = namespace['tagnamespace'].getPrefix()
+              return_di[ns] = {}
+              
+              for tag in namespace['tags']:
+                id = ''
+                label = ''
+                id, label = self._getNamespaceTagTokens(tag)
+                return_di[ns][id] = label.lstrip()
+        return return_di

@@ -42,6 +42,24 @@
              tal:condition="python:exists('portal/%s' % item)"
              tal:content="string:@import url($portal_url/$item);">
       </style>
+      <style type="text/css" media="all">
+          .preview-img {
+              border-color:#CCCCCC #333333 #333333 #CCCCCC;
+              border-style:solid;
+              border-width:1px;
+              bottom:2em;
+              display:none;
+              position:absolute;
+              right:0;
+          }
+          .preview{
+                font-size: .9em;
+                position: relative;
+          }
+          .disableText {
+              color: gray;
+          }
+      </style>
     </tal:css>
     <tal:js condition="js"
             repeat="item js">
@@ -210,8 +228,20 @@ function toggleColorChooser() {
         <fieldset tal:define="fields python:schematas['settings'].editableFields(context);">
           <legend i18n:translate="label_lens_settings">Lens settings</legend>
 
-          <tal:fields repeat="field fields">
-            <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+          <tal:fields repeat="field fields" define="siyavula context/@@siyavula">
+            <tal:tagscheme tal:condition="python:field.getName() == 'tagScheme'">
+              <span tal:condition="siyavula">
+                <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+              </span>
+              <!-- Default tagScheme to FreeForm for non-siyavula users -->
+              <input type="hidden"
+                     tal:condition="not:siyavula"
+                     name="tagScheme"
+                     tal:attributes="value python:context.getTagScheme() or 'FreeForm'" />
+            </tal:tagscheme>
+            <tal:nottagscheme tal:condition="python:field.getName() != 'tagScheme'">
+                <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+            </tal:nottagscheme>
           </tal:fields>
 
           <div class="field" tal:condition="context/workflowStateEditable">

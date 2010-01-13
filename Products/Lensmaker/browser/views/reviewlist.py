@@ -45,8 +45,8 @@ class ReviewList(BrowserView):
                 sort_order='descending',
             )
 
-        # Wrap the brains
-        result = []
+        # Wrap the brains, get rid of duplicates
+        result = {}
         for b in brains:
             content = b.getObject().getContent()
             if content.portal_type not in ('Module', 'Collection'):
@@ -54,8 +54,10 @@ class ReviewList(BrowserView):
             r = record()
             r.objectId = content.contentId
             r.version = content.id
-            result.append(r)
+            result[(r.objectId, r.version)] = r
 
+        result = result.values()
+        result.sort(lambda x,y: cmp(x.objectId, y.objectId))
         return result
 
     def lenses(self, objectId=None):

@@ -100,6 +100,8 @@ CNX note:
                          tal:attributes="src string:$portal_url/select_all_icon.gif"/>
                 </th>
                 <th i18n:translate="listingheader_name">Name</th>
+                <th i18n:translate="listingheader_userid">User Id</th>
+                <th i18n:translate="listingheader_email">E-mail</th>
               </tr>
               
               <tr class="odd"
@@ -113,16 +115,28 @@ CNX note:
                          tal:attributes="value member/getId" />
                 </td>
 
+              <tal:badauthor tal:define="user_id member/getId;
+                                         user python:here.desecured.getMemberById(user_id)" 
+                             tal:on-error="string:(${user_id})">
                 <td>
                   <img src="user.gif" />
-                  <tal:badauthor tal:define="user_id member/getId;
-                                             user python:here.desecured.getMemberById(user_id)" 
-                                 tal:on-error="string:(${user_id})">
                     <a href="" 
                        tal:attributes="href string:/member_profile/${user/id}"
                        tal:content="python:user.getProperty('fullname')">[username]</a>
-                  </tal:badauthor>
                 </td>
+                <td>
+                  <a href="" 
+                      tal:attributes="href string:/member_profile/${user/id}"
+                      tal:content="string:${user/id}">[userid]</a>
+                </td>
+                <td tal:define="email user/email">
+                    <a href="#" tal:attributes="href string:mailto:${email}">
+                        <img src=""
+                             tal:replace="structure portal/mail_icon.gif" />
+                        <span tal:replace="email" />
+                    </a>
+                </td>
+              </tal:badauthor>
               </tr>
               </table>
 
@@ -145,7 +159,8 @@ CNX note:
         <table class="listing">
           <tr>
             <th i18n:translate="listingheader_remove">Remove</th>
-            <th i18n:translate="listingheader_user">User</th>
+            <th i18n:translate="listingheader_name">Name</th>
+            <th i18n:translate="listingheader_userid">User Id</th>
             <th i18n:translate="listingheader_email">E-mail</th>
           </tr>
   
@@ -167,6 +182,11 @@ CNX note:
                        tal:replace="structure portal/user.gif"/>&#160;<tal:badauthor tal:on-error="string:(${username})"><a tal:content="fullname"
                        tal:attributes="href string:/member_profile/${username}">Full Name</a></tal:badauthor>
                   </a>
+                </td>
+                <td>
+                  <a href="" 
+                      tal:attributes="href string:/member_profile/${user/id}"
+                      tal:content="string:${user/id}">[userid]</a>
                 </td>
                 <td tal:define="email python:user.getProperty('email')">
                   <a href="#" tal:attributes="href string:mailto:${email}">

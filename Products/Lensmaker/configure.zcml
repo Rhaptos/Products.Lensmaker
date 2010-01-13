@@ -15,6 +15,11 @@
  
   <subscriber
       for=".ContentSelectionLens.ContentSelectionLens
+          Products.Lensmaker.browser.interfaces.IAfterTransitionEvent"
+      handler=".events.onContentSelectionLensTransition"/>  
+
+  <subscriber
+      for=".ContentSelectionLens.ContentSelectionLens
           zope.app.container.interfaces.IObjectModifiedEvent"
       handler=".events.onContentSelectionLensModified"/>  
 

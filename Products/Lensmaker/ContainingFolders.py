@@ -81,7 +81,7 @@ class LensMajorContainer(BaseBTreeFolder):
             fieldDict['title'] = "Affiliated Lenses in the " + str(self.portal_url.getPortalObject().Title()) + " System"
         elif category == 'List':
             fieldDict['title'] = "Member List Lenses in the " + str(self.portal_url.getPortalObject().Title()) + " System"
-        lensList = self.lens_tool.getListsBy(category)
+        lensList = self.lens_tool.getListsBy(category, incl_organised=True)
         for lens in lensList:
             if lens.review_state != 'private':
                 lensDict = {}

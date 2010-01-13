@@ -50,6 +50,14 @@
         permission="zope2.View"
         />
 
+  <browser:page
+        for="*"
+        name="makeTagsDictFromTagsInUse"
+        class=".misc.MiscView"
+        attribute="makeTagsDictFromTagsInUse"
+        permission="zope2.View"
+        />
+
   <include package=".views" />
 
 </configure>

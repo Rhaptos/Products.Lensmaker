@@ -29,12 +29,34 @@
 
       <h1 i18n:translate="heading_add_to_lens">Add to a lens</h1>
 
-      <metal:heart define-macro="inner"
-                   tal:define="ltool context/lens_tool;
-                               lenses python:ltool.getListsOwned(review_state=['private','published']);
-                               newlens python:{'getPath':'__new__', 'getId':'__new__',
+     <tal:norender condition="nothing">
+     <!-- This macro reuses 'inner' below, but redefines lenses -->
+     <metal:openheart define-macro="openinner">
+       <tal:def define="ltool context/lens_tool;
+                        lenses python:list(ltool.getOpenLenses());
+                        dummy python:lenses.sort(lambda x,y:cmp(x.getDisplayName, y.getDisplayName));
+                        openlenses python:True">
+         <metal:useheart use-macro="context/lens_add/macros/realinner" />
+       </tal:def>
+     </metal:openheart>
+     </tal:norender>
+
+     <tal:norender condition="nothing">
+     <!-- This macro reuses 'inner' below, but redefines lenses -->
+     <metal:hardheart define-macro="inner">
+       <tal:def define="ltool context/lens_tool;
+                        lenses python:list(ltool.getListsOwned());
+                        dummy python:lenses.sort(lambda x,y:cmp(x.getDisplayName, y.getDisplayName));
+                        openlenses python:False">
+         <metal:useheart use-macro="context/lens_add/macros/realinner" />
+       </tal:def>
+     </metal:hardheart>
+     </tal:norender>
+
+      <metal:heart define-macro="realinner"
+                   tal:define="newlens python:{'getPath':'__new__', 'getId':'__new__',
                                                'getDisplayName':'Create a new lens...'};
-                               lenses python:list(lenses) + [newlens];
+                               lenses python:openlenses and lenses or (lenses + [newlens]);
                                contentId options/contentId | request/contentId | nothing;
                                version options/version | request/version | nothing;
                                hasdata python: contentId and version;
@@ -64,91 +86,112 @@
         <tal:data condition="not:hasdata">
           <p i18n:translate="text_no_lens_data"><strong>Error!</strong> Cannot determine content information.</p>
         </tal:data>
-        <tal:data condition="hasdata">
+        <tal:data condition="hasdata"
+                  define="obj python:context.content.getRhaptosObject(contentId, version)">
 
           <h3 i18n:translate="heading_add_content_lens">
             Add "<span i18n:name="title"
-                       tal:define="obj python:context.content.getRhaptosObject(contentId, version)"
-                       tal:replace="obj/Title">[content title]</span>" to a lens
+                       tal:replace="obj/Title">[content title]</span>" to
+            <tal:lenstype content="python:openlenses and 'an open lens' or 'a lens'" />
           </h3>
           <form name="dummy" method="get" action="." id="cnx_lens_switch" style="display:none">
-            <label for="cnx_switch_inner">Choose lens:</label>
+            <label for="cnx_switch_inner" tal:condition="not:openlenses">Choose lens:</label>
+            <label for="cnx_switch_inner" tal:condition="openlenses">Choose open lens:</label>
             <select id="cnx_switch_inner" name="switch">
               <option tal:repeat="l lenses" value="form-1"
                       tal:attributes="value string:cnx_lens_form-${l/getId};
                                       selected python:repeat['l'].start and 'selected' or None"
                       tal:content="l/getDisplayName">My lens is awesome</option>
             </select>
-            <tal:siyavula condition="context/@@siyavula|nothing">
-              <a tal:attributes="href string:${context/absolute_url}/lens_add_open_select"><span i18n:translate="choose_open_lens">Choose Open Lens</span></a>
-            </tal:siyavula>
           </form>
 
-          <form tal:repeat="l lenses" class="cnx_lens_form"
-                method="post" action="lensAdd" id="cnx_lens_form-1"
-                tal:attributes="id string:cnx_lens_form-${l/getId};
-                                class python:not repeat['l'].start and 'cnx_lens_form cnx_lens_form_hidden' or default;">
+          <tal:lenses repeat="l lenses">
             <tal:inner define="lobj l/getObject | nothing;
-                               entry python:lobj is not None and getattr(lobj, contentId, None) or None">
-              <input type="hidden" name="lensPath" tal:attributes="value l/getPath" />
-              <input type="hidden" name="contentId" tal:attributes="value contentId" />
-              <input type="hidden" name="version" tal:attributes="value version" />
-              <input type="hidden" name="returnTo" tal:attributes="value request/returnTo | request/URL1" />
-    <!--
-              <p tal:content="l/Description"
-                tal:attributes="displayName l/getDisplayName;
-                                title l/Title;
-                                shortname l/getId;
-                                path l/getPath;">
-                Lorem ipsum dolor sit amet.
-              </p>
-    -->
-            <fieldset metal:define-macro="fieldset">
-              <legend tal:content="string: Lens: ${l/getDisplayName}">This Lens</legend>
-              
-              <!-- tags -->
-              <div class="field">
-                <label for="tags" i18n:translate="label_tags">Tags</label>
-                <div class="formHelp" id="tags_help">
-                    Add words you associate with this content. Separate each tag with a space.
-                </div>
-                <div>
-                  <input type="text" name="tags" class="cnx_tags_input" size="75"
-                        tal:define="tags entry/getTags | nothing"
-                        tal:attributes="id string:cnx_lens_tags-${l/getId};
-                                        value python:tags and ' '.join(tags) or nothing" />
-                </div>
-              </div>
-              <!-- comments -->
-              <div class="field">
-                <label for="comment" i18n:translate="label_comments">Comments</label>
-                <div class="formHelp" id="comment_help">
-                </div>
-                <div>
-                  <textarea name="comment" rows="3" cols="30" class="cnx_comments_input"
-                            tal:attributes="id string:cnx_lens_comment-${l/getId}"
-                            tal:content="entry/getPlainComment | nothing"></textarea>
-                </div>
-              </div>
+                               entry python:lobj is not None and getattr(lobj, contentId, None) or None;
+                               freeform python:lobj and lobj.getTagScheme()=='FreeForm' or False;
+                               vocabulary python:lobj and lobj.getTagScheme()=='Vocabulary' or False">
 
-            </fieldset>
-    
-            <div tal:attributes="id python:repeat['l'].start and 'cnx_lens_add_button' or nothing"
-                 tal:define="first python:l is newlens;
-                             update python:not first and (entry is not None);
-                             add python:not first and (entry is None)">
-                  <input id="submit" type="submit" name="submit" class="context" value="Continue"
-                         tal:condition="first"
-                         tal:attributes="id string:cnx_lens_submit-${l/getId}" />
-                  <input id="submit" type="submit" name="submit" class="context" value="Add to lens"
-                         tal:condition="add"
-                         tal:attributes="id string:cnx_lens_submit-${l/getId}" />
-                  <input id="submit" type="submit" name="submit" class="context" value="Update"
-                         tal:condition="update"
-                         tal:attributes="id string:cnx_lens_submit-${l/getId}" />
-            </div>
+              <form class="cnx_lens_form"
+                    method="post" action="lensAdd" id="cnx_lens_form-1"
+                    tal:attributes="id string:cnx_lens_form-${l/getId};
+                                    class python:not repeat['l'].start and 'cnx_lens_form cnx_lens_form_hidden' or default;
+                                    action python:freeform and 'lensAdd' or 'lens_add_tags'">
+                <tal:isfreeform condition="freeform">
+                    <input type="hidden" name="lensPath" tal:attributes="value l/getPath" />
+                    <input type="hidden" name="contentId" tal:attributes="value contentId" />
+                    <input type="hidden" name="version" tal:attributes="value version" />
+                    <input type="hidden" name="returnTo"
+                           tal:attributes="value request/returnTo | request/URL1" />
+                </tal:isfreeform>
+                <tal:hasvocab condition="vocabulary">
+                    <input type="hidden" name="lens_paths:list" tal:attributes="value l/getPath" />
+                </tal:hasvocab>
+
+                <tal:osiyesa condition="context/@@siyavula|nothing">
+                    <div tal:condition="python:l['getId']=='__new__'"
+                         class="formHelp cnx_freeform_note">
+                        Note: This will create a lens with free-form tags only.
+                        To create a lens with controlled vocabulary tags go to
+                        <a href="mycnx"
+                           tal:attributes="href string:${context/portal_url}/mycnx">MyCNX</a> and
+                        select "Create a new lens".
+                    </div>
+                </tal:osiyesa>
+
+                <div tal:condition="vocabulary" i18n:translate="lens_needs_vocabulary_tags" class="formHelp">
+                    This lens needs criteria to be selected from a tag
+                    vocabulary. You will be asked to select tags that applies
+                    to "<span tal:replace="obj/Title" />" in the next step.
+                </div>
+
+                <fieldset metal:define-macro="fieldset" tal:condition="python:freeform or l is newlens">
+                  <legend tal:content="string: Lens: ${l/getDisplayName}">This Lens</legend>
+                  
+                  <!-- tags -->
+                  <div class="field">
+                    <label for="tags" i18n:translate="label_tags">Tags</label>
+                    <div class="formHelp" id="tags_help">
+                        Add words you associate with this content. Separate each tag with a space.
+                    </div>
+                    <div>
+                      <input type="text" name="tags" class="cnx_tags_input" size="75"
+                            tal:define="tags entry/getTags | nothing"
+                            tal:attributes="id string:cnx_lens_tags-${l/getId};
+                                            value python:tags and ' '.join(tags) or nothing" />
+                    </div>
+                  </div>
+                  <!-- comments -->
+                  <div class="field">
+                    <label for="comment" i18n:translate="label_comments">Comments</label>
+                    <div class="formHelp" id="comment_help">
+                    </div>
+                    <div>
+                      <textarea name="comment" rows="3" cols="30" class="cnx_comments_input"
+                                tal:attributes="id string:cnx_lens_comment-${l/getId}"
+                                tal:content="entry/getPlainComment | nothing"></textarea>
+                    </div>
+                  </div>
+
+                </fieldset>
+        
+                <div tal:attributes="id python:repeat['l'].start and 'cnx_lens_add_button' or nothing"
+                     tal:define="first python:l is newlens;
+                                 update python:not first and (entry is not None);
+                                 add python:not first and (entry is None)">
+                      <input id="submit" type="submit" name="submit" class="context" value="Continue"
+                             tal:condition="first"
+                             tal:attributes="id string:cnx_lens_submit-${l/getId}" />
+                      <input id="submit" type="submit" name="submit" class="context" value="Add to lens"
+                             tal:condition="add"
+                             tal:attributes="id string:cnx_lens_submit-${l/getId};
+                                             value python:openlenses and 'Add to open lens' or 'Add to lens'" />
+                      <input id="submit" type="submit" name="submit" class="context" value="Update"
+                             tal:condition="update"
+                             tal:attributes="id string:cnx_lens_submit-${l/getId}" />
+                </div>
+              </form>
             </tal:inner>
-          </form>
+        </tal:lenses>
         </tal:data>
         </tal:auth>
       </metal:heart>

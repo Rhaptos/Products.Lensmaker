@@ -14,8 +14,8 @@
                       tag viewinfo/tag;
                       qs request/environ/QUERY_STRING | nothing;
                       qs python:qs and '?%s' % qs or '';
-                      struct python:context.getNamespaceTagsInUse(objectify=True)"
-          tal:condition="python:context.isOpen()">
+                      struct python:context.getAllLensNamespaceTags(objectify=True)"
+          tal:condition="python:not context.getNoTagCloud() and context.getTagScheme() == 'Vocabulary'">
 
       <div id="portlet-lens-criteria"
            class="portletContainer">

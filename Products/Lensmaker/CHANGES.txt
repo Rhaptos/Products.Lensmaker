@@ -1,5 +1,9 @@
+Lensmaker-0.15
+  - lwb-hot-fixes (03 Dec 2009)
+    - #9812: create branding banner bar and set branding cookie, server side
+
 Lensmaker-0.14
-  -light-weight-branding (30 Oct 2009)
+  - light-weight-branding (30 Oct 2009)
     - Added color picker widget
     - created a new Branding role.
     - make the PAS User Folder grok the new Branding role.

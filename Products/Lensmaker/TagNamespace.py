@@ -89,6 +89,7 @@ class TagNamespace(BaseContent):
     def validate_tags(self, value):
         """
         Check that the set of terms for the tags do not contain collisions
+        Also, check for characters that affect url traversal
         """
         if not value:
             return None
@@ -99,8 +100,20 @@ class TagNamespace(BaseContent):
             term = view('prefix', tag)
             if term in terms:
                 return _("The term for %s appears more than once" % tag)
+            for char in ['?', '&', '%', '::', '#']:
+              if char in term[len('prefix::'):]:
+                return _("The term may not contain ?, &, %, :: or # characters")
+
             terms.append(term)
         
+    def validate_prefix(self, value):
+        """
+        Check for characters that affect url traversal
+        """
+        for char in value:
+          if char in ['?', '&', '%', ':', '#']:
+            return _("The prefix may not contain ?, &, %, : or # characters")
+
     def showEditableBorder(self, *args, **kwargs):
         """
         Abuse this nasty hook to always hide the border

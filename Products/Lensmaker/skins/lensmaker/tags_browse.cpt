@@ -17,10 +17,14 @@
          tal:define="viewinfo context/tags_browse_view;
                      searchhash viewinfo/searchhash;
                      results viewinfo/results;
-                     tag viewinfo/tag;">
+                     tag viewinfo/tag;
+                     prefix viewinfo/prefix;">
       <h1 i18n:translate="heading_tagged_content">
         Content tagged with: <span i18n:name="tag" tal:content="tag | string:?">dsp</span>
       </h1>
+      <p class="discreet" tal:condition="python: tag and prefix">
+        Complete tag: Prefix: <strong tal:content="prefix">RT</strong>, Tag: <strong tal:content="tag">Assignment</strong> (<a href="/help/glossary#tagprefix" class="discreet-link">what's this?</a>)
+      </p>
       <p tal:condition="not:tag" i18n:translate="no tag">Error: No tag provided.</p>
       <div tal:condition="tag">
         <p tal:condition="not:results" i18n:translate="text_no_tags">

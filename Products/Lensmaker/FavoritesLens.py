@@ -58,6 +58,8 @@ schema['category'].default = FAVORITES_TYPES[0]
 schema['category'].vocabulary = FAVORITES_TYPES
 schema['category'].write_permission = EditHiddenFields
 
+schema['tagScheme'].default = "FreeForm"
+
 # keep, but rearrange
 schema['language'].schemata = 'settings'
 schema['master_language'].schemata = 'settings'

@@ -29,8 +29,8 @@
           Lists of content selected by an organization or individual
       </div>
 
-      <tal:comment replace="nothing">Featured Lenses: currently only Siyavula, future add additional count
-      defs and extend the haveFeatured flagi as well as a new li</tal:comment>
+      <tal:comment replace="nothing">Featured Lenses: currently only Siyavula and cnxorg Featured,
+      future add additional count defs and extend the haveFeatured flagi as well as a new li</tal:comment>
       <tal:featured-defs tal:define="siyavulaLensCnt context/@@siyavula-lens-count | python:0;
                                      haveFeatured siyavulaLensCnt">
         <tal:show tal:condition="python:not showonly and haveFeatured">

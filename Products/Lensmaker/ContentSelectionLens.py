@@ -43,7 +43,7 @@ from Products.CMFCore.utils import _mergedLocalRoles
 from LensPermissions import AddQualityLens
 from LensPermissions import BrandContent
 
-from config import LENS_TYPES, TAGNAMESPACE_DELIMITER
+from config import LENS_TYPES, TAGNAMESPACE_DELIMITER, TAG_SCHEMES
 from widgets import ColorWidget
 
 LEVELS = 5
@@ -126,7 +126,7 @@ logo = ImageField('logo',
                                    i18n_domain="rhaptos",)
                        )
 
-hasLogo= ComputedField('haslogo',
+hasLogo = ComputedField('haslogo',
                 accessor="hasLogo",
                 searchable=0,
                 index="lens_catalog/:brains",
@@ -152,6 +152,13 @@ bannerColor = StringField('bannerColor',
                                             i18n_domain="rhaptos")
                          )
 
+bannerForegroundColor = ComputedField('bannerForegroundColor',
+                accessor="bannerForegroundColor",
+                searchable=0,
+                index="lens_catalog/:brains",
+                expression="context.calculateForegroundColor()",
+                widget=StringWidget(modes=()),
+                )
 
 urldesc= "Add a Web page you would like readers of your lens to visit, e.g. http://cnx.org/aboutus"
 url = StringField('url',
@@ -184,12 +191,14 @@ notifyOfChanges = BooleanField('notifyOfChanges',
                                               description=notifyOfChangesdesc,)
                          )
 
-noTagClouddesc = ""
+noTagClouddesc = """
+This prevents a "Tags" or "Criteria" selector from appearing on the lens page. This is most useful for lenses where no tags have been used.
+"""
 noTagCloud = BooleanField('noTagCloud',
                          schemata='advanced',
                          searchable=0,
                          default=0,
-                         widget=BooleanWidget(label="Don't show tag cloud",
+                         widget=BooleanWidget(label="Don't show tags box on lens page",
                                               description=noTagClouddesc,)
                          )
 masterlanguagedesc = 'Select the primary language for this lens.'
@@ -295,6 +304,26 @@ reviewers= LinesField('reviewers',
                 widget=LinesWidget(visible=False),
                 )
 
+tagSchemeDesc = """IMPORTANT: This setting cannot be changed later!<br>
+Freeform Tags allow entry of any single word tags. Tag Vocabularies require setting up categories of values, which can be assigned to content in the lens."""
+tagScheme = StringField('tagScheme',
+                         schemata='settings',
+                         #read_permission=View,
+                         #write_permission=AddQualityLens,
+                         index="lens_catalog/FieldIndex",
+                         searchable=0,
+                         required=1,
+                         vocabulary=TAG_SCHEMES,
+                         enforceVocabulary=1,
+                         widget=SelectionWidget(label="Tag Type",
+                                                description=tagSchemeDesc,
+                                                i18n_domain="rhaptos",
+                                                modes=('edit'),
+                                                format="radio",
+                                                macro="radio_tagtype",
+                                                ),
+                         )
+
 schema = OrderedBaseFolderSchema.copy()
 
 # for ordering purposes... language et al are default fields
@@ -303,9 +332,10 @@ schema.delField('title')
 schema.delField('description')
 
 schema = schema +  Schema((shortname, title, displayname, desc, masterlanguage, language,
-                                      logo, hasLogo, banner, bannerColor, url, urltext, category, rights,
-                                      notifyOfChanges, noTagCloud,
-                                      count, creatorName, review_state, allowedRolesAndUsers, reviewers))
+                                      logo, hasLogo, banner, bannerColor, bannerForegroundColor, url,
+                                      urltext, category, rights, notifyOfChanges, noTagCloud,
+                                      count, creatorName, review_state, allowedRolesAndUsers, reviewers,tagScheme))
+schema.moveField('noTagCloud', before='id') 
 
 class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BTree?  #! changed base class needs to change reindex hook
    """List of entries that select a set of content."""
@@ -336,7 +366,7 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
                {'id': 'tagnamespaces',
                 'title': 'Tag vocabularies',
                 'action': Expression('string:${object_url}/lens_tagnamespaces_view'),
-                'condition': 'object/isOpen',
+                'condition': 'python:object.getTagScheme()=="Vocabulary"',
                 'permissions': (ModifyPortalContent,)},
                {'id': 'reviewers',
                 'title': 'Reviewers',
@@ -389,7 +419,7 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
             del allowed['Owner']
         return list(allowed.keys())
    
-   security.declareProtected(View, 'getTagCloud')
+   security.declareProtected(View, 'getCreatorMember')
    def getCreatorMember(self):
       """Return member object representing this object's creator (and, almost certainly, owner).
       """
@@ -401,11 +431,12 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
       wf_tool = getToolByName(self,'portal_workflow')
       return wf_tool.getInfoFor(self, 'review_state', '')
 
-   security.declareProtected(View, 'getTagCloud')
+   security.declareProtected(View, 'listDict')
    def listDict(self):
       """Return a dictionary with the needed information from this lens for content display.
       TODO: we can probably automate this, though I don't know if it's worth it.
       """
+      portal_url = getToolByName(self, 'portal_url')
       wf_tool = getToolByName(self, 'portal_workflow')
       try:
           creatorName = self.getCreatorName()
@@ -414,12 +445,14 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
           creatorName = self.Creator()
       return {
           'id':self.getId(),
-          'location':self.absolute_url(),
+          'location':'/'+'/'.join(portal_url.getRelativeContentPath(self)),
           'displayName':self.getDisplayName(),
           'creatorName':creatorName,
           'title':self.Title(),
           #'description':self.Description(),
           'logo':self.getLogo() and 'true' or None,
+          'banner':self.getBanner() and 'true' or None,
+          'bannerColor':self.getBannerColor() or None,
           #'url':self.getUrl(),
           #'urltext':self.getUrlText(),
           #'notifyOfChanges':self.getNotifyOfChanges(),
@@ -634,7 +667,6 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
         Return the namespace tags applied to content added to this lens
         """
         pc = getToolByName(self, 'lens_catalog')
-
         result = pc(
                 portal_type='SelectedContent',
                 path="/".join(self.getPhysicalPath()),
@@ -660,7 +692,37 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
 
         return li
 
-   security.declareProtected(View, 'getReviewers')
+   security.declareProtected(View, 'getAllLensNamespaceTags')
+   def getAllLensNamespaceTags(self, objectify=False):
+        """
+        Return the namespace tags for this lens
+        """
+        pc = getToolByName(self, 'lens_catalog')
+        results = pc(
+                portal_type='TagNamespace',
+                path="/".join(self.getPhysicalPath()),
+                sort_on='id'
+                )
+        li = []
+        for item in results:
+          # build up list to what objectifyTagNamespaceList understands
+          ns = item.getObject()
+          prefix = ns.getPrefix()
+          for full_tag in ns.getTags():
+            tokens = full_tag.split(' ')
+            tag = tokens[0]
+            li.append("%s%s%s" % (prefix, TAGNAMESPACE_DELIMITER, tag))
+        
+        li.sort()
+
+        if objectify:
+            return self.restrictedTraverse('@@objectifyTagNamespaceList')(li)
+
+        return li
+
+   # No need to set security, Archetypes does this in
+   # ClassGenerator.updateSecurity
+   #security.declareProtected(View, 'getReviewers')
    def getReviewers(self):
         """
         Accessor which strips out invalid member accounts
@@ -673,7 +735,9 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
                 result.append(memberid)
         return result
 
-   security.declareProtected(View, 'setReviewers')
+   # No need to set security, Archetypes does this in
+   # ClassGenerator.updateSecurity
+   #security.declareProtected(View, 'setReviewers')
    def setReviewers(self, value):
         """
         Manage reviewers and the associated Reviewer local roles
@@ -733,6 +797,33 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
         Return number of SelectedContent item in self
         """
         return len(self.objectIds('SelectedContent'))
+
+   def calculateForegroundColor(self):
+        """
+        Return the calculated foreground color
+        """
+        def toRGB(strHex):
+            return { 'r':(int(strHex, 16) & 0xFF0000) >> 16,
+                    'g':(int(strHex, 16) & 0x00FF00) >> 8,
+                    'b':int(strHex, 16) & 0x0000FF }
+
+        def findBrightnessDif(rgb1, rgb2):
+            brightness1 = ((rgb1['r'] * 299) + (rgb1['g'] * 587) + (rgb1['b'] * 114)) / 1000
+            brightness2 = ((rgb2['r'] * 299) + (rgb2['g'] * 587) + (rgb2['b'] * 114)) / 1000
+            return abs( brightness1 - brightness2 )
+
+        strBackground = self.getBannerColor()
+        white = 'ffffff'
+        black = '000000'
+        if strBackground is None or len(strBackground) == 0:
+            return white
+
+        if findBrightnessDif(toRGB(strBackground), toRGB(black)) > findBrightnessDif(toRGB(strBackground), toRGB(white)):
+            strForeground = black
+        else:
+            strForeground = white
+
+        return strForeground
 
 registerType(ContentSelectionLens)
 

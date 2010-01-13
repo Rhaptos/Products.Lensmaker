@@ -35,7 +35,23 @@ companion = context.listOfEntries(tag=tag)
 raw_results = []
 if companion:
     raw_results = context.contentResults(entries=companion)
-results = content.sortSearchResults(list(raw_results),sorton,recent)
+companionMap = dict([(brain.getId, brain) for brain in companion])
+
+def sortOnApproved(x,y):
+    xapp = companionMap[x.objectId].getApproved
+    yapp = companionMap[y.objectId].getApproved
+    if xapp == yapp:
+        return 0
+    if xapp:
+        return -1
+    if yapp:
+        return 1
+
+if sorton == 'getApproved':
+    results = list(raw_results)
+    results.sort(sortOnApproved)
+else:
+    results = content.sortSearchResults(list(raw_results),sorton,recent)
 
 #if results is None: # TODO: doesn't actually use cache
 content.cache.resultsCacheInject(searchhash, (results, {}, sorton, recent))

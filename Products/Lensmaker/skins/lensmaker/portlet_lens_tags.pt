@@ -14,9 +14,9 @@
                           tag              viewinfo/tag;
                           qs               request/environ/QUERY_STRING | nothing;
                           qs               python:qs and '?%s' % qs or '';
-                          isNotOpen        python:not context.isOpen();
+                          isFreeForm       python:context.getTagScheme() == 'FreeForm';
                           showTagCloud     python:context.getNoTagCloud() == False"
-              tal:condition="python:isNotOpen and showTagCloud">
+              tal:condition="python:isFreeForm and showTagCloud">
 
      <div id="portlet-lens-tags"
           class="portletContainer">

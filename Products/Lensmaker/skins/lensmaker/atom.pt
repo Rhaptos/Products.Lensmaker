@@ -58,7 +58,8 @@
                                         item_implicit        item/implicit;
                                         item_title           item/Title;
                                         item_comments        item/comment;
-                                        item_tags            item/getTags;
+                                        item_tags            python:item.getTags();
+                                        item_namespace_tags  python:item.getNamespaceTags() ;
                                         item_version         python:item_version_stop or 'latest';">
                 <author                 tal:content="item/getContentAuthors">
                     Lens Creator
@@ -75,11 +76,16 @@
                             Entry comment 
                         </p>
                     </span>
-                    <span tal:condition="python:len(item.getTags()) > 0" >
+                    <span tal:condition="python:len(item_tags) > 0 or len(item_namespace_tags) > 0" >
                       <strong>Tags:</strong>
                       <ul class="tags">
-                          <tal:tags       tal:repeat="tag item/getTags">
+                          <tal:tags       tal:repeat="tag item_tags">
                               <li         tal:content="tag">
+                              Tag
+                              </li>
+                          </tal:tags>
+                          <tal:tags       tal:repeat="tag item_namespace_tags">
+                              <li         tal:content="python:tag.split('::')[-1]">
                               Tag
                               </li>
                           </tal:tags>

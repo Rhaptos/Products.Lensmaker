@@ -11,17 +11,20 @@
 REQUEST=context.REQUEST
 
 delete = REQUEST.get('delete', [])
+deletebutton = REQUEST.get('prefs_reviewers_edit', None)
+
 add = REQUEST.get('ids', [])
+addbutton = REQUEST.get('addingaction', None)
 
 reviewers = context.getReviewers()
 
-if add:
+if add and addbutton:
     for memberid in add:
         if memberid not in reviewers:
             reviewers.append(memberid)
     context.edit(reviewers=reviewers)
 
-elif delete:
+elif delete and deletebutton:
     for memberid in delete:
         if memberid in reviewers:
             reviewers.remove(memberid)

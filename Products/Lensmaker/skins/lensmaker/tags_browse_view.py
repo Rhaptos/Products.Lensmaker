@@ -21,9 +21,15 @@ request.set('recent',recent)
 cached_results = content.cache.resultsCacheLookup(searchhash,sorton,recent)
 
 tag = request.get('tag')
+prefix = request.get('prefix', '')
+
+if prefix:
+    prefixed_tag = '%s::%s' % (prefix, tag)
+else:
+    prefixed_tag = tag
 
 if cached_results is None:
-    entries = tag and context.lens_tool.getContentForTag(tag) or None
+    entries = tag and context.lens_tool.getContentForTag(prefixed_tag) or None
     raw_results = entries and context.lens_tool.entriesToContent(entries) or []
     results = sorton != 'title' and content.sortSearchResults(list(raw_results),sorton,recent) or raw_results
     content.cache.resultsCacheInject(searchhash, (results, {}, sorton, recent))
@@ -34,4 +40,5 @@ retvals = {}
 retvals['searchhash'] = searchhash
 retvals['results'] = results
 retvals['tag'] = tag
+retvals['prefix'] = prefix
 return retvals

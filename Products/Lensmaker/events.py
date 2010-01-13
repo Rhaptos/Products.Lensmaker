@@ -25,6 +25,13 @@ class AfterTransitionEvent(object):
     def __init__(self, ob):
         self.object = ob
 
+def onContentSelectionLensTransition(context, event):
+    """
+    Add creator to reviewer list of an open lens.
+    """
+    if context.isOpen() and not context.getReviewers():
+        context.setReviewers([context.Creator()])
+
 def onContentSelectionLensModified(context, event):
     """
     Create Tag Namespaces folder if lens is an open lens

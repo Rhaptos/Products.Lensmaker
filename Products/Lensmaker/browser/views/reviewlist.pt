@@ -10,6 +10,11 @@
     <style type="text/css" media="all"
            tal:content="string: @import url($portal_url/content_browse.css);"></style>
   </metal:css>
+  <metal:js fill-slot="javascript_head_slot">
+    <script type="text/javascript"
+            tal:attributes="src string:${portal_url}/lensmaker_utils.js">
+    </script>
+  </metal:js>
 </head>
 
 <body>
@@ -34,7 +39,7 @@
     </div>
 
     <div style="margin-top: 2em">    
-    <form tal:attributes="action string:${context/absolute_url}" 
+    <form tal:attributes="action string:${context/absolute_url}/@@lensmaker.reviewlist.approve"
           tal:condition="brains"
           method="post"
           name="results_form">
@@ -45,6 +50,14 @@
           <th valign="middle" colspan="2">
             <metal:block metal:use-macro="here/batch_macros_results/macros/navigation" />
           </th>
+        </tr>
+
+        <tr>
+          <th>
+            <input type="submit" class="context" value="Approve" />
+          </th>
+          <th></th>
+          <th></th>
         </tr>
 
         <tal:block tal:repeat="resobj batch">
@@ -64,7 +77,10 @@
           conflicting python:conflictsMap and conflictsMap.get(resobj.objectId, None);
           companionElt python:companionMap and companionMap[o.objectId];"
             tal:attributes="class python:view.test(oddrow, 'even', 'odd')">
-            <td class="add_workarea_checkbox" valign="top"></td>
+            <td class="add_workarea_checkbox" valign="top">
+              <input type="checkbox" onclick="onApprove(this)"
+                     tal:attributes="value o/objectId" />
+            </td>
             <td class="object_match">
               <div class="object_name"
                    tal:define="version companionElt/getVersionStop | string:;
@@ -231,13 +247,18 @@
                 </tal:abstract>
               </div>
 
-              <div class="object_extended_metadata">
+              <div class="object_extended_metadata"
+                   tal:attributes="id string:metadata_${o/objectId}">
                 <b i18n:translate="text_header_namespacetags" 
                    class="waiting_approval_in">Waiting for approval in:</b>
                 <tal:def define="aview nocall:context/@@lensmaker.reviewlist.lenses;
                                  lenses python:aview(objectId=o.objectId)">
                   <tal:loop repeat="lens lenses">
-                    <tal:if condition="not:repeat/lens/start">, </tal:if>
+                    <tal:if condition="not:repeat/lens/start">,
+                    </tal:if><input tal:attributes="value string:${lens/getPath}/${o/objectId}"
+                           name="paths:list"
+                           type="checkbox"
+                           style="display: none" />
                     <span tal:replace="lens/pretty_title_or_id"/>
                   </tal:loop>
                 </tal:def>
@@ -292,14 +313,6 @@
               </td>
               </tr>
 -->
-             
-              <tr tal:condition="python:hasattr(o, 'rating')"
-                  class="object_extended_metadata">
-              <td class="left-cell">
-                <b i18n:translate="text_rating_header">Rating: </b>
-              </td>
-              <td><tal:stars repeat="i python:range(0, round(o.rating()))"><img tal:attributes="src string:${portal_url}/full_star.png"/></tal:stars><img tal:condition="python:view.modf(round(o.rating() * 2) / 2.0)[0]" tal:attributes="src string:${portal_url}/half_star.png"/></td>
-              </tr>
 
               <tr class="object_extended_metadata">
               <td class="left-cell">
@@ -344,11 +357,29 @@
                   <span tal:content="resobj/matched | nothing"/>
                 </td>
               </tr>
+             
+              <tr tal:condition="python:hasattr(o, 'rating')"
+                  class="object_extended_metadata">
+              <td class="left-cell">
+                <b i18n:translate="text_rating_header">Rating: </b>
+              </td>
+              <td tal:condition="python:round(o.rating())"><tal:stars repeat="i python:range(0, round(o.rating()))"><img tal:attributes="src string:${portal_url}/full_star.png"/></tal:stars><img tal:condition="python:view.modf(round(o.rating() * 2) / 2.0)[0]" tal:attributes="src string:${portal_url}/half_star.png"/></td>
+              <td tal:condition="python:not round(o.rating())" i18n:translate="not_rated_like">Not yet rated</td>
+              </tr>
+
               </tbody>
               </table>
             </td>
           </tr>
         </tal:block>
+
+        <tr>
+          <th>
+            <input type="submit" class="context" value="Approve" />
+          </th>
+          <th></th>
+          <th></th>
+        </tr>
 
         <tr tal:condition="python:len(brains) > len(batch)"
             id="results_row_three">

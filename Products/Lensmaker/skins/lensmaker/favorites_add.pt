@@ -51,7 +51,10 @@
                   method="post" action="lensAdd" id="cnx_lens_form-favorites"
                   tal:define="l context/favorites_get;
                               lobj nocall:l">
-              <tal:inner define="entry python:lobj is not None and getattr(lobj, contentId, None)">
+              <tal:inner define="entry python:lobj is not None and getattr(lobj, contentId, None);
+                                 freeform python:lobj and lobj.getTagScheme()=='FreeForm' or False;
+                                 newlens python:{'getPath':'__new__', 'getId':'__new__',
+                                               'getDisplayName':'Create a new lens...'};">
                 <input type="hidden" name="lensPath" tal:attributes="value python:'/'.join(l.getPhysicalPath())" />
                 <input type="hidden" name="contentId" tal:attributes="value contentId" />
                 <input type="hidden" name="version" tal:attributes="value version" />

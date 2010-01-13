@@ -58,6 +58,13 @@ Present UI to edit multiple TagNamespace instances at once.
                i18n:attributes="value"
                style="margin: 1em 0 0;" />
 
+        <input class="context"
+               type="submit"
+               name="form.button.cancel"
+               value="Cancel"
+               style="margin: 1em 0 0;" 
+               i18n:attributes="value" />
+
         <input type="hidden" name="b_start:int" value="#"
                tal:define="b_start request/b_start | nothing"
                tal:condition="b_start"

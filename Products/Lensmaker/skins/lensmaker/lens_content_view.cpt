@@ -298,11 +298,16 @@
                           <tal:cell define="v item/getRawVersionStop"
                                     content="python:v or 'latest'">never</tal:cell>
                       </td>
-                      <td tal:define="tags python:item.getTags()"> <!-- tags -->
+                      <td tal:define="item_tags python:item.getTags();
+                                      item_namespace_tags python:item.getNamespaceTags()"> <!-- tags -->
                           <span
-                             tal:repeat="tag tags"
+                             tal:repeat="tag item_tags"
                              tal:content="tag">pirates</span>
-                          <span tal:condition="not:tags" class="none_added">(none added)</span>
+                          <span
+                             tal:repeat="tag item_namespace_tags"
+                             tal:content="python:tag.split('::')[-1]">pirates</span>
+                           <span tal:condition="python: not(item_tags or item_namespace_tags)" 
+                                 class="none_added">(none added)</span>
                       </td>
                       <td class="last_cell"> <!-- comments -->
                           <tal:cell tal:content="item/getComment">It's something!</tal:cell>
@@ -336,72 +341,6 @@
 
         <input type="hidden" name="form.submitted" value="1" />
        </form>
-
-       <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js"></script>
-       <script type="text/javascript"
-               tal:define="lensPath context/absolute_url_path;"
-               tal:content="string:var lensPath='${lensPath}';"></script>
-       <script type="text/javascript"
-               tal:define="bannerColor python:context['bannerColor'] or '';"
-               tal:content="string:var bannerColor='${bannerColor}';var fgColor = findBestTextColor(bannerColor);"></script>
-       <script type="text/javascript"
-               tal:content="string:var bannerTitle=&quot;${context/Title}&quot;;"></script>
-       <script type="text/javascript"
-               tal:define="logo context/getLogo | nothing;
-                           hasLogo python:logo is not None and 'true' or 'false';"
-               tal:content="string:var hasLogo=${hasLogo};"></script>
-       <script type="text/javascript"
-               tal:define="cat context/getCategory;
-                           lensCategory python:cat or '';"
-               tal:content="string:var lensCategory='${lensCategory}';"></script>
-       <script type="text/javascript"
-               tal:define="gotBranding python:context.getBanner() and 'true' or 'false';"
-               tal:content="string:var gotBranding=${gotBranding};"></script>
-       <script type="text/javascript">
-        //<![CDATA[
-          (function() {
-            // we can get to this page after we save the "Edit lens property" page.
-            // here we check to see if the branding cookie got stale after the save.
-            var updateCookie;
-            var newLensCookiePart = [escape(lensPath), bannerColor, fgColor, escape(bannerTitle), hasLogo, lensCategory].join('#');
-
-            // read cookie (defined in rhaptosutils.js)
-            var oldCookie = readCookie('lenses');
-            var lenses = [];
-            if ( oldCookie ) {
-              lenses = oldCookie.split('|');
-            }
-
-            // remove the lens if it already exists
-            updateCookie = false;
-            for(var i=0; i < lenses.length; i++) {
-              if(unescape(lenses[i].split('#')[0]) == lensPath) {
-                if ( gotBranding && newLensCookiePart != lenses[i] ) {
-                  // lens changed out from under us
-                  lenses.splice(i, 1);
-                  i--;
-                  updateCookie = true;
-                }
-                if ( !gotBranding ) {
-                  // branding for this lens got turned off
-                  lenses.splice(i, 1);
-                  i--;
-                  updateCookie = true;
-                }
-              }
-            }
-
-            // re-add the lens back into the cookie
-            if ( updateCookie ) {
-              if ( gotBranding ) {
-                lenses.push(newLensCookiePart);
-              }
-              newCookie = lenses.join('|');
-              createCookie('lenses', newCookie, 365/*days*/);
-            }
-          }) ();
-        //]]>
-       </script>
 
      </metal:reuse>
     </div>

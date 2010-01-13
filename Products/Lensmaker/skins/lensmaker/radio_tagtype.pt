@@ -1,0 +1,82 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+
+<head>
+    <title></title>
+</head>
+
+<body>
+
+    <!-- Radio Button Selection for TagType Widget -->
+
+    <metal:view_macro define-macro="view"
+                      tal:define="vocab python:field.Vocabulary(here);
+                                  value python:accessor();
+                                  display python:here.displayValue(vocab, value)"
+                      tal:replace="structure display" />
+
+    <metal:define define-macro="edit">
+
+        <metal:use use-macro="field_macro | here/widgets/field/macros/edit">
+
+            <metal:fill fill-slot="widget_body"
+                        tal:define="vocab python:field.Vocabulary(here);
+                                    vlen python:len(vocab);
+                                    format python:widget.format">
+
+
+                <div>
+                <tal:radios tal:repeat="item vocab">
+
+                    <input class="noborder"
+                           tabindex=""
+                           type="radio"
+                           tal:define="tabindex tabindex/next"
+                           tal:attributes="name fieldName;
+                                           id string:${fieldName}_${repeat/item/number};
+                                           checked python:here.checkSelected(item, value);
+                                           value item;
+                                           disabled python:not context.isTemporary() and 'disabled' or None;
+                                           tabindex tabindex;"
+                           />
+
+                   <span tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"
+                           i18n:translate=""
+                           tal:attributes="for string:${fieldName}_${repeat/item/number};
+                                           class python:not context.isTemporary() and 'disableText' or None" />
+
+                   <span class="preview">
+                   <a href="#"
+                       i18n:translate="see_example"
+                       tal:attributes="
+                       onmouseout string:document.getElementById('preview-${item}').style.display = 'none';;;
+                       onmouseover string:document.getElementById('preview-${item}').style.display = 'block';;"
+                       onclick="return false;">(see example)</a>
+                                
+                   <div class="preview-img" 
+                       tal:attributes="id string:preview-${item}" 
+                       style="display: none;">
+                   <img tal:attributes="src string:${context/portal_url}/tag-type-${item}.png" />
+                   </div>
+                   </span>
+                   &nbsp;&nbsp;
+
+                </tal:radios>
+                </div>
+
+            </metal:fill>
+
+        </metal:use>
+
+    </metal:define>
+
+    <div metal:define-macro="search">
+        <div metal:use-macro="here/widgets/selection/macros/edit" />
+    </div>
+
+</body>
+
+</html>

@@ -264,7 +264,7 @@ class LensTool(UniqueObject, SimpleItem):
         return pwned
     
     security.declarePublic('getListsBy')
-    def getListsBy(self, category=None, path=None, all=None, memberid=None, inclzero=True):
+    def getListsBy(self, category=None, path=None, all=None, memberid=None, inclzero=True, incl_organised=False):
         """Return public lensish content (per getLensTypes) meeting certain criteria. Light catalog wrapper.
         Returns catalog results list.
         If 'path' is provided, restrict to that path. (Used for showing only those inside a folder.)
@@ -283,13 +283,14 @@ class LensTool(UniqueObject, SimpleItem):
         if results:
             if not inclzero: results = [x for x in results if x.getCount > 0]
 
-            # find all lenses referenced by a lensorganiser
-            rc = getToolByName(self, 'reference_catalog')
-            targetUIDs = [b.targetUID for b in rc(relationship='lenses_lensorganizers')] 
-            
-            # filter out the lenses in lensorganisers
-            if targetUIDs:
-                results = [x for x in results if x.UID not in targetUIDs]
+            if not incl_organised:
+                # find all lenses referenced by a lensorganiser
+                rc = getToolByName(self, 'reference_catalog')
+                targetUIDs = [b.targetUID for b in rc(relationship='lenses_lensorganizers')] 
+                
+                # filter out the lenses in lensorganisers
+                if targetUIDs:
+                    results = [x for x in results if x.UID not in targetUIDs]
 
         return results
 
