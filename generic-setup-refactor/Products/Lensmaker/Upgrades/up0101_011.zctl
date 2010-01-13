@@ -1,0 +1,35 @@
+from Products.CMFCore.tests.base.security import AnonymousUser, OmnipotentUser
+from AccessControl.SecurityManagement import newSecurityManager
+user = OmnipotentUser().__of__(app)
+#user = app.acl_users.getUser('jcc')
+newSecurityManager(None, user)
+
+qi = app.plone.portal_quickinstaller
+name = 'Lensmaker'
+if not qi.isProductInstalled(name):
+    qi.installProduct(name)
+else:
+    qi.reinstallProducts([name])
+
+from Products.CMFCore.utils import getToolByName
+lenstool = getToolByName(app.plone, 'lens_catalog')
+
+brains = lenstool(portal_type='SelectedContent')
+iSelectedContentCount = len(brains)
+iNonZeroCatalogEntries = 0
+iBadCatalogEntries = 0
+for b in brains:
+    selContent = b.getObject()
+    if b.getComment is not None and len(b.getComment) > 0:
+        iNonZeroCatalogEntries += 1
+        if b.getComment != selContent.getRawComment():
+            iBadCatalogEntries += 1
+            lenstool.catalog_object(selContent, update_metadata=1, idxs=['Title'])
+
+print "There were %s SelectedConent objects in the catalog." % str(iSelectedContentCount)
+print "%s entries had nonzero comment fields." % str(iNonZeroCatalogEntries)
+print "%s entries had comment fields that needed to be upgraded." % str(iBadCatalogEntries)
+
+import transaction
+transaction.commit()
+print "transaction complete"

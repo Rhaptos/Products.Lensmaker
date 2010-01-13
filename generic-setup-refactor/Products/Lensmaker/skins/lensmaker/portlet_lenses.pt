@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <body>
+     <div metal:define-macro="portlet"
+          tal:define="ltool context/lens_tool | nothing;"
+          id="portlet-lenses"
+          class="portletContainer">
+       <dl class="portlet">
+          <dt class="portletHeader">
+            <span class="portletTopLeft"></span>
+            <span i18n:translate="box_heading_lens_portlet"
+              metal:define-slot="title">Public Lenses</span>
+            <span class="portletTopRight"></span>
+          </dt>
+
+          <dd class="portletItem odd">
+              <a href="/lenses" 
+                 tal:attributes="href string:$portal_url/lenses;"
+                 i18n:translate="text_lenses_all">All lenses</a>
+              <ul>
+                <li>
+                  <a href="/endorsements" 
+                     tal:attributes="href string:$portal_url/endorsements;"
+                     i18n:translate="text_lenses_endorsement">Endorsements</a>
+                  (<span tal:replace="python:len(ltool.getListsBy(category='Endorsement', inclzero=False))">45</span>)
+                </li>
+                <li>
+                  <a href="/affiliations" 
+                     tal:attributes="href string:$portal_url/affiliations;"
+                     i18n:translate="text_lenses_affiliation">Affiliations</a>
+                  (<span tal:replace="python:len(ltool.getListsBy(category='Affiliation', inclzero=False))">45</span>)
+                </li>
+                <li>
+                  <a href="/memberlists"
+                     tal:attributes="href string:$portal_url/memberlists;"
+                     i18n:translate="text_lenses_lists">Member lists</a>
+                  (<span tal:replace="python:len(ltool.getListsBy(category='List', inclzero=False))">45</span>)
+                </li>
+              </ul>
+              <p tal:define="help nocall:portal/help/viewing/lenses | nothing" tal:condition="nocall:help">
+                <a href="/help/viewing/lenses" i18n:translate="text_what_lens"
+                    tal:attributes="href help/absolute_url">What's a Lens?</a></p>
+          </dd>
+
+       </dl>
+     </div>
+  </body>
+</html>

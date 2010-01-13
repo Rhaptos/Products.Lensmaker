@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<tal:border define="is_editable python:request.set('disable_border', 1)" />
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <h1 i18n:translate="heading_new_lens">New lens</h1>
+    </div>
+
+    <div metal:fill-slot="main">
+      <form method="post" action="." tal:attributes="action template/getId">
+        <metal:hiddens define-macro="hiddens">
+          <input type="hidden" name="contentId" value=""
+                tal:define="val request/contentId | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="contentTitle" value=""
+                tal:define="val request/contentTitle | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="tags" value=""
+                tal:define="val request/tags | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="comment" value=""
+                tal:define="val request/comment | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="versionStart" value=""
+                tal:define="val request/versionStart | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="versionStop" value=""
+                tal:define="val request/versionStop | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="implicit:boolean" value=""
+                tal:define="val request/implicit | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+          <input type="hidden" name="returnTo" value=""
+                tal:define="val request/returnTo | nothing;"
+                tal:condition="val"
+                tal:attributes="value val" />
+        </metal:hiddens>
+
+        <div metal:define-macro="contentdata" class="carryinfo"
+             tal:define="contentId request/contentId | nothing;"
+             tal:condition="contentId">
+          <div tal:define="version request/versionStop | string:latest;
+                           title python:contentId and context.content.getRhaptosObject(contentId, version).title;" 
+               class="carryinfoitem">
+            Adding  
+            <strong tal:content="title">The Basic CNXML</strong> to a new lens
+          </div>
+          <div tal:define="val request/tags | nothing;"
+               tal:condition="val"
+               class="carryinfoitem">
+            <strong>Tags: </strong><span tal:replace="val">cnxml basic cnx</span>
+          </div>
+          <div tal:define="val request/comment | nothing;"
+               tal:condition="val"
+               class="carryinfoitem">
+            <strong>Comments:</strong> 
+            <div>
+              <span tal:replace="structure val">This is a module!</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- title -->
+        <div class="field" style="margin-top: 1em;">
+            <label for="title" i18n:translate="label_title">Title</label>
+
+            <div class="formHelp" id="title_help" i18n:translate="help_lens_title">
+                Enter the full title of your lens.
+            </div>
+            <div>
+              <input type="text" name="title" size="100" tal:attributes="value context/Title | nothing" />
+            </div>
+        </div>
+        
+        <!-- type -->
+        <div class="field">
+            <label for="category" i18n:translate="label_type">Type</label>
+            <div class="formHelp" id="category_help" i18n:translate="help_lens_category">
+                Select the type of lens you would like.
+            </div>
+            <div>
+              <select name="category">
+                <option value="Endorsement" i18n:translate="text_endorsement">Endorsement</option>
+                <option value="Affiliation" i18n:translate="text_affiliation">Affiliation</option>
+                <option value="List" i18n:translate="text_member_list">Member list</option>
+              </select>
+            </div>
+        </div>
+
+        <p i18n:translate="text_lens_types_desc" style="font-size: .9em;">
+          The various lens types appear as sections within the "Lenses" box, when readers view the content selected by the lens. 
+        </p>
+        <ul style="font-size: .9em;">
+          <li i18n:translate="text_lens_endorsement_desc">
+            <strong>Endorsement lenses</strong> are used to select content that has been carefully checked for quality by the lens maker.
+          </li>
+          <li i18n:translate="text_lens_affil_desc">
+            <strong>Affiliation lenses</strong> are used to select content that is affiliated with a particular organization. For example, a university might select all content by its faculty.
+          </li>
+          <li i18n:translate="text_lens_list_desc">
+            All other lenses are <strong>Member lists</strong>, including the private Favorites lenses. Member lists are the only lenses that can be created by standard (non-organizational) Connexions accounts.
+          </li>
+        </ul>
+
+        <input class="context"
+               type="submit"
+               name="form.button.save"
+               value="Continue"
+               i18n:attributes="value" />
+<!--
+    <input class="context"
+               type="submit"
+               name="form.button.cancel"
+               value="Cancel"
+               tabindex=""
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+-->
+
+        <input type="hidden" name="form.submitted" value="1" />
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+[default]
+title=Edit Lens Content Dispatcher
+
+[actions]
+action.success=traverse_to:string:lens_content_edit
+action.failure=traverse_to:string:lens_content_view

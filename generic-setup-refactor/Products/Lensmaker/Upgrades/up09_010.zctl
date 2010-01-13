@@ -1,0 +1,45 @@
+import sys
+from types import ListType, TupleType
+import transaction
+from Testing import makerequest
+from AccessControl.SecurityManagement import newSecurityManager
+
+try:
+    user_id = sys.argv[1]
+except IndexError:
+    print "Usage: <instancehome>/bin/zopectl run %s user_id" % sys.argv[0]
+    sys.exit(1)
+
+app = makerequest.makerequest(app)
+portal = app.plone
+user = app.acl_users.getUser(user_id)
+newSecurityManager(None, user.__of__(app.acl_users))
+
+# Update lens_catalog
+print "Updating lens_catalog. This may take some time."
+for brain in portal.lens_catalog():
+    lens = brain.getObject()
+    # copy boolean_workflow history to LensWorkflow so that remains
+    # consistent under new workflow.
+    if lens.workflow_history.has_key('boolean_workflow'):
+        lens.workflow_history['LensWorkflow'] = \
+            lens.workflow_history['boolean_workflow']
+    lens.reindexObject()
+
+print "Lens reindexing done."
+
+print "Reinstalling Lensmaker (again)."
+
+# Install products
+qi = portal.portal_quickinstaller
+name = 'Lensmaker'
+if not qi.isProductInstalled(name):
+    qi.installProduct(name)
+else:
+    qi.reinstallProducts([name])
+print "Trying %s" % name
+print "Installed %s" % name
+
+print "committing transaction..."
+transaction.commit()
+print "Done"

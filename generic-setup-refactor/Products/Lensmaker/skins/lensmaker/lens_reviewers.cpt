@@ -1,0 +1,195 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos">
+
+<tal:comment tal:replace="nothing">
+CNX note: 
+  small changes for FormController. No layout changes.
+</tal:comment>
+
+  <style metal:fill-slot="css_slot">
+    #examples li { margin-bottom: 0.5em; }
+    #examples { margin-bottom: 1em; }
+    #desc {margin-bottom: 0; }
+  </style>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+
+    <div metal:fill-slot="main"
+       tal:define="errors python:request.get('errors', {});
+                   mtool nocall:here/portal_membership;
+                   Batch python:modules['Products.CMFPlone'].Batch;
+                   reviewers here/getReviewers;
+   	               searchonly string:users;">
+
+    <h2 i18n:translate="heading_search_reviewers">Search for New Reviewers</h2>
+      <tal:block tal:condition="not:request/searchstring | nothing">
+      <p id="desc" i18n:translate="description_search_reviewers">
+        Enter names or e-mail addresses of people with <span i18n:name="portal_title"
+        tal:replace="portal/Title">[Portal]</span> accounts you want
+        to add as reviewers.  For example, to locate George
+        Washington you could enter:
+      </p>
+      <ul id="examples">
+  	    <li i18n:translate="text_search_suggestion_common_first_name">George</li>
+    	<li i18n:translate="text_search_suggestion_common_last_name">Washington</li>
+	    <li i18n:translate="text_search_suggestion_common_full_name">"G* Washington"</li>
+    	<li i18n:translate="text_serach_suggestion_common_email">gwash@example.com</li>
+      </ul>
+      <p i18n:translate="text_use_spaces_mulitple_people">
+	    You can use a space-separated list to search for multiple people.
+      </p>
+      </tal:block>
+
+      <form action="."
+  	        name="reviewersearch"
+	        tal:attributes="action template/id">
+
+	    <p>
+          <input tabindex=""
+                 type="text"
+                 name="searchstring"
+                 value=""
+                 tal:attributes="tabindex tabindex/next;
+                                 value request/searchstring | default" />
+
+          <input class="context searchButton"
+                 tabindex=""
+                 type="submit"
+                 name="search"
+                 value="Search"
+             i18n:attributes="value value_serch"
+                 tal:attributes="tabindex tabindex/next;" />
+        </p>
+      </form>
+
+      <form action="."
+    	    name="reviewersearch"
+	        method="post"
+            tal:attributes="action template/getId"
+    	    tal:define="b_start request/b_start | python:0;
+	                    b_size python:10;">
+
+        <input type="hidden" name="b_start" value="" tal:attributes="value b_start" />
+        <input type="hidden" name="searchstring" value="" tal:attributes="value request/searchstring | nothing" />
+        
+        <tal:block tal:condition="request/searchstring | nothing">
+          <tal:block tal:define="results python:here.searchNonReviewers(request.searchstring, reviewers);
+                                 batch python:Batch(results, b_size, int(b_start), orphan=1);">
+            <em tal:condition="not:results" i18n:translate="text_search_reviewers_no_results">No people found</em>
+            <tal:block tal:condition="results">
+              <h2 i18n:translate="heading_search_add_people">Select People to Add</h2>
+              <table class="listing notDraggable">
+              <tr>
+                <th>
+                  <input class="noborder"
+                         type="checkbox"
+                         src="select_all_icon.gif"
+                         name="selectButton"
+                         title="Select all items"
+                         alt="Select all items"
+                         i18n:attributes="title title_select_all_items"
+                         onClick="toggleSelect(this); return false;"
+                         tal:attributes="src string:$portal_url/select_all_icon.gif"/>
+                </th>
+                <th i18n:translate="listingheader_name">Name</th>
+              </tr>
+              
+              <tr class="odd"
+                  tal:repeat="member batch"
+                  tal:attributes="class python:repeat['member'].even() and 'even' or 'odd';">
+                <td>
+                  <input class="noborder"
+                         type="checkbox"
+                         selected="selected"
+                         name="ids:list"
+                         tal:attributes="value member/getId" />
+                </td>
+
+                <td>
+                  <img src="user.gif" />
+                  <tal:badauthor tal:define="user_id member/getId;
+                                             user python:here.desecured.getMemberById(user_id)" 
+                                 tal:on-error="string:(${user_id})">
+                    <a href="" 
+                       tal:attributes="href string:/member_profile/${user/id}"
+                       tal:content="python:user.getProperty('fullname')">[username]</a>
+                  </tal:badauthor>
+                </td>
+              </tr>
+              </table>
+
+              <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
+          
+              <input class="context"
+                     tabindex=""
+                     type="submit"
+                     name="addingaction"
+                     value="Add selected users"
+                     i18n:attributes="value value_add_selected_users"
+                     tal:attributes="tabindex tabindex/next;" />
+            </tal:block>
+
+          </tal:block>
+        </tal:block>
+
+        <h2><span i18n:translate="heading_current_reviewers">Current Reviewers</span></h2>
+  
+        <table class="listing">
+          <tr>
+            <th i18n:translate="listingheader_remove">Remove</th>
+            <th i18n:translate="listingheader_user">User</th>
+            <th i18n:translate="listingheader_email">E-mail</th>
+          </tr>
+  
+          <tal:block tal:repeat="u reviewers">
+            <tr tal:define="oddrow repeat/u/odd"
+                tal:attributes="class python:test(oddrow,'odd','even')">
+              <tal:block tal:define="username u;
+                                     user python:here.desecured.getMemberById(u);
+                                     fullname python:user.getProperty('fullname')">
+                <td class="checkbox">
+                  <input type="checkbox"
+                         class="noborder"
+                         name="delete:list" tal:attributes="value username" />
+                </td>
+                <td>
+                  <a tal:omit-tag="python:1" 
+                     tal:attributes="href string:${here/portal_memberdata/absolute_url}/prefs_user_details?userid=$username">
+                  <img src=""
+                       tal:replace="structure portal/user.gif"/>&#160;<tal:badauthor tal:on-error="string:(${username})"><a tal:content="fullname"
+                       tal:attributes="href string:/member_profile/${username}">Full Name</a></tal:badauthor>
+                  </a>
+                </td>
+                <td tal:define="email python:user.getProperty('email')">
+                  <a href="#" tal:attributes="href string:mailto:${email}">
+                    <img src=""
+                         tal:replace="structure portal/mail_icon.gif" />
+                    <span tal:replace="email" />
+                  </a>
+                </td>
+              </tal:block>
+            </tr>
+  
+          </tal:block>
+        </table>
+
+        <input class="destructive"
+               type="submit"
+               name="prefs_reviewers_edit"
+               value="Remove selected reviewers" 
+               i18n:attributes="value value_remove_selected_users" />
+        
+        <input type="hidden" name="form.submitted" value="1" />
+      </form>
+
+  </div>
+
+</html>

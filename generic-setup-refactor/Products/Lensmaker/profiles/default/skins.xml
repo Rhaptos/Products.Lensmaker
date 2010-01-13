@@ -1,0 +1,11 @@
+<object name="portal_skins" meta_type="Plone Skins Tool">
+  <object name="ext" meta_type="Filesystem Directory View"
+      directory="Products.Lensmaker/skins/ext"/>
+  <object name="lensmaker" meta_type="Filesystem Directory View"
+      directory="Products.Lensmaker/skins/lensmaker"/>
+  <skin-path name="*">
+    <layer name="ext" insert-after="custom"/>
+    <layer name="lensmaker" insert-after="custom"/>
+  </skin-path>
+</object>
+

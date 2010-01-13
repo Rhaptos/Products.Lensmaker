@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="rhaptos">
+  <body>
+
+<metal:wf define-macro="wfstate">
+    <span tal:condition="python:review_state == 'published'" tal:omit-tag="">
+      <strong tal:condition="not:icononly | default">
+        public<tal:period condition="period|nothing">.</tal:period>
+      </strong>
+    </span>
+    <span tal:condition="python:review_state == 'private'" style="white-space: nowrap;">
+      <img src="/private.gif" tal:replace="structure context/private.gif">
+      <strong tal:condition="not:icononly | default">
+        private<tal:period condition="period|nothing">.</tal:period>
+      </strong>
+    </span>
+    <span tal:condition="python:review_state == 'private_open'" tal:omit-tag="">
+      <img src="/private.gif" tal:replace="structure context/private.gif">
+      <strong tal:condition="not:icononly | default">
+        private<tal:period condition="period|nothing">.</tal:period>
+      </strong>
+    </span>
+    <span tal:condition="python:review_state == 'published_open'" tal:omit-tag="">
+      <strong tal:condition="not:icononly | default">
+        public<tal:period condition="period|nothing">.</tal:period>
+      </strong>
+    </span>
+    
+</metal:wf>
+
+  </body>
+</html>

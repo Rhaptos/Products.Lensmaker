@@ -1,0 +1,8 @@
+[default]
+title=Edit Lens Content
+
+[actions]
+action.success=traverse_to:string:lens_content_edit_dispatch
+action.success..edit=traverse_to:string:lens_content_edit_dispatch
+action.success..delete=traverse_to:string:folder_delete_confirm_dispatch
+action.success..ContextAdd=traverse_to:string:addObjectsToWorkspace

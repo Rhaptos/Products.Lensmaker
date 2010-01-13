@@ -1,0 +1,6 @@
+[default]
+title=Edit Lens Tag Namespaces Dispatcher
+
+[actions]
+action.success=traverse_to:string:lens_tagnamespaces_edit
+action.failure=traverse_to:string:lens_tagnamespaces_view

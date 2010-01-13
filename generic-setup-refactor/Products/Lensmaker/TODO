@@ -1,0 +1,28 @@
+Install
+ --
+
+Workflow
+ --
+
+CSL
+ Should CSL be BTreeFolder? Can those be ordered? Do we need ordering of CSL?
+
+Entry
+ Probably need a TagsWidget that understands space separated entries instead of normal LinesField
+ set id to contentId
+
+Tool
+ --
+
+Skins:
+ lens_view behavior on empty: need 'found' like Yummy endorsementsBy?
+ lens_view still needs tags/comments displayed in content
+
+ changing image leaves old image still in browser cache; we might try a nocache header somewhere.
+
+content_render
+  i18n of attributes
+  secondary lens listing should not show endorsements/associated
+  what's on the other side of tags? another content view? a list of lenses?
+  courses still need duplication of view and add functions
+     - but this is low on the list until UI shakes out, since it will require duplicated changes

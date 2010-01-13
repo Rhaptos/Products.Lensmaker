@@ -1,0 +1,24 @@
+<tal:comment condition="nothing">
+Simple view displaying only the bare essentials of a TagNamespace
+instance.
+</tal:comment>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US"
+      lang="en-US"
+      metal:use-macro="here/main_template/macros/master">
+<body>
+
+<div metal:fill-slot="main">
+
+<metal:body define-macro="body">
+ 
+  <metal:trash_header define-macro="header"/>
+  <metal:use_header use-macro="here/base/macros/header"/>
+  <metal:use_body use-macro="here/base/macros/body"/>
+
+</metal:body>
+
+</div>
+
+</body>
+</html>

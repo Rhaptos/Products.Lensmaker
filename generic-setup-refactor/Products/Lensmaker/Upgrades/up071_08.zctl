@@ -1,0 +1,22 @@
+import transaction
+from AccessControl.SecurityManagement import newSecurityManager
+from Products.CMFCore.tests.base.security import AnonymousUser, OmnipotentUser
+user = OmnipotentUser().__of__(app)
+newSecurityManager(None, user) 
+
+#Add contentAuthors to lens_catalog
+portal = app.plone
+catalog = portal.lens_catalog
+
+newindex = 'getContentAuthors'
+
+portal.portal_quickinstaller.reinstallProducts(['Lensmaker'])
+
+lcat = app.plone.lens_catalog
+objs = lcat.searchResults(portal_type="SelectedContent")
+
+for brain in objs:
+   obj = brain.getObject()
+   lcat.catalog_object(obj, update_metadata=1, idxs=["portal_type"])
+
+transaction.commit()

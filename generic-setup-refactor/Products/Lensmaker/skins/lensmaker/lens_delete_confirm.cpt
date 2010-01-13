@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+
+    <div metal:fill-slot="main">
+      <h2 i18n:translate="heading_delete_lens">Delete lens</h2>
+
+      <p>Deleting a lens erases all of its properties, along with all the tags and
+        comments made for the content that it includes. Are you sure you want to delete this lens?</p>
+
+      <p>
+        <form name="deletechoice" method="post" action="." tal:attributes="action template/id">
+          <input type="submit" class="destructive" name="form.button.yes" value="Yes, delete this lens"
+                 i18n:attributes="value text_del_lens" />
+          <input type="submit" class="standalone" name="form.button.cancel" value="No, do not delete this lens"
+                 i18n:attributes="value text_no_del_lens" />
+          <input type="hidden" name="form.submitted" value="1" />
+        </form>
+      </p>
+
+    </div>
+  </body>
+</html>

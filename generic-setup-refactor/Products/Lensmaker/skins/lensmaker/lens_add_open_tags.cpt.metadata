@@ -1,0 +1,11 @@
+[default]
+title=Add to Open Lens
+        
+[validators]
+validators..save = validate_lens_add_open_tags
+validators..cancel = 
+      
+[actions]
+action.failure = traverse_to:string:lens_add_open_tags
+action.success..save = traverse_to:string:lens_add_open_finish
+action.success..cancel = redirect_to:string:${request/cancel_url}

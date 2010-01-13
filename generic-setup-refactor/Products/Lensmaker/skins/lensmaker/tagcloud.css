@@ -1,0 +1,32 @@
+.cloudtag{
+  margin-right: .5em;
+}
+
+.portlet .cloudtag{
+  font-size: 1.1em;
+}
+
+.verymany {
+  font-size: 1.8em;
+}
+
+.many {
+  font-size: 1.5em;
+}
+
+.normal {
+  font-size: 1.3em;
+}
+
+.some {
+  font-size: 1.1em;
+}
+
+.few {
+  font-size: .9em;
+}
+
+.narrowed_tag{
+  color: #e70;
+  font-weight: bold;
+}

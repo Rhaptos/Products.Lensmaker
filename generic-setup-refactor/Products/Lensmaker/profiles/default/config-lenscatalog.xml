@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<object name="lens_catalog" meta_type="ZCatalog">
+  <property name="title">Lens catalog</property>
+  <object name="lexicon" meta_type="ZCTextIndex Lexicon">
+    <element name="HTML aware splitter" group="Word Splitter"/>
+    <element name="Case Normalizer" group="Case Normalizer"/>
+    <element name="Remove listed and single char words" group="Stop Words"/>
+  </object>
+  <index name="Creator" meta_type="FieldIndex">
+    <indexed_attr value="Creator"/>
+  </index>
+  <index name="Title" meta_type="TextIndex">
+    <indexed_attr value="Title"/>
+  </index>
+  <index name="Type" meta_type="FieldIndex">
+    <indexed_attr value="Type"/>
+  </index>
+  <index name="allowedRolesAndUsers" meta_type="KeywordIndex">
+    <indexed_attr value="allowedRolesAndUsers"/>
+  </index>
+  <index name="getApproved" meta_type="FieldIndex">
+    <indexed_attr value="getApproved"/>
+  </index>
+  <index name="getApprovedBy" meta_type="FieldIndex">
+    <indexed_attr value="getApprovedBy"/>
+  </index>
+  <index name="getCategory" meta_type="FieldIndex">
+    <indexed_attr value="getCategory"/>
+  </index>
+  <index name="getImplicit" meta_type="FieldIndex">
+    <indexed_attr value="getImplicit"/>
+  </index>
+  <index name="getNamespaceTags" meta_type="KeywordIndex">
+    <indexed_attr value="getNamespaceTags"/>
+  </index>
+  <index name="getPrefix" meta_type="FieldIndex">
+    <indexed_attr value="getPrefix"/>
+  </index>
+  <index name="getRating" meta_type="FieldIndex">
+    <indexed_attr value="getRating"/>
+  </index>
+  <index name="getReviewers" meta_type="KeywordIndex">
+    <indexed_attr value="getReviewers"/>
+  </index>
+  <index name="getTags" meta_type="KeywordIndex">
+    <indexed_attr value="getTags"/>
+  </index>
+  <index name="getVersionStart" meta_type="FieldIndex">
+    <indexed_attr value="getVersionStart"/>
+  </index>
+  <index name="getVersionStop" meta_type="FieldIndex">
+    <indexed_attr value="getVersionStop"/>
+  </index>
+  <index name="id" meta_type="FieldIndex">
+    <indexed_attr value="id"/>
+  </index>
+  <index name="modified" meta_type="FieldIndex">
+    <indexed_attr value="modification_date"/>
+  </index>
+  <index name="path" meta_type="PathIndex">
+    <indexed_attr value="getPhysicalPath"/>
+  </index>
+  <index name="portal_type" meta_type="FieldIndex">
+    <indexed_attr value="portal_type"/>
+  </index>
+  <index name="review_state" meta_type="FieldIndex">
+    <indexed_attr value="review_state"/>
+  </index>
+  <column value="Title"/>
+  <column value="Type"/>
+  <column value="UID"/>
+  <column value="allowedRolesAndUsers"/>
+  <column value="getApproved"/>
+  <column value="getApprovedBy"/>
+  <column value="getCategory"/>
+  <column value="getComment"/>
+  <column value="getContentAuthors"/>
+  <column value="getCount"/>
+  <column value="getCreatorName"/>
+  <column value="getDisplayName"/>
+  <column value="getId"/>
+  <column value="getImplicit"/>
+  <column value="getNamespaceTags"/>
+  <column value="getPlainComment"/>
+  <column value="getRating"/>
+  <column value="getTags"/>
+  <column value="getVersionStart"/>
+  <column value="getVersionStop"/>
+  <column value="hasLogo"/>
+  <column value="id"/>
+  <column value="portal_type"/>
+  <column value="review_state"/>
+</object>

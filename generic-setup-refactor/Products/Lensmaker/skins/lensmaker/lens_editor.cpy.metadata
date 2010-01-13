@@ -1,0 +1,10 @@
+[default]
+title = Lens Edit Script
+
+[validators]
+validators = validate_base
+
+[actions]
+action.success = redirect_to_action:string:contents
+action.success..cancel = traverse_to:string:go_back
+action.failure = traverse_to_action:string:edit

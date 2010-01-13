@@ -1,0 +1,11 @@
+[default]
+title=Edit Lens Content
+
+[validators]
+validators = validate_lens_tagnamespaces
+validators..cancel =
+
+[actions]
+action.success=traverse_to:string:lens_tagnamespaces_editor
+action.success..cancel=traverse_to:string:lens_tagnamespaces_view
+action.failure=traverse_to:string:lens_tagnamespaces_edit

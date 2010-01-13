@@ -1,0 +1,128 @@
+Lensmaker-0.14
+  -light-weight-branding (30 Oct 2009)
+    - Added color picker widget
+    - created a new Branding role.
+    - make the PAS User Folder grok the new Branding role.
+    - Viewing a lens page now sets (or updates) a cookie with a unique list
+      of lenses visited. Then, content_render.xsl has javascript that detects
+      if this module is in one of the lenses in the cookie (by navigating
+      the DOM tree) and displays an ugly banner
+    - Banner colors, title, and whether a logo exists are stored in the cookie
+      and (aside from the logo) rendered.
+    - branding bar message needs to change based on lens category:
+      {Endorsement, Affiliation}.
+    - Updated Colorpicker to show previews on the edit page and inside the widget
+      (updates foreground and background colors).
+    - Fixing up banner creation to store the foreground color in the cookie too.
+    - add Connexions Featured Content lens to Featured lenses in the lens listing page.
+    - Added dashed gray border around color preview.
+    - branding should not be turned on by default, during lens creation.
+    - make branding hidden while editing the My Favorites lens.
+    - conditionally display the branding color picker for lens edit.
+    - added logic, after a lens edit properties save, to check for a stale branding cookie.
+    - move Display Name up one field as seen in lens_edit.
+    - need validate the *input* fields
+    - associate an error message with the invalid banner color.
+    - when the logo does not exists (get this from the cookie), we do not
+      add an <img> node which a nonworking @src (which IE7/8 was mangling).
+    - Renaming colorpicker to colorchooser
+    - Restricted what is a valid color from 3 or 6-digit hex to just 6-digit hex because
+      IE 7 does not allow 3-digits and added validation when the chooser initially pops up.
+
+Lensmaker-0.13
+  - collection-structure-redesign-1 (Oct. 22, 2009)
+    - change and (mostly) make dynamic help links for new help area structure
+    - remove copy/paste license info about transmenus that shouldn't be here
+
+Lensmaker-0.12
+  - content-actions-move (17 Aug 2009)
+    - allow specified returnTos in lens_add and favorites_add so we can call them
+      from a root context
+
+Lensmaker-0.11.1
+  - Convert notify templates to python scripts
+
+Lensmaker-0.11
+  - Module Edit Workflow (30 Jun 2009) [reinstall reqd (@Upgrades/upMew-Phase-1.zctl)]
+    - can now list recently modified lenses
+      - lenses now indexed by modification date
+      - lens tool gets new method for modification listing
+    - lens actions now handled by GenericSetup XML profile, like in RhaptosSite
+    - lens add link added to lens_folder_view
+  - #9232 (in its own devset) - naked & in Lens entry comments
+
+Lensmaker-0.10.1
+ - Suppress Featured Lenses (on list of Lenses tab page) if there aren't any
+
+Lensmaker-0.10
+ - Siyavula release (May 14, 2009)
+   - Added Open lens UI
+   - Added restrictions for Siyavula account
+   - Added Reviewers to lens view
+   - Updated Atom feed for Siyavula lenses
+   - Added Forum link to Siyavula Lenses
+   - Added Review State to sort dropdown
+
+Lensmaker-0.9
+  - cnxml-0.6 (30 Jan 2009)
+    - removed ext-all.js from module_text.cpt. rebuilt ext.js to include
+      Ext.MessageBox. (for rebuild instructions see ext.js.components.
+      ext.js now also includes definitions of Ext.Button, Ext.SplitButton,
+      and Ext.MessageBox.)
+    - Corrected missing Lens title from change notification email
+
+Lensmaker 0.8.1
+  - #7875: module titles not showing up in lens editing interface
+  - #7601: typo fix
+
+Lensmaker 0.8
+  - #7172: Favorites lens and unpublished-collection-cookie bug
+  - ATOM feed
+    - added methods to collect correct data for feeds
+    - modified display of feed information 
+    - made part of atom.pt more generic
+    - Added links to Atom Feed on Lens viewing templates
+    - Added links to Feed help pages on Lens viewing templates
+
+Lensmaker 0.7.1
+  - #6910: turn off email notification for My Favorites by default
+
+Lensmaker 0.7
+  - MyCNX phase 2
+    - #6506: problem with the lens-adding pop-up resizing in IE
+    - #6382: add last-read feature using My Favorites
+    - #6721: unauthorized (login) page for go_favorites if anonymous
+
+Lensmaker 0.6
+  - MyCNX lands
+    - Favorites type of lens added; restricted values, single instance per user, added with portal_factory
+    - upgrade to 1.1.1 and simplify ExtJS
+    - lens generalizations/improvements
+      - multiple types recognized as lenses
+      - UI changes: editing looks more grid-like, edit buttons on listings, aliases for view/edit
+    - keep up with MyCNX tabs
+
+Lensmaker 0.5.1
+  - fix #6035: explicit default for lens chooser so that form popups work in all browsers
+
+Lensmaker 0.5
+  - style adjustments to lens tag cloud and icon; lenses1 merge
+  - fix #3647: don't show empty lenses on lens listing page
+  - fix #4439: Plone upgrade problem with traversal mechanism causing category-specific pages to not be category-specific
+
+Lensmaker 0.4
+  - upgrade to Plone 2.5
+
+Lensmaker 0.3.1
+  - Fix bug (#4121) that prevented modules from being published if a collection containing them was in a private lens.
+
+Lensmaker 0.3
+  - update tags_browse with the new results set macro and view technique. see #3984. Requires r20428 in RhaptosRepository
+
+Lensmaker 0.2
+  - Convert for using with the unified results set macros.
+  - update the allowedUsersAndGroups index of lens contents when the workflow state changes, since they don't control their
+    own workflow and otherwise have stale values
+
+Lensmaker 0.1
+  - new!

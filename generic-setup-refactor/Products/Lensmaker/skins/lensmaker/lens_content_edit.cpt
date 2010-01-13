@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<tal:block xmlns:tal="http://xml.zope.org/namespaces/tal"
+           xmlns:metal="http://xml.zope.org/namespaces/metal"
+           tal:define="default_tab string:contents;
+                       utool nocall:here/portal_url;
+                       portalPath utool/getPortalPath;">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <metal:css fill-slot="css_slot">
+    <style type="text/css">
+      fieldset {
+        padding-top: 1em;
+        background-color: #f5f7f8;
+      }
+      .lens_edit_title{
+        color: #369 !important;
+        font-size: 1.2em;
+      }
+    </style>
+  </metal:css>
+
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+
+    <div metal:fill-slot="main"
+         tal:define="errors python:request.get('errors', {});
+                     batch request/paths | nothing">
+
+        <div class="return-link">
+          <a href="lens_content_view" i18n:translate="link_lens_return_to_content">
+            &#171; Return to full listing of lens contents</a>
+        </div>
+
+        <h2 i18n:translate="heading_edit_tags_comments">Edit tags, comments, and included versions</h2>
+
+        <p tal:condition="not:batch"><em>No items selected for editing.</em></p>
+        <form name="edit" method="post" action="." tal:attributes="action template/getId" tal:condition="batch">
+
+        <input class="context"
+               type="submit"
+               name="form.button.save"
+               value="Save changes"
+               i18n:attributes="value"
+               style="margin: 1em 0 0;" />
+        <input class="context"
+               type="submit"
+               name="form.button.cancel"
+               value="Cancel"
+               i18n:attributes="value"
+               style="margin: 1em 0 0;" />
+
+        <input type="hidden" name="b_start:int" value="#"
+               tal:define="b_start request/b_start | nothing"
+               tal:condition="b_start"
+               tal:attributes="value b_start" />
+
+        <input type="hidden" name="b_size:int" value="#"
+               tal:define="b_size request/b_size | nothing"
+               tal:condition="b_size"
+               tal:attributes="value b_size" />
+
+        <div tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                            getRelativeContentURL nocall:utool/getRelativeContentURL">
+            <tal:comment replace="nothing">
+                Somewhat Plone 2.5 'folder_contents' derived, but *heavily* modified.
+            </tal:comment>
+
+            <tal:loop tal:repeat="oid batch">
+                <fieldset tal:define="
+                                item                 python:context[oid];
+                                item_id              item/getId;
+                                item_version         item/getRawVersionStop;
+                                item_version         python:item_version or 'latest';
+                                item_url             item/getURL|item/absolute_url;
+                                item_path            item/getPath|python:'/'.join(item.getPhysicalPath());
+                                item_type            item/portal_type;
+                                item_folderish       nothing;
+                                item_use_view        python:item_type in use_view_action;
+                                item_title_or_id     item/Title;
+                                hasGetUrl            python:hasattr(item.aq_explicit, 'getURL');
+                                item_rel_url         python:hasGetUrl and item.getURL(relative=1) or getRelativeContentURL(item);
+                              ">
+                  <input type="hidden" name="obj_ids:list" value="#"
+                         tal:attributes="value item_id" />
+                  <div class="field">
+                      <a href="#" tal:attributes="href string:/content/$item_id/$item_version/;">
+                          <img src="icon" tal:attributes="src item/getInnerIcon;
+                                                          alt item/getInnerType" />
+                      </a>
+                      <a href="#" class="lens_edit_title"
+                         tal:attributes="href  string:/content/$item_id/$item_version/;">
+                          <strong tal:content="item_title_or_id">
+                            Item Title
+                          </strong></a>
+                      (<span tal:content="item_id" tal:omit-tag="">m0000</span>)
+                  </div>
+                  <div tal:condition="item/representsContainer" class="field"> <!-- implicit -->
+                      <input type="checkbox"
+                            class="noborder"
+                            name="implicit:boolean"
+                            value="True"
+                            tal:define="implicit item/getImplicit;"
+                            tal:attributes="name    string:$item_id-implicit;
+                                            checked python:test(implicit, 'checked', None);" />
+                      Show this lens on modules that are inside this
+                      collection, even when they are viewed from
+                      outside the collection, such as from a web
+                      search.
+                  </div>
+                  <!-- tags -->
+                  <div tal:condition="not:context/getTagNamespaces"
+                       class="field" tal:define="widget python:item.getField('tags').widget">
+                      <label for="tags"
+                             tal:attributes="for string:$item_id-tags"
+                             tal:content="widget/label">Tags</label>
+                      <div class="formHelp" id="tags_help" tal:content="widget/description">
+                          Add words you...
+                      </div>
+                      <div>
+                        <input type="text" name="tags" size="75"
+                                tal:define="tags item/getRawTags"
+                                tal:attributes="name string:$item_id-tags;
+                                                value python: ' '.join(item.getTags())" />
+                      </div>
+                  </div>
+
+                  <tal:def define="pth python:'/'.join(item.getPhysicalPath());
+                                   lens nocall:context;
+                                   context python:context.restrictedTraverse(portalPath+'/content/%s/%s' % (item_id, item_version))">
+                    <metal:use use-macro="here/lens_add_open_tags/macros/namespacetags_field"/>
+                  </tal:def>
+
+                  <!-- comments -->
+                  <div class="field" tal:define="widget python:item.getField('comment').widget">
+                      <label for="comment"
+                             tal:attributes="for string:$item_id-comment"
+                             tal:content="widget/label">Tags</label>
+                      <div class="formHelp" id="comment_help" tal:content="widget/description">
+                          Lorem ipsum dolor sit amet.
+                      </div>
+                      <div>
+                        <textarea name="comment" cols="80" rows="3"
+                                tal:attributes="name string:$item_id-comment;"
+                                tal:content="item/getRawComment"></textarea>
+                      </div>
+                  </div>
+                  <!-- versions -->
+                  <div class="field">
+                      <label for="comment"
+                             tal:attributes="for string:$item_id-versionStart">Versions Included</label>
+                      <div class="formHelp" id="versions_help">
+                          Choose which versions of this content you would like to include in this lens.
+                          Future publications can be automatically included by selecting "all future"
+                          from the "Final" dropdown.
+                      </div>
+                      <div>
+                        <strong>Earliest</strong>
+                        <select name="versionStart"
+                                tal:define="version item/getRawVersionStart;"
+                                tal:attributes="name string:$item_id-versionStart">
+                            <option value="1.1"
+                                    tal:repeat="v item/moduleVersions"
+                                    tal:attributes="value v;
+                                                    selected python:v==version and 'selected' or None"
+                                    tal:content="v">1.1</option>
+                        </select>
+                        <strong>Final</strong>
+                        <select name="versionStop"
+                                tal:define="version item/getRawVersionStop;"
+                                tal:attributes="name string:$item_id-versionStop">
+                            <option value="1.11"
+                                    tal:repeat="v item/moduleVersionsAndNone"
+                                    tal:attributes="value v;
+                                                    selected python:v==version and 'selected' or None"
+                                    tal:content="python: v and v or default">all future</option>
+                        </select>
+                        <a href="" 
+                          tal:define="item_latest_version python:item.moduleVersions().keys()[0];"
+                          tal:attributes="href string:/content/$item_id/$item_latest_version/content_info#cnx_history_section;"
+                          i18n:translate="label_see_version_history">See this content's version history</a>
+                      </div>
+                  </div>
+
+                </fieldset>
+            </tal:loop>
+        </div>
+        <input class="context"
+               type="submit"
+               name="form.button.save"
+               value="Save changes"
+               i18n:attributes="value" />
+        <input class="context"
+               type="submit"
+               name="form.button.cancel"
+               value="Cancel"
+               i18n:attributes="value" />
+
+        <input type="hidden" name="form.submitted" value="1" />
+       </form>
+    </div>
+  </body>
+</html>
+
+</tal:block>

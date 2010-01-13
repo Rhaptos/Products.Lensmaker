@@ -1,0 +1,6 @@
+[default]
+title=Edit Lens Content
+
+[actions]
+action.success=traverse_to:string:lens_content_editor
+action.success..cancel=traverse_to:string:lens_content_view

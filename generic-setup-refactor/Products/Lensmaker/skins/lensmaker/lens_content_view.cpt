@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <metal:css fill-slot="css_slot">
+    <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+  </metal:css>
+
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+
+    <div metal:fill-slot="main">
+      <metal:reuse metal:define-macro="body"
+         tal:define="allowed context/checkEditLens;
+                     errors python:request.get('errors', {});
+                     contents python:[o for o in context.contentValues() if getattr(o, 'portal_type', '') not in ('Folder', 'PloneboardForum',)];
+
+                     dummy python:contents.sort(lambda x,y: int(cmp(y.representsContainer(), x.representsContainer()) or
+                                                                cmp(x.Title().lower(),y.Title().lower())))">
+      <fieldset id="nothingset">
+        <div id="nothingsetlogo" tal:define="logo context/getLogo; thumb context/logo_thumb | nothing"
+             metal:define-slot="logo">
+          <strong>Logo:</strong>
+          <img tal:condition="nocall:thumb" src="" tal:replace="structure thumb" />
+          <div tal:condition="python: logo and logo.height > 50">
+              <em>thumbnail</em>
+          </div>
+          <i tal:condition="not:logo">No logo set.</i>
+        </div>
+
+        <p>
+           <strong i18n:translate="text_title">Title:</strong>
+           <tal:title tal:content="context/Title">My Work Areas</tal:title>
+        </p>
+
+        <p tal:define="description python:context.Description(mimetype='text/plain')"
+           metal:define-slot="description">
+           <strong i18n:translate="text_description">Description:</strong>
+           <tal:desc tal:condition="description" tal:content="structure python:context.truncate(description, 60)">
+             Model of a modern Major General.
+           </tal:desc>
+           <em tal:condition="not:description">No description set.</em>
+        </p>
+
+        <p tal:define="url context/getUrl; urltext context/getUrlText"
+           metal:define-slot="url">
+           <strong i18n:translate="text_website">Web page:</strong>
+           <a href="#" tal:condition="url" tal:attributes="href url" tal:content="urltext">Visit Web page
+           </a>
+           <em tal:condition="not:url">No URL set.</em>
+        </p>
+
+        <p tal:define="review_state python:context.portal_workflow.getInfoFor(here, 'review_state');
+                       private python:review_state in ('private', 'private_open');
+                       published python:review_state in ('published', 'published_open');
+                       open python:review_state in ('published_open','private_open');
+                       icononly nothing;
+                       period python:True"
+           metal:define-slot="state">
+           This lens is set to
+           <metal:wf use-macro="context/wf_state_macros/macros/wfstate">private</metal:wf>
+           <tal:switch condition="private" i18n:translate="text_about_private">
+             Others will not be able to view this lens.</tal:switch>
+           <tal:switch condition="published" i18n:translate="text_about_published">
+             Others will be able to view this lens.</tal:switch>
+           <tal:switch condition="open" i18n:translate="text_about_open">
+             This lens is also open.</tal:switch>
+
+           (Edit the lens properties to make it          
+           <tal:if condition="private">
+             <tal:oppositeday define="review_state string:published;
+                                      period python:False">
+               <metal:state use-macro="context/wf_state_macros/macros/wfstate">public</metal:state>
+             </tal:oppositeday>
+           </tal:if>
+
+           <tal:if condition="published">
+             <tal:oppositeday define="review_state string:private;
+                                      period python:False">
+               <metal:state use-macro="context/wf_state_macros/macros/wfstate">public</metal:state>
+             </tal:oppositeday>
+           </tal:if>
+           )
+        </p>
+        
+        <div id="nothingsetedit">
+          <p style="float: left;">
+            <a href="lens_edit" i18n:translate="">Edit lens properties</a>
+          </p>
+
+          <p metal:define-slot="delete">
+            <a href="lens_delete_confirm" i18n:translate="text_lens_del">Delete lens...</a>
+          </p>
+          <div style="clear: both;"> </div>
+        </div>
+
+     </fieldset>
+
+     <h3 i18n:translate="heading_search_content_lens" tal:condition="nothing">Search for content to add to this lens</h3>
+
+        <tal:inlinesearch tal:condition="nothing"
+            tal:define="words request/words | nothing;
+                        conflicts contents | nothing;
+                        exclude request/exclude | nothing;
+                        excludeids python:exclude and conflicts and [o.getId() for o in conflicts] or [];
+                        results python:words and context.search_form_handler() or [];
+                        results python:[elt for elt in results if elt.objectId not in excludeids];
+                        length python:len(results);
+                        Batch python:modules['Products.CMFPlone'].Batch;
+                        b_size request/b_size | python:10;
+                        b_start request/b_start | python:0;
+                        batch python:Batch(results, int(b_size), int(b_start), orphan=5);
+                        found length;">
+          <form action="." name="search" tal:attributes="action template/id; id template/id">
+            <div metal:use-macro="context/search/macros/search">
+              <input type="text" size="50" name="words" value=""
+                      tal:attributes="value words;" />
+              <input type="submit" class="standalone" name="submit" value="Search for content to add"
+                    i18n:attributes="value text_search_content_add" />
+            </div>
+            <div>
+              <input type="checkbox" name="exclude" value="true" checked="checked" class="noborder"
+                      tal:attributes="checked python:test(words, exclude and default or None, default)"
+                      i18n:attributes="value text_search_content_add" />
+              Do not include results already in this lens
+            </div>
+          </form>
+
+        <tal:block tal:define="loggedIn python:True;
+          inContext python:True;
+          inContextLabel string:Add to lens;
+          short python:True;">
+          <tal:block metal:use-macro="here/search_macros/macros/search_results" tal:condition="found"/>
+        </tal:block>
+        
+        <tal:block tal:define="searched exists:request/words" tal:condition="python:searched and not found">
+          <metal:block metal:use-macro="here/search_macros/macros/no_matches_text" />
+        </tal:block>
+        <!-- Do we still need this?   
+        <input type="hidden" name="workspace" value="lens"
+        tal:attributes="value
+        string:lenses/${context/getId}"/>
+        -->
+        </tal:inlinesearch>
+
+      <h3 style="margin-top: .5em;">
+        <span tal:define="cat context/getCategory" metal:define-macro="listingTitle">
+          <tal:titletype tal:condition="python:cat in ('Endorsement')">Endorsed content</tal:titletype>
+          <tal:titletype tal:condition="python:cat in ('Affiliation')">Affiliated content</tal:titletype>
+          <tal:titletype tal:condition="python:cat not in ('Endorsement', 'Affiliation')">Selected content</tal:titletype>
+        </span>
+      </h3>
+
+        <p tal:condition="not:contents"><em i18n:translate="text_no_content">None</em></p>
+        <form name="listing" method="post" action="."
+              tal:attributes="action template/getId"
+              tal:define="Batch python:modules['Products.CMFPlone'].Batch;
+                          b_size request/b_size | python:25;
+                          b_start request/b_start | python:0;
+                          batch python:Batch(contents, int(b_size), int(b_start), orphan=5);
+                          big python:len(contents) > 10"
+              tal:condition="batch">
+
+          <input type="hidden" name="b_start:int" value="#"
+               tal:define="b_start request/b_start | nothing"
+               tal:condition="b_start"
+               tal:attributes="value b_start" />
+
+          <input type="hidden" name="b_size:int" value="#"
+               tal:define="b_size request/b_size | nothing"
+               tal:condition="b_size"
+               tal:attributes="value b_size" />
+
+        <div style="margin-top: 1ex;">
+
+        <input class="context"
+               type="submit"
+               name="form.button.edit"
+               value="Edit tags, comments, etc."
+               tabindex=""
+               tal:condition="big"
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+        <input class="context"
+               type="submit"
+               name="form.button.delete"
+               value="Remove from lens"
+               tabindex=""
+               tal:condition="big"
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+
+        <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
+
+        <table id="lensen" style="width: 100%;" class="listing" summary="Content listing" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                  <th class="nosort">
+                      <input class="noborder"
+                             type="checkbox"
+                             src="select_all_icon.gif"
+                             name="selectButton"
+                             title="Select/unselect all items"
+                             onClick="toggleSelect(this,'paths:list');"
+                             tal:attributes="src string:$portal_url/select_all_icon.gif"
+                             alt="Select/unselect all items"
+                             i18n:domain="plone"
+                             i18n:attributes="title label_select_all_items; alt label_select_all_items;"
+                  />
+                  <th tal:attributes="class string:"
+                      >&nbsp;<tal:title i18n:translate="listingheader_title" i18n:domain="plone"
+                      >Title</tal:title>&nbsp;</th>
+                  <th tal:attributes="class string:"
+                      >&nbsp;<tal:title i18n:translate="listingheader_versions"
+                      >Versions</tal:title>&nbsp;</th>
+                  <th tal:attributes="class string:"
+                      >&nbsp;<tal:title i18n:translate="listingheader_tags"
+                      >Tags</tal:title>&nbsp;</th>
+                  <th tal:attributes="class string:"
+                      >&nbsp;<tal:title i18n:translate="listingheader_comment"
+                      >Comments</tal:title>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                               getRelativeContentURL nocall:utool/getRelativeContentURL;">
+                <tal:comment replace="nothing">
+                   Table structure is mostly Plone 2.5 'folder_contents' derived, but *heavily* modified.
+
+                   Note: we use the actual objects here instead of catalog brains, as we normally would
+                   use in a listing template, because this is actually an editing template (well, will be).
+                </tal:comment>
+
+                <tal:items tal:repeat="item batch">
+                   <tr tal:define="oddrow               repeat/item/odd;
+                                   item_id              item/getId;
+                                   item_version         item/getRawVersionStop;
+                                   item_version         python:item_version or 'latest';
+                                   item_url             item/getURL|item/absolute_url;
+                                   item_path            item/getPath|python:'/'.join(item.getPhysicalPath());
+                                   item_type            item/portal_type;
+                                   item_folderish       nothing;
+                                   item_use_view        python:item_type in use_view_action;
+                                   item_title_or_id     item/Title;
+                                   hasGetUrl            python:hasattr(item.aq_explicit, 'getURL');
+                                   item_rel_url         python:hasGetUrl and item.getURL(relative=1) or getRelativeContentURL(item);"
+                       tal:attributes="class python:test(oddrow, 'even', 'odd')">
+                      <td class="notDraggable" style="text-align: center;">
+                          <tal:comment replace="nothing">
+                            'paths' is borrowed from folder_contents, so we can use some of the same stuff.
+                            'selected_ids' would be a better description.
+                          </tal:comment>
+                          <input type="checkbox"
+                                class="noborder"
+                                name="paths:list" id="#"
+                                value="#"
+                                tal:attributes="value   item_id;
+                                                id      string:cb_$item_id;
+                                                checked python:test(request.get('ids_checked', False), 'checked', None);
+                                                alt     string:Select $item_title_or_id;
+                                                title   string:Select $item_title_or_id" />
+                          <input type="hidden" name="obj_paths:list" value="#"
+                                tal:attributes="value item_rel_url" />
+                      </td>
+                      <td tal:define="item_implicit item/getImplicit;">
+                          <a href="#" tal:attributes="href  string:/content/$item_id/$item_version/;">
+                              <img src="icon" tal:attributes="src item/getInnerIcon;
+                                                              alt item/getInnerType" />
+                          </a>
+                          <a href="#" tal:attributes="href  string:$portal_url/content/$item_id/$item_version/;">
+                              <span tal:content="item_title_or_id">
+                                Item Title
+                              </span></a>
+                          (<span tal:content="item_id" tal:omit-tag="">m0000</span>)
+                          <tal:implicit condition="nothing | item/representsContainer">
+                           <span tal:condition="item_implicit" tal:omit-tag="">and contents</span>
+                           <span tal:condition="not:item_implicit" tal:omit-tag="">but not contents</span>
+                          </tal:implicit>
+
+                          <tal:siyavula condition="context/@@siyavula|nothing"> 
+                            <tal:if condition="item/getApproved">
+                              <b>[<span i18n:translate="approved">approved</span>]</b>
+                            </tal:if>
+                          </tal:siyavula>
+                      </td>
+
+                      <td class="version_cell"> <!-- versions -->
+                          <tal:cell define="v item/getRawVersionStart"
+                                    content="python:v or 'latest'">1.1</tal:cell> to
+                          <tal:cell define="v item/getRawVersionStop"
+                                    content="python:v or 'latest'">never</tal:cell>
+                      </td>
+                      <td tal:define="tags python:item.getTags()"> <!-- tags -->
+                          <span
+                             tal:repeat="tag tags"
+                             tal:content="tag">pirates</span>
+                          <span tal:condition="not:tags" class="none_added">(none added)</span>
+                      </td>
+                      <td class="last_cell"> <!-- comments -->
+                          <tal:cell tal:content="item/getComment">It's something!</tal:cell>
+                          <span tal:condition="not:item/getComment" class="none_added">(none added)</span>
+                      </td>
+                   </tr>
+                </tal:items>
+            </tbody>
+        </table>
+
+        <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
+
+        <div style="margin-top: 1ex;">
+        <input type="hidden" name="orig_template"
+               tal:attributes="value template_id"/>
+        <input class="context"
+               type="submit"
+               name="form.button.edit"
+               value="Edit tags, comments, etc."
+               tabindex=""
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+        <input class="context"
+               type="submit"
+               name="form.button.delete"
+               value="Remove from lens"
+               tabindex=""
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+        </div>
+
+        <input type="hidden" name="form.submitted" value="1" />
+       </form>
+
+       <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js"></script>
+       <script type="text/javascript"
+               tal:define="lensPath context/absolute_url_path;"
+               tal:content="string:var lensPath='${lensPath}';"></script>
+       <script type="text/javascript"
+               tal:define="bannerColor python:context['bannerColor'] or '';"
+               tal:content="string:var bannerColor='${bannerColor}';var fgColor = findBestTextColor(bannerColor);"></script>
+       <script type="text/javascript"
+               tal:content="string:var bannerTitle=&quot;${context/Title}&quot;;"></script>
+       <script type="text/javascript"
+               tal:define="logo context/getLogo | nothing;
+                           hasLogo python:logo is not None and 'true' or 'false';"
+               tal:content="string:var hasLogo=${hasLogo};"></script>
+       <script type="text/javascript"
+               tal:define="cat context/getCategory;
+                           lensCategory python:cat or '';"
+               tal:content="string:var lensCategory='${lensCategory}';"></script>
+       <script type="text/javascript"
+               tal:define="gotBranding python:context.getBanner() and 'true' or 'false';"
+               tal:content="string:var gotBranding=${gotBranding};"></script>
+       <script type="text/javascript">
+        //<![CDATA[
+          (function() {
+            // we can get to this page after we save the "Edit lens property" page.
+            // here we check to see if the branding cookie got stale after the save.
+            var updateCookie;
+            var newLensCookiePart = [escape(lensPath), bannerColor, fgColor, escape(bannerTitle), hasLogo, lensCategory].join('#');
+
+            // read cookie (defined in rhaptosutils.js)
+            var oldCookie = readCookie('lenses');
+            var lenses = [];
+            if ( oldCookie ) {
+              lenses = oldCookie.split('|');
+            }
+
+            // remove the lens if it already exists
+            updateCookie = false;
+            for(var i=0; i < lenses.length; i++) {
+              if(unescape(lenses[i].split('#')[0]) == lensPath) {
+                if ( gotBranding && newLensCookiePart != lenses[i] ) {
+                  // lens changed out from under us
+                  lenses.splice(i, 1);
+                  i--;
+                  updateCookie = true;
+                }
+                if ( !gotBranding ) {
+                  // branding for this lens got turned off
+                  lenses.splice(i, 1);
+                  i--;
+                  updateCookie = true;
+                }
+              }
+            }
+
+            // re-add the lens back into the cookie
+            if ( updateCookie ) {
+              if ( gotBranding ) {
+                lenses.push(newLensCookiePart);
+              }
+              newCookie = lenses.join('|');
+              createCookie('lenses', newCookie, 365/*days*/);
+            }
+          }) ();
+        //]]>
+       </script>
+
+     </metal:reuse>
+    </div>
+  </body>
+</html>

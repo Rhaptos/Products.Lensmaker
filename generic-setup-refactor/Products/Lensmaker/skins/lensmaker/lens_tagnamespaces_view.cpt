@@ -1,0 +1,227 @@
+<tal:comment condition="nothing">
+Listing of TagNamespace instances and buttons for editing, creation, deletion.
+</tal:comment>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <metal:css fill-slot="css_slot">
+    <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+  </metal:css>
+
+  <body>
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="lens nocall:context">
+        <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+      </tal:block>
+    </div>
+    
+    <div metal:fill-slot="main">
+
+      <!-- Reuse the modified folder_contents from RhaptosSite -->
+      <!--<tal:def define="context nocall:python:here['tag-namespaces'];
+                       here nocall:context;
+                       here_url here/absolute_url;
+                       full_view python:False;
+                       actions python:{'folder_buttons':[
+                        {'category': 'folder_buttons', 
+                        'available': True, 
+                        'title': 'Edit', 
+                        'url': lambda:'form.button.edit', 
+                        'name': 'Edit', 
+                        'visible': True, 
+                        'allowed': True, 
+                        'id': 'edit', 
+                        'permissions': ('Modify portal content',)},
+                        {'category': 'folder_buttons', 
+                        'available': True, 
+                        'title': 'Remove', 
+                        'url': lambda:'form.button.delete', 
+                        'name': 'Remove', 
+                        'visible': True, 
+                        'allowed': True, 
+                        'id': 'delete', 
+                        'permissions': ('Modify portal content',)},
+                        ]}">
+        <metal:use use-macro="here/folder_contents/macros/contents">
+          <metal:h1 metal:fill-slot="h1"/>
+
+          <metal:header_slot metal:fill-slot="listingheader">
+            <th tal:attributes="class python:nosortclass"
+                >&nbsp;<tal:title i18n:translate="listingheader_title"
+                >Title</tal:title>&nbsp;</th>
+          </metal:header_slot>
+
+          <metal:item_display metal:fill-slot="item_display">
+            <td tal:define="url python:test(item_use_view, item_url+'/view',
+                                    test(item_folderish, item_url+'/folder_contents', item_url+'/'));">
+                        <span tal:attributes="class item_type_class">
+                        <a href="#" tal:attributes="href  url;
+                                                  title string: $item_type: $item_description;
+                                                  class string:$item_wf_state_class visualIconPadding;">
+                            <strong tal:omit-tag="python:not isBrowserDefault">
+                            <span tal:content="item_title_or_id">
+                              Item Title
+                            </span>
+                            </strong>
+                        </a>
+                        </span>
+
+                        <span class="state-expired"
+                              tal:condition="python:portal.isExpired(item)"
+                              i18n:translate="time_expired">expired</span>
+            </td>
+          </metal:item_display>
+        </metal:use>
+      </tal:def>-->
+
+      <tal:def define="
+            sort_on python:(('id', 'cmp', 'asc'),);
+            contents python:context['tag-namespaces'].contentValues(spec='TagNamespace');
+            contents python:sequence.sort(contents, sort_on)">
+
+        <form name="listing" method="post" action="."
+              tal:attributes="action template/getId"
+              tal:define="Batch python:modules['Products.CMFPlone'].Batch;
+                          b_size request/b_size | python:25;
+                          b_start request/b_start | python:0;
+                          batch python:Batch(contents, int(b_size), int(b_start), orphan=5);
+                          big python:len(contents) > 10">
+
+          <input class="context"
+               type="submit"
+               name="form.button.add"
+               value="Create new tag vocabulary"
+               tabindex=""
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+
+          <input type="hidden" name="b_start:int" value="#"
+               tal:define="b_start request/b_start | nothing"
+               tal:condition="b_start"
+               tal:attributes="value b_start" />
+
+          <input type="hidden" name="b_size:int" value="#"
+               tal:define="b_size request/b_size | nothing"
+               tal:condition="b_size"
+               tal:attributes="value b_size" />
+
+        <div style="margin-top: 1ex;">
+
+        <input class="context"
+               type="submit"
+               name="form.button.edit"
+               value="Edit tags, comments, etc."
+               tabindex=""
+               tal:condition="big"
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+        <input class="context"
+               type="submit"
+               name="form.button.delete"
+               value="Remove from lens"
+               tabindex=""
+               tal:condition="big"
+               i18n:attributes="value"
+               tal:attributes="tabindex tabindex/next;" />
+
+        <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
+
+        <table tal:condition="batch"
+               id="lensen" style="width: 100%;" class="listing" summary="Content listing" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                  <th class="nosort" width="16">
+                      <input class="noborder"
+                             type="checkbox"
+                             src="select_all_icon.gif"
+                             name="selectButton"
+                             title="Select/unselect all items"
+                             onClick="toggleSelect(this,'selected_ids:list');"
+                             tal:attributes="src string:$portal_url/select_all_icon.gif"
+                             alt="Select/unselect all items"
+                             i18n:domain="plone"
+                             i18n:attributes="title label_select_all_items; alt label_select_all_items;"
+                  />
+                  <th tal:attributes="class string:"
+                      >&nbsp;<tal:title i18n:translate="listingheader_title" i18n:domain="plone"
+                      >Title</tal:title>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                               getRelativeContentURL nocall:utool/getRelativeContentURL;">
+                <tal:comment replace="nothing">
+                   Table structure is mostly Plone 2.5 'folder_contents' derived, but *heavily* modified.
+
+                   Note: we use the actual objects here instead of catalog brains, as we normally would
+                   use in a listing template, because this is actually an editing template (well, will be).
+                </tal:comment>
+
+                <tal:items tal:repeat="item batch">
+                   <tr tal:define="oddrow               repeat/item/odd;
+                                   item_id              item/getId;
+                                   item_url             item/getURL|item/absolute_url;
+                                   item_path            item/getPath|python:'/'.join(item.getPhysicalPath());
+                                   item_type            item/portal_type;
+                                   item_folderish       nothing;
+                                   item_use_view        python:item_type in use_view_action;
+                                   item_title_or_id     item/Title;
+                                   hasGetUrl            python:hasattr(item.aq_explicit, 'getURL');
+                                   item_rel_url         python:hasGetUrl and item.getURL(relative=1) or getRelativeContentURL(item);"
+                       tal:attributes="class python:test(oddrow, 'even', 'odd')">
+                      <td class="notDraggable" style="text-align: center;">
+                          <input type="checkbox"
+                                class="noborder"
+                                name="selected_ids:list" id="#"
+                                value="#"
+                                tal:attributes="value   item_id;
+                                                id      string:cb_$item_id;
+                                                checked python:test(request.get('ids_checked', False), 'checked', None);
+                                                alt     string:Select $item_title_or_id;
+                                                title   string:Select $item_title_or_id" />
+                          <input type="hidden" name="obj_paths:list" value="#"
+                                tal:attributes="value item_rel_url" />
+                      </td>
+                      <td class="last_cell">
+                          <a href="#" tal:attributes="href  string:$item_url">
+                              <span tal:content="item_title_or_id">
+                                Item Title
+                              </span></a>
+                      </td>
+                   </tr>
+                </tal:items>
+            </tbody>
+        </table>
+  
+        <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
+        
+        <div tal:condition="batch"
+             style="margin-top: 1ex;">
+          <input class="context"
+                 type="submit"
+                 name="form.button.edit"
+                 value="Edit tag vocabularies"
+                 tabindex=""
+                 i18n:attributes="value"
+                 tal:attributes="tabindex tabindex/next;" />
+          <input class="context"
+                 type="submit"
+                 name="form.button.delete"
+                 value="Remove tag vocabularies"
+                 tabindex=""
+                 i18n:attributes="value"
+                 tal:attributes="tabindex tabindex/next;" />
+        </div>
+
+        <input type="hidden" name="form.submitted" value="1" />
+       </form>
+
+      </tal:def>
+    </div>
+  </body>
+</html>

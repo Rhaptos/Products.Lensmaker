@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      xmlns:rhaptos="https://trac.rhaptos.org/trac/rhaptos/wiki/LensAPI">
+
+    <!-- <feed spoof comment - move above feed to get browser to show xml  -->
+    <tal:lens                           tal:condition="python:context.Type() == 'Content Selection Lens' and context.review_state() != 'private'">
+        <author                         tal:content="python:context.getCreatorMember()">
+            Lens container
+        </author>
+        <title                          type="text"
+                                        tal:content="context/title">           
+            Lens Name
+        </title>
+        <name                           tal:content="context/displayName">           
+        </name>
+        <subtitle                       type="text/html"    
+                                        tal:content="context/description">           
+            Lens Description
+        </subtitle>
+        <id                             tal:content="context/id">           
+            Id reference number 
+        </id>
+        <category                       term="Lens type"
+                                        tal:attributes="term context/category"
+        />
+        <rights                         tal:content="context/rights">
+            Lens rights
+        </rights>
+        <logo                           tal:omit-tag="python:not context.hasLogo() and True or False"
+                                        tal:content="python:context.hasLogo() and context.logo.absolute_url() or ''">
+            Lens Logo
+        </logo>
+        <rhaptos:ownerUrl               tal:content="python:context.url" >
+            Owner url
+        </rhaptos:ownerUrl>
+        <rhaptos:ownerUrlText           tal:omit-tag="not:python:context.url and context.urlText"
+                                        tal:content="python:context.url and context.urlText or ''" >
+            Owner url text
+        </rhaptos:ownerUrlText>
+        <rhaptos:public                 tal:content="python:context.review_state() != 'private' and 'true' or 'false'"> 
+            Is Public
+        </rhaptos:public>
+        <rhaptos:recieveEmailOnUpdate   tal:content="python:context.notifyOfChanges and 'true' or 'false'">
+            True
+        </rhaptos:recieveEmailOnUpdate>
+        <rhaptos:hasTagCloud            tal:content="python:not context.getNoTagCloud() and 'true' or 'false'">
+            True
+        </rhaptos:hasTagCloud>
+        <rhaptos:language               tal:content="context/master_language">
+            Language
+        </rhaptos:language>
+        <tal:entries                    tal:repeat="item python:[i for i in context.contentValues() if getattr(i, 'portal_type', '') not in ('Folder','PloneboardForum')]">
+            <entry                      tal:define="oddrow   repeat/item/odd;
+                                        item_id              item/getId;
+                                        item_version_start   item/versionStart;
+                                        item_version_stop    item/versionStop;
+                                        item_implicit        item/implicit;
+                                        item_title           item/Title;
+                                        item_comments        item/comment;
+                                        item_tags            item/getTags;
+                                        item_version         python:item_version_stop or 'latest';">
+                <author                 tal:content="item/getContentAuthors">
+                    Lens Creator
+                </author>
+                <title                  type="text"
+                                        tal:content="python:item_title">           
+                    Item Title
+                </title>
+                <content type="application/xhtml+xml" xml:lang="en">
+                  <div class="comment" xmlns="http://www.w3.org/1999/xhtml">
+                  <span tal:condition="python:len(item.comment) > 0">
+                      <strong>Comment:</strong>
+                        <p tal:content="item_comments">           
+                            Entry comment 
+                        </p>
+                    </span>
+                    <span tal:condition="python:len(item.getTags()) > 0" >
+                      <strong>Tags:</strong>
+                      <ul class="tags">
+                          <tal:tags       tal:repeat="tag item/getTags">
+                              <li         tal:content="tag">
+                              Tag
+                              </li>
+                          </tal:tags>
+                      </ul>
+                    </span>
+                  </div>
+                </content>
+                <id                     tal:content="item_id">           
+                    Id reference number 
+                </id>
+                <link  tal:attributes="rel string:alternate;
+                                       href string:/content/$item_id/$item_version/;"/>
+                <rhaptos:inclusive      tal:content="item_implicit">           
+                    whether contents are included
+                </rhaptos:inclusive>
+                <rhaptos:versionStart   tal:content="item_version_start">           
+                    Start Version
+                </rhaptos:versionStart>
+                <rhaptos:versionStop    tal:content="item_version_stop">           
+                    Stop Version
+                </rhaptos:versionStop>
+            </entry>
+        </tal:entries>
+    </tal:lens>
+    <tal:lensMajorContainer    tal:condition="python:(context.Type() == 'Lens Major Container' or context.Type() == 'Lens Folder') or (context.getCategory() =='Endorsement' and context.Type() != 'Content Selection Lens') or (context.getCategory() =='Affiliation' and context.Type() != 'Content Selection Lens') or (context.getCategory() =='List' and context.Type() != 'Content Selection Lens')">
+      <tal:definition tal:define="fieldDictionary python:context.getFeedData()">
+        <author tal:content="python:fieldDictionary['author']">
+            Various
+        </author>
+        <title tal:content="python:fieldDictionary['title']">
+            All Lenses in the System
+        </title>
+        <updated                        tal:content="python:fieldDictionary['lastUpdated']" >
+            Updated
+        </updated>
+        <id                             tal:content="python:fieldDictionary['id']">
+            Id reference number 
+        </id>
+        <tal:entryList tal:repeat="item python:fieldDictionary['lenses']">
+            <entry tal:condition="python:item['count'] > 0">
+                <author                 tal:content="python:item['author']">
+                    Lens Creator
+                </author>
+                <title                  type="text"
+                                        tal:content="python:item['title']">
+                    Item Title
+                </title>
+                <category               term="Lens type"
+                                        tal:attributes="term python:item['category']"
+                />
+                <id                     tal:content="python:item['id']">
+                    Id reference number 
+                </id>
+                <updated                tal:content="python:item['lastModified']" >
+                    Lens Updated
+                </updated>
+                <content type="application/xhtml+xml" xml:lang="en">
+                  <div class="article" xmlns="http://www.w3.org/1999/xhtml">
+                    <span tal:condition="python:item['logoURL'] != ''">
+                      <img tal:attributes="src python:item['logoURL']" />
+                    </span>
+                    <ul>
+                      <li>
+                        <strong>Lens by:</strong>
+                        <tal:data content="python:item['lensBy']">George Washington</tal:data>
+                      </li>
+                      <li>
+                        <strong>Content:</strong>
+                        <tal:data content="python: item['count']">303</tal:data>
+                        <span tal:omit-tag="">modules and/or collections</span>
+                      </li>
+                      <li>
+                        <a tal:attributes="href  python:item['feedURL']">Subscribe to this lens</a>
+                      </li>
+                    </ul>
+                  </div>
+                </content>
+                <link  tal:attributes="rel string:alternate; href  python:item['lensURL']"/>
+            </entry>
+         </tal:entryList>
+       </tal:definition>
+    </tal:lensMajorContainer>
+</feed>

@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<dc-workflow workflow_id="LensWorkflow" title="LensWorkflow"
+             state_variable="review_state"
+             initial_state="private">
+ <permission>Access contents information</permission>
+ <permission>View</permission>
+ <permission>Modify portal content</permission>
+ <permission>List folder contents</permission>
+ <permission>Add lens selected content</permission>
+ <state state_id="private" title="Private">
+  <exit-transition transition_id="publish"/>
+  <exit-transition transition_id="expose_private"/>
+  <exit-transition transition_id="expose_published"/>
+  <permission-map name="Access contents information"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="List folder contents"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="View" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
+ <state state_id="private_open" title="Open">
+  <exit-transition transition_id="publish"/>
+  <exit-transition transition_id="hide"/>
+  <exit-transition transition_id="expose_published"/>
+  <permission-map name="Access contents information"
+                  acquired="True">
+   <permission-role>Anonymous</permission-role>
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="Add lens selected content"
+                  acquired="True">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+   <permission-role>Member</permission-role>
+  </permission-map>
+  <permission-map name="List folder contents"
+                  acquired="True">
+   <permission-role>Anonymous</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="View" acquired="True">
+   <permission-role>Anonymous</permission-role>
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
+ <state state_id="published" title="Public">
+  <exit-transition transition_id="hide"/>
+  <exit-transition transition_id="expose_private"/>
+  <exit-transition transition_id="expose_published"/>
+  <permission-map name="Access contents information"
+                  acquired="True">
+   <permission-role>Anonymous</permission-role>
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="List folder contents"
+                  acquired="True">
+   <permission-role>Anonymous</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="View" acquired="True">
+   <permission-role>Anonymous</permission-role>
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
+ <state state_id="published_open" title="Public Open">
+  <exit-transition transition_id="expose_private"/>
+  <exit-transition transition_id="publish"/>
+  <exit-transition transition_id="hide"/>
+  <permission-map name="Access contents information"
+                  acquired="True">
+   <permission-role>Anonymous</permission-role>
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="Add lens selected content"
+                  acquired="True">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+   <permission-role>Member</permission-role>
+  </permission-map>
+  <permission-map name="List folder contents"
+                  acquired="True">
+   <permission-role>Anonymous</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+  <permission-map name="View" acquired="True">
+   <permission-role>Anonymous</permission-role>
+   <permission-role>Manager</permission-role>
+   <permission-role>Owner</permission-role>
+  </permission-map>
+ </state>
+ <transition transition_id="expose_private"
+             title="expose_private" new_state="private_open"
+             trigger="USER" before_script=""
+             after_script="afterTransition">
+  <action url="" category="workflow">expose_private</action>
+  <guard>
+   <guard-permission>Modify portal content</guard-permission>
+   <guard-role>Manager</guard-role>
+   <guard-role>Owner</guard-role>
+  </guard>
+ </transition>
+ <transition transition_id="expose_published"
+             title="expose_published"
+             new_state="published_open" trigger="USER"
+             before_script="" after_script="afterTransition">
+  <action url="" category="workflow">expose_published</action>
+  <guard>
+   <guard-permission>Modify portal content</guard-permission>
+   <guard-role>Manager</guard-role>
+   <guard-role>Owner</guard-role>
+  </guard>
+ </transition>
+ <transition transition_id="hide" title="hide"
+             new_state="private" trigger="USER"
+             before_script="" after_script="afterTransition">
+  <action url="" category="workflow">hide</action>
+  <guard>
+   <guard-role>Owner</guard-role>
+  </guard>
+ </transition>
+ <transition transition_id="publish" title="publish"
+             new_state="published" trigger="USER"
+             before_script="" after_script="afterTransition">
+  <action url="" category="workflow">publish</action>
+  <guard>
+   <guard-permission>Modify portal content</guard-permission>
+   <guard-role>Manager</guard-role>
+   <guard-role>Owner</guard-role>
+  </guard>
+ </transition>
+ <variable variable_id="action" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>The last transition</description>
+  <default>
+   
+   <expression>transition/getId|nothing</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <variable variable_id="actor" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>The ID of the user who performed the last transition</description>
+  <default>
+   
+   <expression>user/getId</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <variable variable_id="comments" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>Comments about the last transition</description>
+  <default>
+   
+   <expression>python:state_change.kwargs.get('comment', '')</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <variable variable_id="review_history" for_catalog="False"
+           for_status="False" update_always="False">
+  <description>Provides access to workflow history</description>
+  <default>
+   
+   <expression>state_change/getHistory</expression>
+  </default>
+  <guard>
+   <guard-permission>Request review</guard-permission>
+   <guard-permission>Review portal content</guard-permission>
+  </guard>
+ </variable>
+ <variable variable_id="time" for_catalog="False"
+           for_status="True" update_always="True">
+  <description>Time of the last transition</description>
+  <default>
+   
+   <expression>state_change/getDateTime</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+ <script script_id="afterTransition" type="External Method"
+         filename="" module="Lensmaker.LensWorkflow_scripts"
+         function="afterTransition"/>
+</dc-workflow>

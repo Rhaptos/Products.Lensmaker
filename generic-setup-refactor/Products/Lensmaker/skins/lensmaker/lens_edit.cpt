@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<tal:slotcontext xmlns:metal="http://xml.zope.org/namespaces/metal"
+                 xmlns:tal="http://xml.zope.org/namespaces/tal"
+                 define="slotcontext python:context.portal_url.getPortalObject().lenses;
+                         left_slots slotcontext/left_slots;
+                         sl python:[(slot, slot.find('/macros/')!=-1) for slot in left_slots];
+                         right_slots slotcontext/right_slots;
+                         sr python:[(slot, slot.find('/macros/')!=-1) for slot in right_slots]">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <tal:comment replace="nothing">All this head stuff directly from AT's base_edit</tal:comment>
+  <metal:head fill-slot="top_slot">
+    <tal:block define="macro edit_macros/topslot | nothing"
+                    condition="macro">
+        <metal:block use-macro="macro" />
+    </tal:block>
+  </metal:head>
+
+
+    <metal:block metal:fill-slot="css_slot">
+      <link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all.css"
+            tal:attributes="href string:$portal_url/extjs/resources/css/ext-all.css"/>
+    </metal:block>
+
+  <metal:head fill-slot="javascript_head_slot">
+ <div tal:define="allowed context/checkEditLens;
+                  schema context/Schema;
+                  fields python:schema.editableFields(context);
+                  css python:context.getUniqueWidgetAttr(fields, 'helper_css');
+                  js python:context.getUniqueWidgetAttr(fields, 'helper_js');">
+    <tal:block define="macro here/archetypes_custom_js/macros/javascript_head | nothing"
+               condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+    <tal:css condition="css"
+             repeat="item css">
+      <style type="text/css"
+             media="all"
+             tal:condition="python:exists('portal/%s' % item)"
+             tal:content="string:@import url($portal_url/$item);">
+      </style>
+    </tal:css>
+    <tal:js condition="js"
+            repeat="item js">
+      <script type="text/javascript"
+              charset="iso-8859-1"
+              tal:condition="python:exists('portal/%s' % item)"
+              tal:attributes="src string:$portal_url/$item">
+      </script>
+    </tal:js>
+        <script type="text/javascript" src="/extjs/ext.js" href=""
+                tal:attributes="href string:$portal_url/extjs/ext.js;
+                                src  string:$portal_url/extjs/ext.js"></script>
+        <script type="text/javascript" src="/eip/prototype.js" 
+                tal:attributes="src  string:$portal_url/eip/prototype.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/colormethods.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/colormethods.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/colorvaluepicker.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/colorvaluepicker.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/slider.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/slider.js"></script>
+        <script type="text/javascript" src="/colorchooser-resources/colorpicker.js" 
+                tal:attributes="src  string:$portal_url/colorchooser-resources/colorpicker.js"></script>
+        <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js" 
+                tal:attributes="src  string:$portal_url/lightweight-branding-foreground-calculator.js"></script>
+  </div>
+  
+  <script type="text/javascript">
+//<![CDATA[
+window.onload = function(e) {
+    initialSettings();
+}
+
+var expander;
+var hider;
+var advcontent;
+var nodeBannerCheckboxInput;
+var nodeColorChooserDiv;
+
+function setExpand() {
+    advcontent.style.display = "block";
+    expander.style.display = "none";
+    hider.style.display = "inline";
+}
+
+function setHide() {
+    advcontent.style.display = "none";
+    expander.style.display = "inline";
+    hider.style.display = "none";
+}
+
+function initialSettings() {
+   // Advanced setting show/hide magic:
+   expander = document.getElementById('adv_expand');
+   hider = document.getElementById('adv_hide');
+   advcontent = document.getElementById('adv_content');
+   advhidden = document.getElementById('adv_toggle');
+   stayopen= document.getElementById('adv_open');
+
+   advhidden.style.display = "inline";
+
+   if (stayopen) {
+      setExpand();
+   } else {
+      setHide();
+   }
+
+   // branding color chooser show/hide magic
+   nodeBannerCheckboxInput = document.getElementById('banner');
+   nodeColorChooserDiv = document.getElementById('archetypes-fieldname-bannerColor');
+   if ( nodeBannerCheckboxInput ) {
+      // node is only present with the owner of the lens has the "branding" role
+      // checkbox is used to turn on branding for a given lens.
+      // set the initial display state of the color chooser, i.e show or hide it
+      if ( !nodeBannerCheckboxInput.checked ) {
+          nodeColorChooserDiv.style.display = 'none';
+      }
+      // set the onclick handler for the banner checkbox input
+      //nodeBannerCheckboxInput.onclick = function(event){toggleColorChooser();return false;};
+      Ext.get('banner').on('click', toggleColorChooser, document);
+   }
+
+   // make the conditionally required Branding Banner Color look required
+   var divColorField;
+   var i;
+   var nodeChild;
+   divColorField = document.getElementById('archetypes-fieldname-bannerColor');
+   for ( i = 0; i < divColorField.childNodes.length; i++ ) {
+     nodeChild = divColorField.childNodes[i];
+     if ( nodeChild.nodeType == 1 /*Node.ELEMENT_NODE*/ &&
+          nodeChild.nodeName.toLowerCase() == 'label' ) {
+       var nodeLabel = nodeChild;
+       // &lt;span class="fieldRequired" title="Required">(Required)&lt;/span>
+       var nodeSpan = document.createElement('span');
+       nodeSpan.className = 'fieldRequired';
+       nodeSpan.setAttribute('title', 'Required');
+       nodeSpan.innerHTML = '\n(Required)\n';
+       if ( nodeLabel.nextSibling ) divColorField.insertBefore(nodeSpan, nodeLabel.nextSibling);
+       else                         divColorField.appendChild(nodeSpan);
+       break;
+     }
+   }
+}
+
+function toggleAdvanced() {
+  if (advcontent.style.display == 'none') {
+    setExpand();
+  } else {
+    setHide();
+  }
+}
+
+function toggleColorChooser() {
+   if ( nodeColorChooserDiv.style.display == 'none' ) {
+      nodeColorChooserDiv.style.display = '';
+   } else {
+      nodeColorChooserDiv.style.display = 'none';
+   }
+}
+
+//]]>
+  </script>
+
+  </metal:head>
+
+
+  <body>
+
+    <div metal:fill-slot="content_title_header">
+      <tal:block tal:define="show_border python:here.showEditableBorder(template_id=template_id, actions=actions );
+                             creatingNewLens not:show_border">
+        <tal:block tal:condition="creatingNewLens">
+          <h1 i18n:translate="heading_new_lens">New lens</h1>
+        </tal:block>
+        <tal:block tal:define="lens nocall:context"
+                    tal:condition="not:creatingNewLens">
+          <h1><tal:block replace="structure python:getattr(here, context.getIcon(1))"/> <span tal:replace="context/Title">Lens Title</span></h1>
+        </tal:block>
+      </tal:block>
+    </div>
+
+    <div metal:fill-slot="main"
+         tal:define="errors options/state/getErrors | nothing;">
+
+      <form name="edit_form" action="." method="post" tal:attributes="action template/getId"
+            enctype="multipart/form-data"
+            tal:define="schematas context/Schemata">
+        <metal:hiddens use-macro="context/lens_chooser/macros/hiddens" />
+        <metal:contentinfo use-macro="context/lens_chooser/macros/contentdata" />
+
+        <fieldset tal:define="fields python:schematas['basic'].editableFields(context);"
+                  tal:condition="fields">
+          <legend i18n:translate="label_basic_info">Basic information</legend>
+          <tal:fields repeat="field fields">
+            <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+          </tal:fields>
+        </fieldset>
+
+        <fieldset tal:define="fields python:schematas['branding'].editableFields(context);"
+                  tal:condition="fields">
+          <legend i18n:translate="label_basic_info">Lens Branding</legend>
+          <tal:fields repeat="field fields">
+            <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+          </tal:fields>
+        </fieldset>
+
+        <fieldset tal:define="fields python:schematas['settings'].editableFields(context);">
+          <legend i18n:translate="label_lens_settings">Lens settings</legend>
+
+          <tal:fields repeat="field fields">
+            <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+          </tal:fields>
+
+          <div class="field" tal:condition="context/workflowStateEditable">
+            <label for="">
+              Privacy
+            </label>
+            <div class="formHelp">
+              With the privacy settings you can control the visibility of your lens (private: for your eyes only OR public: anybody 
+              can view the lens)<span tal:condition="context/@@siyavula-account|nothing">, as well as who can add content to your lens 
+              (just you or any account holder)</span>.
+            </div>
+            <div style="margin-left: 2em;">
+            <label for="">
+              Who can see this lens?
+            </label>
+            <p tal:define="review_state request/wfstate | python:context.portal_workflow.getInfoFor(context, 'review_state')">
+              <input name="wfstate" type="radio" value="private" class="noborder"
+                     tal:attributes="checked python:review_state in ('private','private_open') and 'checked' or nothing">
+              Owner only (Private <img src="/private.gif" tal:replace="structure context/private.gif">)
+              <input name="wfstate" type="radio" value="published" class="noborder" style="margin-left: .75em;"
+                     tal:attributes="checked python:review_state in ('published','published_open') and 'checked' or nothing">
+              Everyone (Public)
+            </p>
+            </div>
+          </div> 
+    
+          <tal:siyavula condition="context/@@siyavula-account|nothing">
+          <div class="field" tal:condition="context/workflowStateEditable" style="margin-left: 2em;">
+            <label for="">
+              Who can add content to this lens?
+            </label>
+            <p tal:define="review_state request/wfstate | python:context.portal_workflow.getInfoFor(context, 'review_state')">
+              <input name="wfstate_modifier" type="radio" value="" class="noborder"
+                     tal:attributes="checked python:review_state not in ('private_open','published_open') and 'checked' or nothing">
+              Owner only (Controlled submission)
+              <input name="wfstate_modifier" type="radio" value="1" class="noborder"
+                     style="margin-left: .75em;"
+                     tal:attributes="checked python:review_state in ('private_open','published_open') and 'checked' or nothing">
+              Everyone (Open submission)
+              </p>
+          </div>
+          </tal:siyavula>
+
+          <tal:block tal:define="fields python:schematas['advanced'].editableFields(context);"
+                     tal:condition="fields">
+            <p>
+              <span tal:omit-tag="" i18n:translate="text_advanced_settings">Advanced settings</span>
+              <span id="adv_toggle" style="display:none">
+                [ <a href="lens_edit" id="adv_expand" onclick="toggleAdvanced(); return false">show</a><a 
+                    href="lens_edit" id="adv_hide"   onclick="toggleAdvanced(); return false">hide</a> ]
+              </span>
+            </p>
+
+            <div id="adv_open" style="display:none" tal:condition="nothing | errors"></div>
+
+            <div id="adv_content">
+              <tal:fields repeat="field fields">
+                <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+              </tal:fields>
+            </div>
+        </tal:block>
+
+        </fieldset>
+
+        <input class="context"
+                type="submit"
+                name="form_submit"
+                value="Save"
+                tabindex=""
+                i18n:attributes="value"
+                tal:attributes="tabindex tabindex/next;" />
+
+          <input type="hidden" name="form.submitted" value="1" />
+
+     </form>
+    </div>
+  </body>
+</html>
+</tal:slotcontext>

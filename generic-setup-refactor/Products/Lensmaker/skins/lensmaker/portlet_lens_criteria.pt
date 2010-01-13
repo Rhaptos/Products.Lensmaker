@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <body>
+     <metal:macro define-macro="portlet">
+     <tal:type condition="python:getattr(context, 'portal_type', '') == 'ContentSelectionLens'">
+
+     <tal:def define="ltool context/lens_tool | nothing;
+                      param options/tag | nothing;
+                      viewinfo python:context.lens_view_view(tag=param);
+                      tag viewinfo/tag;
+                      qs request/environ/QUERY_STRING | nothing;
+                      qs python:qs and '?%s' % qs or '';
+                      struct python:context.getNamespaceTagsInUse(objectify=True)"
+          tal:condition="python:context.isOpen()">
+
+      <div id="portlet-lens-criteria"
+           class="portletContainer">
+
+       <script type="text/javascript">
+       function toggle_lens_criteria(key)
+       {
+         //var ul = document.getElementById(key+'-ul');
+         //ul.style.display = ul.style.display=='block'?'none':'block';
+
+         var imgshow = document.getElementById(key+'-show');
+         imgshow.style.display = imgshow.style.display=='inline'?'none':'inline';
+
+         var imghide = document.getElementById(key+'-hide');
+         imghide.style.display = imghide.style.display=='inline'?'none':'inline';
+
+         // Iterate over contained li tags
+         var new_style = (imgshow.style.display == 'inline') ? 'none' : 'block';
+         var ul = document.getElementById(key+'-ul');
+         var li_list = ul.getElementsByTagName('li');
+         for (var i=0; i<li_list.length; i++)
+         {
+             if (li_list[i].className != 'currentNavItem')
+                 li_list[i].style.display = new_style;
+         }
+       } 
+       </script>
+
+       <dl class="portlet">
+          <dt class="portletHeader">
+            <span class="portletTopLeft"></span>
+            <span i18n:translate="box_heading_lens_criteria"
+              metal:define-slot="title">Criteria</span>
+            <span class="portletTopRight"></span>
+          </dt>
+
+          <dd class="portletItem odd">
+
+            <p>
+              <em tal:condition="not:struct">No criteria provided.</em>
+              <tal:span tal:condition="struct">Select criteria to narrow the contents of this lens.</tal:span>
+            </p>
+            <tal:keys repeat="di struct">
+              <tal:def define="tagnamespace python:di['tagnamespace'];
+                               expanded python:False;
+                               right_arrow_display_style python:expanded and 'none' or 'inline';
+                               down_arrow_display_style python:expanded and 'inline' or 'none';">
+                <a tal:define="id tagnamespace/UID"
+                   tal:attributes="onClick string:toggle_lens_criteria('${id}');;return false;;"
+                   href="#" class="criterion">
+                  <img tal:attributes="id string:${id}-show;
+                                       src string:${portal_url}/transmenus/rightArrow.gif;
+                                       style string:display:${right_arrow_display_style}"
+                       alt=""/>
+                  <img tal:attributes="id string:${id}-hide;
+                                       src string:${portal_url}/transmenus/downArrow.gif;
+                                       style string:display:${down_arrow_display_style}"
+                       alt=""/>
+                  <strong tal:content="tagnamespace/pretty_title_or_id">Tag Namespace</strong>
+                </a>
+
+                <ul tal:attributes="id string:${tagnamespace/UID}-ul;">
+
+                  <tal:tags repeat="ltag python:di['tags']">
+                    <tal:def define="aview nocall:context/@@getNamespaceTagTerm;
+                                     prefixed_tag python:aview(tagnamespace.getPrefix(), ltag);
+
+                                     tag_copy python:[t for t in tag if not t.startswith(tagnamespace.getPrefix())];
+                                     dummy python:prefixed_tag not in request.traverse_subpath and tag_copy.append(prefixed_tag);
+
+                                     plus_url python:'%s/%s/%s' % (template.id, '/'.join(tag_copy), qs);
+                                     minus_url python:'%s/%s/%s' % (template.id, '/'.join(tag_copy), qs);
+
+                                     selected python:prefixed_tag in request.traverse_subpath;
+                                     num_tagged_modules python:len(ltool.searchResults(
+                                        getNamespaceTags=[prefixed_tag],
+                                        portal_type='SelectedContent',
+                                        path='/'.join(context.getPhysicalPath())))">
+
+                      <li tal:condition="python:num_tagged_modules > 0"
+                          tal:define="li_display_style python:selected and 'block' or 'none'"
+                          tal:attributes="class python:selected and 'currentNavItem' or '';
+                                          style string:display: ${li_display_style};;">
+                        <a tal:attributes="href plus_url;
+                                           title python:context.restrictedTraverse('@@getNamespaceTagLabel')(tag=ltag)"
+                            ><span tal:replace="python:context.restrictedTraverse('@@getNamespaceTagTerm')(prefix=None, tag=ltag)"/></a> (<span tal:replace="num_tagged_modules"/>)
+
+                        <tal:if condition="selected">
+                          <a tal:attributes="href minus_url">
+                            <img tal:attributes="src string:${portal_url}/Eliminate.gif">
+                          </a>
+                        </tal:if>
+                      </li>
+                    </tal:def>
+                  </tal:tags>
+
+                </ul>
+              </tal:def>
+            </tal:keys>
+
+          </dd>
+       </dl>
+
+     </div>
+     </tal:def>
+     </tal:type>
+     </metal:macro>
+  </body>
+</html>

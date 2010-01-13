@@ -1,0 +1,22 @@
+# set all existing notify flags to false, since the default changes to false
+# see https://trac.rhaptos.org/trac/rhaptos/ticket/6910
+
+from Products.ExternalMethod.ExternalMethod import ExternalMethod
+from AccessControl.SecurityManagement import newSecurityManager
+from Products.CMFCore.tests.base.security import AnonymousUser, OmnipotentUser
+user = OmnipotentUser().__of__(app)
+newSecurityManager(None, user)
+
+factool = app.plone.portal_factory
+
+favs = app.plone.lens_catalog(portal_type="FavoritesLens")
+for brain in favs:
+    try:
+        obj = brain.getObject()   # may fail if portal_factory temp object cataloged somehow
+        obj.setNotifyOfChanges(0)
+    except AttributeError:
+        print "skipping",
+    print brain.getPath()
+
+import transaction
+transaction.commit()

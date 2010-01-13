@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<tal:border define="is_editable python:request.set('disable_border', 1)">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+      xmlns:metal="http://xml.zope.org/namespaces/metal" 
+      xmlns:tal="http://xml.zope.org/namespaces/tal" 
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="rhaptos"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <metal:css fill-slot="css_slot">
+    <link rel="stylesheet" type="text/css" href="/content_browse.css" />
+    <link rel="stylesheet" type="text/css" href="/tagcloud.css" />
+  </metal:css>
+
+  <metal:head fill-slot="javascript_head_slot">
+    <script type="text/javascript" src="/extjs/ext.js"
+            tal:attributes="href string:$portal_url/extjs/ext.js"></script>
+    <script type="text/javascript" src="/lightweight-branding-foreground-calculator.js"></script>
+  </metal:head>
+
+  <body>
+
+    <div metal:fill-slot="column_one_slot">
+      <td id="portal-column-one" class="lens-left-column">
+        <metal:use use-macro="here/portlet_lenses/macros/portlet"/>
+        <!-- portlet_lens_criteria/macros/portlet and portlet_lens_tags/macros/portlet
+             are mutually exclusive. open lenses can have tag vocabularies but not tags.
+             non-open lenses can have tags, but not tag vocabularies. -->
+        <metal:use use-macro="here/portlet_lens_criteria/macros/portlet"/>
+        <metal:use use-macro="here/portlet_lens_tags/macros/portlet"/>
+        <metal:use use-macro="here/portlet_recentview/macros/portlet"/>
+      </td>
+    </div>
+
+    <div metal:fill-slot="column_two_slot"/>
+
+    <div metal:fill-slot="main">
+      <tal:banner tal:condition='context/banner | nothing'>
+        <tal:comment tal:replace="nothing">tal can not parameterize the interior of a script node, but can parameterie the script node itself; thus, the trickiness.</tal:comment>
+        <tal:comment tal:replace="nothing">Either there is a banner color or not. I just made 2 exclusive cases</tal:comment>
+        <script type="text/javascript" 
+            tal:condition="python:context['bannerColor']"
+            tal:content="string:var bannerColor='${context/bannerColor}';"></script>
+        <script type="text/javascript"
+            tal:define="hasColor python:context['bannerColor']"
+            tal:condition="not:hasColor"
+            tal:content="string:var bannerColor='';"></script>
+        <script type="text/javascript" tal:content="string:var bannerTitle=&quot;${context/Title}&quot;;"></script>
+        <script type="text/javascript" 
+                tal:define="logo context/getLogo;
+                            flag nocall:logo"
+                tal:condition="flag"
+                tal:content="string:var hasLogo=true;"></script>
+        <script type="text/javascript" 
+                tal:define="logo context/getLogo;
+                            flag nocall:logo"
+                tal:condition="not:flag"
+                tal:content="string:var hasLogo=false;"></script>
+        <script type="text/javascript"
+                tal:define="lensPath context/absolute_url_path;"
+                tal:content="string:var lensPath='${lensPath}';"></script>
+        <tal:script tal:define="cat context/getCategory;
+                                isEndorsement python:'Endorsement' in cat;
+                                isAffiliation python:'Affiliation' in cat;
+                                isMemberList  python:'List' in cat;">
+          <script type="text/javascript" tal:condition="isEndorsement" tal:content="string:var lensCategory='Endorsement';"/>
+          <script type="text/javascript" tal:condition="isAffiliation" tal:content="string:var lensCategory='Affiliation';"/>
+          <script type="text/javascript" tal:condition="isMemberList"  tal:content="string:var lensCategory='List';"/>
+          <script type="text/javascript" tal:condition="python:not isEndorsement and not isAffiliation and not isMemberList"
+                                              tal:content="string:var lensCategory='';"/>
+        </tal:script>
+        <script type="text/javascript">
+        //<![CDATA[
+
+          (function() {
+            //Store a list of lenses so if the user visits more
+            // than one lens, it will show up.
+
+            //read cookie (defined in rhaptosutils.js)
+            var rawCookie = readCookie('lenses');
+            var lenses = [];
+            if(rawCookie) {
+              lenses = rawCookie.split('|');
+            }
+            //Remove the lens if it already exists (to push it to the top of the stack)
+            for(var i=0; i < lenses.length; i++) {
+              if(unescape(lenses[i].split('#')[0]) == lensPath) {
+                lenses.splice(i, 1);
+                i--;//break; //Keep cleaning
+              }
+            }
+
+            var fgColor = findBestTextColor(bannerColor);
+            var lensString = [escape(lensPath), bannerColor, fgColor, escape(bannerTitle), hasLogo, lensCategory].join('#');
+
+            //set it.
+            lenses.push(lensString);
+
+            //save the cookie (defined in rhaptosutils.js)
+            createCookie('lenses', lenses.join('|'), 365/*days*/);
+
+            //-----------------------------------------
+
+            //Render the banner on this page
+            //Copy-pasted from lightweight-branding-banner.js
+            var bgColor = bannerColor;
+            var title = bannerTitle;
+
+            var portalTop = Ext.get('portal-top'); //inconsistency. different for collections/modules.... they use cnx_portal_top
+
+            //TODO: Use the lens url (endsWith) to know which message to use
+            var bannerMessage = '';
+            if ( lensCategory == 'Endorsement' ) {
+                bannerMessage = 'Content endorsed by: ';
+            }
+            else if ( lensCategory == 'Affiliation' ) {
+                bannerMessage = 'Content affiliated with: ';
+            }
+            else if ( lensCategory == 'List' ) {
+                bannerMessage = 'Content included in lens: ';
+            }
+
+            var linkStyle = ''; //'text-decoration:none;';
+            var bannerStyle = '';
+            if ('' != bgColor) {
+              bannerStyle = 'background-color: #' + bgColor + ';';
+              bannerStyle += ' color:#'+fgColor+';';
+              linkStyle += ' color:#'+fgColor+';';
+            } else {
+              bannerStyle = 'color:#ffffff;'; //for the message preceding the link
+              linkStyle += ' color:#ffffff;';
+            }
+            Ext.DomHelper.append(portalTop,
+             { tag:'div', id:'cnx_branding_banner', style:bannerStyle,
+               children:[
+                 bannerMessage,
+                 { tag:'a', href:lensPath, style:linkStyle, children:[title]}
+               ]
+             }
+            );
+          }) ();
+
+        //]]>
+        </script>
+      </tal:banner>
+
+      <tal:inner metal:define-macro="viewguts"
+         tal:define="param options/tag | nothing;
+                     viewinfo python:context.lens_view_view(tag=param);
+                     searchhash viewinfo/searchhash;
+                     results viewinfo/results;
+                     tag viewinfo/tag;
+                     aview nocall:context/@@getPrintableTags;
+                     printable_tags python:aview(tag);
+                     companion viewinfo/companion;
+                     creator viewinfo/creator;
+                     creatorName viewinfo/creatorName;
+                     length python:len(results);
+                     qs request/environ/QUERY_STRING | nothing;
+                     qs python:qs and '?%s' % qs or '';
+                     review_state python:context.portal_workflow.getInfoFor(here, 'review_state');
+                     private python:review_state == 'private';">
+
+      <tal:recentview define="dummy python:context.setrecentview('viewed_lenses', context.aq_parent.getId(), context.getId())" />
+      
+      <tal:block tal:condition="not:private">
+        <span metal:use-macro="here/lenses_listing/macros/lensfeedicon" />
+      </tal:block>
+
+      <h1>
+      <img src="/lenses.gif" alt="Lens" i18n:attributes="alt text_lens_icon"
+             tal:attributes="src string:$portal_url/${context/getIcon}"/>
+        <span id="cnx_lens-title">
+          <tal:dacct content="context/Title">Great Stuff Here</tal:dacct>
+        </span>
+        <span class="normal-text-in-header" tal:condition="python:user.has_permission('Modify portal content', context)">
+           <span tal:condition="not:is_editable" >(<a href="contents"  >edit lens</a>)</span>
+           <span  tal:condition="is_editable" >(<a href="view" >full view</a>)</span>
+        </span> 
+      </h1>
+
+      <tal:comment condition="nothing">
+      <div id="tagcloud"
+           tal:condition="python:not (context.getNoTagCloud() or context.getNamespaceTagsInUse())">
+        <tal:inner tal:define="cloud context/getTagCloud;
+                               items cloud/items;
+                               bagmap python:{4:'verymany', 3:'many', 2:'normal', 1:'some', 0:'few'}">
+          <h4>Tags added to this lens</h4>
+          <em tal:condition="not:items">No tags provided.</em>
+          <tal:loop repeat="item items">
+          <span tal:define="l_tag python:item[0];
+                            bag python:item[1][0];
+                            num python:item[1][1];
+                            aclass python:bagmap[bag];
+                            viewing_tag python:l_tag in tag;
+                            aclass python:viewing_tag and 'narrowed_tag %s'%aclass or aclass;"
+                class="cloudtag">
+            <a tal:omit-tag="viewing_tag" href="#" 
+                tal:attributes="class aclass;
+                                href string:${template/id}/$l_tag$qs;
+                                title string:$num item(s) tagged with $l_tag">
+              <span tal:content="l_tag" class="narrowed_tag" 
+                  tal:omit-tag="not:viewing_tag"
+                  tal:attributes="class aclass">dsp</span></a><!-- TODO: non-visual indication -->
+          </span>
+          </tal:loop>
+        </tal:inner>
+      </div>
+      </tal:comment>
+
+      <p>
+        <img src="" tal:define="logo context/getLogo"
+                    tal:condition="nocall:logo"
+                    tal:replace="structure python:logo.tag(style='float: right; margin: .5em 0 .5em 1em;')" />
+        <strong>Lens by:</strong>
+        <a href="#" tal:attributes="href string:/member_profile/${creator}" tal:content="creatorName">Great Caesar's ghost</a>
+        <tal:if define="reviewers context/getActiveReviewers"
+                condition="reviewers">
+          <br/>
+          <strong>Reviewers:</strong>     
+          <tal:loop repeat="reviewer reviewers">
+            <tal:if condition="not:repeat/reviewer/start">, </tal:if>
+            <a tal:attributes="href string:/member_profile/${reviewer/getId}" 
+               tal:content="python:reviewer.getProperty('fullname')"></a>          
+          </tal:loop>
+        </tal:if>
+      </p>
+
+      <p tal:content="structure context/Description" tal:condition="context/Description">I am the very model of a modern major general.</p>
+
+      <tal:siyavula tal:condition="context/@@siyavula-forum|nothing">
+      <tal:wfstate tal:define="review_state python:context.portal_workflow.getInfoFor(context, 'review_state')"
+          tal:condition="python:review_state not in ('private','private_open')">
+      <p tal:define="qi_forums python:context.portal_quickinstaller.get('RhaptosForums', None)"
+         tal:condition="python:(qi_forums is not None) and (qi_forums.status == 'installed')">
+          <span i18n:translate="discuss_lens">Discuss the lens by posting in the</span>
+          <a tal:attributes="href string: ${context/absolute_url}/lens_discuss">
+              <img tal:attributes="src string:${portal_url}/ploneboard_forum_icon.gif"/>
+                <span i18n:translate="forum">Forum</span>
+          </a>
+      </p>
+      </tal:wfstate>
+      </tal:siyavula>
+
+      <p tal:condition="context/url">
+        <a tal:attributes="href context/url" tal:content="context/getUrlText">[Visit ...]</a>
+      </p>
+
+      <div style="clear:both"
+           tal:define="cat context/getCategory">
+        <h3 i18n:translate="header_selected_content_with_tag">
+          <img tal:condition="python:cat in ('Endorsement')" src="/endorsed.gif" />
+          <span i18n:name="main_title">
+            <span metal:use-macro="context/lens_content_view/macros/listingTitle">
+              Selected content
+            </span>
+          </span>
+          <a href="#"
+             tal:condition="python:cat in ('Endorsement')"
+             tal:attributes="href string:/help/glossary#endorsement"
+             class="whats_this"
+             title="The listed content is endorsed by the lens maker. Click for more information.">(what's this?)</a>
+          <a href="#"
+             tal:condition="python:cat in ('Affiliation')"
+             tal:attributes="href string:/help/glossary#affiliation"
+             class="whats_this"
+             title="The listed content is affiliated with the lens maker. Click for more information.">(what's this?)</a>
+          <a href="#"
+             tal:condition="python:cat not in ('Endorsement', 'Affiliation')"
+             tal:attributes="href string:/help/glossary#lens"
+             class="whats_this"
+             title="The listed content is selected by the lens maker. Click for more information.">(what's this?)</a>
+        </h3>
+
+        <tal:comment replace="nothing">
+             condition tag     => a tag has been applied to a nonempty lens
+             condition results => lens plus tags (if any) yields a nonempty result set
+        </tal:comment>
+
+        <tal:comment replace="nothing"> empty lens </tal:comment>
+        <tal:block tal:condition="python:not results and not tag">
+          <p><em i18n:translate="text_no_content">None</em></p>
+        </tal:block>
+
+        <tal:comment replace="nothing"> nonempty lens filtered with criteria yielding an empty result set </tal:comment>
+        <tal:block tal:condition="python:not results and tag">
+          <p class="lens_quantity">
+            <em i18n:translate="text_no_content">No content tagged with: </em>
+            <tal:loop tal:repeat="printable_tag printable_tags">
+              <strong tal:content="printable_tag"/><tal:text tal:condition="python:printable_tag != printable_tags[-1]">, </tal:text>
+            </tal:loop>
+          </p>
+          <p class="show_all no_results">
+            (<a href="#" tal:attributes="href string:${template/id}$qs"
+                i18n:translate="label_return_to_base_lens_view"
+              >Show all content in this lens</a>)
+          </p>
+        </tal:block>
+
+        <tal:comment replace="nothing"> nonempty results set with or without criteria filtering </tal:comment>
+        <tal:block tal:define="inLens python:True;
+                               default_view string:lens;"
+                   tal:condition="results">
+          <p class="lens_quantity">
+            <span tal:define="results_breakdown nocall:context/@@getLensContentTypeBreakdown"
+                  tal:content="python:results_breakdown(results)">2 modules and 9 collections</span>
+            <tal:span tal:condition="python:tag">
+              tagged with:
+              <tal:loop tal:repeat="printable_tag printable_tags">
+                <strong tal:content="printable_tag"/><tal:text tal:condition="python:printable_tag != printable_tags[-1]">, </tal:text>
+              </tal:loop>
+            </tal:span>
+          </p>
+          <tal:block tal:condition="python:tag">
+            <p class="show_all">
+              (<a href="#" tal:attributes="href string:${template/id}$qs"
+                 i18n:translate="label_return_to_base_lens_view">Show all content in this lens</a>)
+            </p>
+          </tal:block>
+          <tal:block metal:use-macro="here/search_macros/macros/search_results"/>
+        </tal:block>
+
+      </div>
+      <p id="lens_feed_links">
+      <strong>Feeds: </strong><a tal:attributes="href string:${context/absolute_url}/atom;" >Subscribe to this feed</a> |
+      <tal:help tal:define="help nocall:portal/help/viewing/feeds | nothing" tal:condition="nocall:help">
+        <a tal:attributes="href string:${help/absolute_url}#availablefeeds" >All Connexions Feeds</a> |
+        <a tal:attributes="href help/absolute_url" >About RSS Feeds</a>
+      </tal:help>
+      </p>
+    </tal:inner>
+    </div>
+  </body>
+</html>
+</tal:border>
