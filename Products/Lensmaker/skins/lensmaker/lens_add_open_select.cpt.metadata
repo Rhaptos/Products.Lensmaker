@@ -1,9 +1,0 @@
-[default]
-title=Add to Open Lens
-        
-[validators]
-validators = validate_lens_add_open_select
-      
-[actions]
-action.failure = traverse_to:string:lens_add_open_select
-action.success = traverse_to:string:lens_add_open_tags

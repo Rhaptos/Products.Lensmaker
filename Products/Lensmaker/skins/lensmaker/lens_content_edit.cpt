@@ -21,6 +21,10 @@
         color: #369 !important;
         font-size: 1.2em;
       }
+     .lens_tag_table{
+        background-color: #e9eff3;
+      }
+
     </style>
   </metal:css>
 
