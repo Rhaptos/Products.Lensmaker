@@ -145,7 +145,7 @@
 
       <p tal:content="structure context/Description" tal:condition="context/Description">I am the very model of a modern major general.</p>
 
-      <tal:siyavula tal:condition="context/@@siyavula-forum">
+      <tal:siyavula tal:condition="context/@@siyavula-forum|nothing">
       <tal:wfstate tal:define="review_state python:context.portal_workflow.getInfoFor(context, 'review_state')"
           tal:condition="python:review_state not in ('private','private_open')">
       <p tal:define="qi_forums python:context.portal_quickinstaller.get('RhaptosForums', None)"
