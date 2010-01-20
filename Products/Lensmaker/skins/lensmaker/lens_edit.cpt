@@ -228,7 +228,7 @@ function toggleColorChooser() {
         <fieldset tal:define="fields python:schematas['settings'].editableFields(context);">
           <legend i18n:translate="label_lens_settings">Lens settings</legend>
 
-          <tal:fields repeat="field fields" define="siyavula context/@@siyavula">
+          <tal:fields repeat="field fields" define="siyavula context/@@siyavula|nothing">
             <tal:tagscheme tal:condition="python:field.getName() == 'tagScheme'">
               <span tal:condition="siyavula">
                 <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
