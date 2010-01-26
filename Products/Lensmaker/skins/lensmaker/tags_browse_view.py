@@ -18,7 +18,8 @@ recent = request.get('recent', False)
 request.set('sorton',sorton)
 request.set('recent',recent)
 
-cached_results = content.cache.resultsCacheLookup(searchhash,sorton,recent)
+#FIXME TODO need invalidation code for lens tag edit
+cached_results = None # content.cache.resultsCacheLookup(searchhash,sorton,recent)
 
 tag = request.get('tag')
 prefix = request.get('prefix', '')
