@@ -241,7 +241,7 @@
       <p id="lens_feed_links">
       <strong>Feeds: </strong><a tal:attributes="href string:${context/absolute_url}/atom;" >Subscribe to this feed</a> |
       <tal:help tal:define="help nocall:portal/help/viewing/feeds | nothing" tal:condition="nocall:help">
-        <a tal:attributes="href string:${help/absolute_url}#availablefeeds" >All Connexions Feeds</a> |
+        <a tal:attributes="href string:${help/absolute_url}#availablefeeds" >Our RSS Feeds</a> |
         <a tal:attributes="href help/absolute_url" >About RSS Feeds</a>
       </tal:help>
       </p>
