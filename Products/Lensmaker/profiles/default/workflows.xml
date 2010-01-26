@@ -9,5 +9,6 @@
   <type type_id="FavoritesLens">
    <bound-workflow workflow_id="boolean_workflow"/>
   </type>
+  <type type_id="SelectedContent"/>
  </bindings>
 </object>
