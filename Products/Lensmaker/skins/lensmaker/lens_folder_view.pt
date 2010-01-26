@@ -35,7 +35,7 @@
         </span>
       </h1>
 
-      <div>
+      <p>
         <span tal:define="help nocall:portal/help/viewing/lenses | nothing" tal:condition="nocall:help"
               style="float: right">(<a i18n:translate="label_more_about_lenses" href="/help/viewing/lenses" tal:attributes="href help/absolute_url">More about Lenses</a>)</span>
         <tal:block tal:condition="mine">
@@ -50,7 +50,7 @@
             </a>
           </metal:macro>
         </tal:block>
-      </div>
+      </p>
 
       <tal:show tal:condition="python:mine and not showonly or showonly=='Favorites'">
           <tal:block tal:define="global lensCount python:lensCount + 1;" />
