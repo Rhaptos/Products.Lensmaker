@@ -1,3 +1,6 @@
+lensemaker-0.17
+  - generic setup refactor. Rhaptos 2.0 release
+
 lensemaker-0.16
   - siyavula-phase-3 (11 Jan 2010)
 
