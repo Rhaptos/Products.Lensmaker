@@ -132,8 +132,8 @@
                          class="formHelp cnx_freeform_note">
                         Note: This will create a lens with free-form tags only.
                         To create a lens with controlled vocabulary tags go to
-                        <a href="mycnx"
-                           tal:attributes="href string:${context/portal_url}/mycnx">MyCNX</a> and
+                        <a href="mydashboard"
+                           tal:attributes="href string:${context/portal_url}/mydashboard">MyCNX</a> and
                         select "Create a new lens".
                     </div>
                 </tal:osiyesa>
