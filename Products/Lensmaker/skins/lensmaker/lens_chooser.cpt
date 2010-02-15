@@ -111,7 +111,7 @@
             <strong>Affiliation lenses</strong> are used to select content that is affiliated with a particular organization. For example, a university might select all content by its faculty.
           </li>
           <li i18n:translate="text_lens_list_desc">
-            All other lenses are <strong>Member lists</strong>, including the private Favorites lenses. Member lists are the only lenses that can be created by standard (non-organizational) Connexions accounts.
+            All other lenses are <strong>Member lists</strong>, including the private Favorites lenses. Member lists are the only lenses that can be created by standard (non-organizational) accounts.
           </li>
         </ul>
 
