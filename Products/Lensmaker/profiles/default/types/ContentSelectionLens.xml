@@ -50,7 +50,7 @@
   <permission value="View"/>
  </action>
  <action title="Tag vocabularies" action_id="tagnamespaces" category="object"
-    condition_expr="object/isOpen"
+    condition_expr="python:object.getTagScheme()=='Vocabulary'"
     url_expr="string:${object_url}/lens_tagnamespaces_view" visible="True">
   <permission value="Modify portal content"/>
  </action>
