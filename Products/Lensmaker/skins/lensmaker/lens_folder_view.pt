@@ -58,7 +58,7 @@
           <p i18n:translate="text_favorites_info">
             Lens to bookmark favorite or often-used content
           </p>
-          <ul class="lens_listing">
+          <ul class="lens_listing" id='myfavorites_lens_listing'>
             <li tal:define="l_tool context/lens_tool | nothing;
                             fav python:l_tool.getIndividualFolder(create=False);
                             fav nocall:fav/favorites | nothing;">
@@ -84,7 +84,7 @@
           <p i18n:translate="text_endorsement_lenses">
             Selections of content that have been carefully checked for quality by the lens maker
           </p>
-          <ul class="lens_listing">
+          <ul class="lens_listing" id='endorsements_lens_listing'>
             <li metal:use-macro="listmacro">
               ...
             </li>
@@ -100,7 +100,7 @@
           <p i18n:translate="text_affiliation_lenses">
             Selections of content that are affiliated with a particular organization
           </p>
-          <ul class="lens_listing">
+          <ul class="lens_listing" id='affiliations_lens_listing'>
             <li metal:use-macro="listmacro">
               ...
             </li>
@@ -116,7 +116,7 @@
           <p i18n:translate="text_member_lists">
             Selections of content for any purpose
           </p>
-          <ul class="lens_listing">
+          <ul class="lens_listing" id='memberlists_lens_listing'>
             <li metal:use-macro="listmacro">
               ...
             </li>

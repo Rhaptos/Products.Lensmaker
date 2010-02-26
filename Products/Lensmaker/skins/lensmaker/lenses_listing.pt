@@ -73,7 +73,8 @@
         <p i18n:translate="text_endorsement_lenses">
           Selections of content that have been carefully checked for quality by the lens maker
         </p>
-        <ul tal:define="list python:ltool.getListsBy(category='Endorsement', inclzero=False)" class="lens_listing">
+        <ul tal:define="list python:ltool.getListsBy(category='Endorsement', inclzero=False)" 
+            class="lens_listing" id='endorsements_lens_listing'>
           <li metal:define-macro="lenslist" tal:repeat="lens list">
             <img style="float: right; margin: 0 0 5px 1em;" src="logo_thumb"
                  tal:condition="lens/hasLogo | nothing"
@@ -103,7 +104,8 @@
         <p i18n:translate="text_affiliation_lenses">
           Selections of content that are affiliated with a particular organization
         </p>
-        <ul tal:define="list python:ltool.getListsBy(category='Affiliation', inclzero=False)" class="lens_listing">
+        <ul tal:define="list python:ltool.getListsBy(category='Affiliation', inclzero=False)" 
+            class="lens_listing" id='affiliations_lens_listing'>
           <li metal:use-macro="template/macros/lenslist">
             ...
           </li>
@@ -116,7 +118,8 @@
         <p i18n:translate="text_member_lists">
           Selections of content for any purpose
         </p>
-        <ul tal:define="list python:ltool.getListsBy(category='List', inclzero=False)" class="lens_listing">
+        <ul tal:define="list python:ltool.getListsBy(category='List', inclzero=False)" 
+            class="lens_listing" id='memberlists_lens_listing'>
           <li metal:use-macro="template/macros/lenslist">
             ...
           </li>
