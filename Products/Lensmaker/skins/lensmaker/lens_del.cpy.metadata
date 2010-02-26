@@ -2,5 +2,5 @@
 title=Delete a Lens
 
 [actions]
-action.success=redirect_to:string:/mycnx
+action.success=redirect_to:string:/mydashboard
 action.failure=redirect_to_action:string:contents
