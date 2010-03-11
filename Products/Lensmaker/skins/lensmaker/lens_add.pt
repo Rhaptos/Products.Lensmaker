@@ -108,7 +108,8 @@
           <tal:lenses repeat="l lenses">
             <tal:inner define="lobj l/getObject | nothing;
                                entry python:lobj is not None and getattr(lobj, contentId, None) or None;
-                               freeform python:lobj and lobj.getTagScheme()=='FreeForm' or False;
+                               createNewLens python:lobj is None;
+                               freeform python:lobj and lobj.getTagScheme()=='FreeForm' or createNewLens or False;
                                vocabulary python:lobj and lobj.getTagScheme()=='Vocabulary' or False">
 
               <form class="cnx_lens_form"
