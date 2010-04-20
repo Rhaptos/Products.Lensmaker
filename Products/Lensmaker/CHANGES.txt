@@ -1,3 +1,6 @@
+lensemaker-0.18
+  - hotfix for can't create new lens from add-to-lens dropdown
+
 lensemaker-0.17
   - generic setup refactor. Rhaptos 2.0 release
 
