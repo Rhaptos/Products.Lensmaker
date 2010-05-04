@@ -32,10 +32,7 @@
      <tal:norender condition="nothing">
      <!-- This macro reuses 'inner' below, but redefines lenses -->
      <metal:openheart define-macro="openinner">
-       <tal:def define="ltool context/lens_tool;
-                        lenses python:list(ltool.getOpenLenses());
-                        dummy python:lenses.sort(lambda x,y:cmp(x.getDisplayName, y.getDisplayName));
-                        openlenses python:True">
+       <tal:def define="openlenses python:True">
          <metal:useheart use-macro="context/lens_add/macros/realinner" />
        </tal:def>
      </metal:openheart>
@@ -44,18 +41,19 @@
      <tal:norender condition="nothing">
      <!-- This macro reuses 'inner' below, but redefines lenses -->
      <metal:hardheart define-macro="inner">
-       <tal:def define="ltool context/lens_tool;
-                        lenses python:list(ltool.getListsOwned());
-                        dummy python:lenses.sort(lambda x,y:cmp(x.getDisplayName, y.getDisplayName));
-                        openlenses python:False">
+       <tal:def define="openlenses python:False">
          <metal:useheart use-macro="context/lens_add/macros/realinner" />
        </tal:def>
      </metal:hardheart>
      </tal:norender>
 
       <metal:heart define-macro="realinner"
-                   tal:define="newlens python:{'getPath':'__new__', 'getId':'__new__',
+                   tal:define="ltool context/lens_tool;
+                               lenses python:list(ltool.getOpenLenses());
+                               dummy python:lenses.sort(lambda x,y:cmp(x.getDisplayName, y.getDisplayName));
+                               newlens python:{'getPath':'__new__', 'getId':'__new__',
                                                'getDisplayName':'Create a new lens...'};
+                               openlenses openlenses|python:True;                                               
                                lenses python:openlenses and lenses or (lenses + [newlens]);
                                contentId options/contentId | request/contentId | nothing;
                                version options/version | request/version | nothing;
@@ -108,9 +106,9 @@
           <tal:lenses repeat="l lenses">
             <tal:inner define="lobj l/getObject | nothing;
                                entry python:lobj is not None and getattr(lobj, contentId, None) or None;
-                               createNewLens python:lobj is None;
-                               freeform python:lobj and lobj.getTagScheme()=='FreeForm' or createNewLens or False;
-                               vocabulary python:lobj and lobj.getTagScheme()=='Vocabulary' or False">
+                               tagscheme python:lobj and lobj.getTagScheme() or 'FreeForm';
+                               freeform python:tagscheme == 'FreeForm';
+                               vocabulary python:tagscheme == 'Vocabulary'">
 
               <form class="cnx_lens_form"
                     method="post" action="lensAdd" id="cnx_lens_form-1"
@@ -134,7 +132,7 @@
                         Note: This will create a lens with free-form tags only.
                         To create a lens with controlled vocabulary tags go to
                         <a href="mydashboard"
-                           tal:attributes="href string:${context/portal_url}/mydashboard">MyCNX</a> and
+                           tal:attributes="href string:${context/portal_url}/mydashboard">authoring home</a> and
                         select "Create a new lens".
                     </div>
                 </tal:osiyesa>
