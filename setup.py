@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.18'
+version = '0.19'
 
 setup(name='Products.Lensmaker',
       version=version,
