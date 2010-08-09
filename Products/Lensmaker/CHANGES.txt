@@ -1,3 +1,5 @@
+  - Add epub link to lenses
+
 lensemaker-0.18
   - hotfix for can't create new lens from add-to-lens dropdown
 

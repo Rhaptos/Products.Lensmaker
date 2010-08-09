@@ -60,7 +60,15 @@
                                         item_comments        item/comment;
                                         item_tags            python:item.getTags();
                                         item_namespace_tags  python:item.getNamespaceTags() ;
-                                        item_version         python:item_version_stop or 'latest';">
+                                        item_version         python:item_version_stop or 'latest';
+                                        obj                  python:context.content.getRhaptosObject(item_id,item_version);
+                                        obj_version          python:item_version == 'latest' and obj.version or
+                                                                    item_version;
+                                        utils                python:modules['Products.CMFCore.utils'];
+                                        ptool                python:utils.getToolByName(context, 'rhaptos_print');
+                                        gotEpub              python:ptool.doesFileExist(item_id, obj_version, 'epub');
+                                        isModule             python:obj.portal_type and obj.portal_type == 'Module' or
+                                                                    False;">
                 <author                 tal:content="item/getContentAuthors">
                     Lens Creator
                 </author>
@@ -70,11 +78,19 @@
                 </title>
                 <content type="application/xhtml+xml" xml:lang="en">
                   <div class="comment" xmlns="http://www.w3.org/1999/xhtml">
-                  <span tal:condition="python:len(item.comment) > 0">
+                    <span tal:condition="python:len(item.comment) > 0 or gotEpub">
                       <strong>Comment:</strong>
-                        <p tal:content="item_comments">           
-                            Entry comment 
-                        </p>
+                      <p>
+                        <tal:p tal:content="item_comments">Entry comment</tal:p>
+                        <span tal:condition="python:gotEpub">
+                          <a href=""
+                             tal:attributes="href string:/content/$item_id/$obj_version/?format=epub"
+                             tal:condition="isModule">Download Epub File</a>
+                          <a href=""
+                             tal:attributes="href string:/content/$item_id/$obj_version/epub"
+                             tal:condition="not:isModule">Download Epub File</a>
+                        </span>
+                      </p>
                     </span>
                     <span tal:condition="python:len(item_tags) > 0 or len(item_namespace_tags) > 0" >
                       <strong>Tags:</strong>
