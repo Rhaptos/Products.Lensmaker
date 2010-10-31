@@ -8,6 +8,7 @@ This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 
+from zope.interface import implements
 from Products.validation.config import validation
 from Products.validation.interfaces.IValidator import IValidator
 
@@ -89,7 +90,7 @@ class SimpleHtmlValidator:
     """Succeed only if a limited list of HTML tags is found. Also, HTML must be good.
     """
 
-    __implements__ = IValidator
+    implements(IValidator)
     
     def __init__(self, name, title='', description=''):
         self.name = name
