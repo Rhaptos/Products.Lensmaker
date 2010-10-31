@@ -10,7 +10,7 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 import AccessControl
 
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
+from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.Expression import Expression
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import DisplayList

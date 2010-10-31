@@ -8,7 +8,7 @@ This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 
-from Products.CMFCore.CMFCorePermissions import AddPortalContent
+from Products.CMFCore.permissions import AddPortalContent
 from Products.Archetypes.public import DisplayList
 from Products.PloneLanguageTool import availablelanguages
 

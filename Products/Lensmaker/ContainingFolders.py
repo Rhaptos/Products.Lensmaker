@@ -10,7 +10,7 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 import AccessControl
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
+from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.Expression import Expression
 
 from Products.Archetypes.public import Schema
@@ -19,7 +19,6 @@ from Products.Archetypes.public import BaseFolder, BaseFolderSchema
 from Products.Archetypes.public import BaseBTreeFolder, BaseBTreeFolderSchema
 from Products.Archetypes.public import StringField, SelectionWidget
 
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
 from xml.dom import minidom
 
 from Products.Lensmaker.domTools import *

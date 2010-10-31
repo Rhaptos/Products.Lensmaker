@@ -9,7 +9,7 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 import AccessControl
 
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
+from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 
 from DateTime import DateTime

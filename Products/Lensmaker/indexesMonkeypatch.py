@@ -45,7 +45,7 @@ if not getattr(CatalogTool, '_old_searchResults', None):
     from Products.ZCatalog.ZCatalog import ZCatalog
     from Products.CMFCore.utils import _checkPermission, _getAuthenticatedUser
     from Acquisition import aq_base
-    from Products.CMFCore.CMFCorePermissions import AccessInactivePortalContent
+    from Products.CMFCore.permissions import AccessInactivePortalContent
 
     # searchResults has inherited security assertions.
     def searchResults(self, REQUEST=None, **kw):

@@ -12,7 +12,7 @@ from types import ListType, StringTypes, TupleType
 
 import AccessControl
 
-from Products.CMFCore.CMFCorePermissions import View, ModifyPortalContent
+from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.utils import getToolByName
 

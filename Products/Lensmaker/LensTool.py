@@ -16,13 +16,13 @@ from Globals import InitializeClass
 from ZODB.POSException import ConflictError
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.CMFCorePermissions import View, ManagePortal
+from Products.CMFCore.permissions import View, ManagePortal
 from Products.CMFPlone.utils import _createObjectByType
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.ZCatalog.Lazy import LazyCat
 
 from Products.CMFCore.utils import _getAuthenticatedUser
-from Products.CMFCore.CMFCorePermissions import AccessInactivePortalContent
+from Products.CMFCore.permissions import AccessInactivePortalContent
 
 
 from config import PROJECTNAME, KNOWN_LENS_TYPES, TAGNAMESPACE_DELIMITER
