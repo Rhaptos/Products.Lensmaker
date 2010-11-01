@@ -89,7 +89,7 @@ class LensMajorContainer(BaseBTreeFolder):
                 lensDict['title'] = lens.Title
                 lensDict['category'] = lens.getCategory
                 lensDict['id'] = lens.getId
-                lensDict['lastModified'] = lens.ModificationDate
+                lensDict['lastModified'] = lens.ModificationDate()
                 if lens.hasLogo:
                     lensDict['logoURL'] = str(lens.getURL()) + '/logo_thumb'
                 else:
