@@ -1,3 +1,7 @@
+Lensmaker-0.20
+  - upgrade jquery to 1.4.3
+  - atom feed updated timestamp fix
+
 Lensmaker-0.19
   - Add epub link to lenses
 
