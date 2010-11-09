@@ -102,7 +102,7 @@ class LensMajorContainer(BaseBTreeFolder):
             
             
 
-registerType(LensMajorContainer)
+registerType(LensMajorContainer, 'Lensmaker')
 
 from Acquisition import ImplicitAcquisitionWrapper, aq_base, aq_inner
 
@@ -138,7 +138,7 @@ class LensRedirectContainer(LensMajorContainer):
     def PUT(self, REQUEST):
         return
 
-registerType(LensRedirectContainer)
+registerType(LensRedirectContainer, 'Lensmaker')
 
 
 schema = BaseBTreeFolderSchema.copy()
@@ -235,4 +235,4 @@ class LensFolder(BaseFolder, ObjectManager):
                 fieldDict['lenses'].append(lensDict)
         return fieldDict
 
-registerType(LensFolder)
+registerType(LensFolder, 'Lensmaker')

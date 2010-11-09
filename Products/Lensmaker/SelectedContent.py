@@ -385,4 +385,4 @@ class SelectedContent(BaseFolder):  # should it be BTree?
             return 0.0
         return getattr(content, 'rating', lambda:0.0)()
 
-registerType(SelectedContent)
+registerType(SelectedContent, 'Lensmaker')

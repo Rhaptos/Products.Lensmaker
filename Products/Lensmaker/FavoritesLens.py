@@ -62,7 +62,6 @@ schema['tagScheme'].default = "FreeForm"
 
 # keep, but rearrange
 schema['language'].schemata = 'settings'
-schema['master_language'].schemata = 'settings'
 schema['noTagCloud'].schemata = 'settings'
 #schema['notifyOfChanges'].schemata = 'settings'
 
@@ -140,4 +139,4 @@ class FavoritesLens(ContentSelectionLens):
                 moduleId = getattr(entry, 'lastRead', None)
                 return moduleId
 
-registerType(FavoritesLens)
+registerType(FavoritesLens, 'Lensmaker')
