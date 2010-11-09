@@ -10,7 +10,6 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 from Products.CMFCore.permissions import AddPortalContent
 from Products.Archetypes.public import DisplayList
-from Products.PloneLanguageTool import availablelanguages
 
 ADD_CONTENT_PERMISSION = AddPortalContent
 ADD_LENS_SELECTED_CONTENT_PERMISSION = 'Add lens selected content'
