@@ -23,8 +23,6 @@ import monkeypatch
 
 registerDirectory(SKINS_DIR, GLOBALS)
 
-import BooleanWorkflow
-
 import LensTool
 tools = (LensTool.LensTool,)
 
