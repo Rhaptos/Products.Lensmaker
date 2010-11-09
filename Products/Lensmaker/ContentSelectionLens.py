@@ -31,7 +31,7 @@ from OFS.ObjectManager import ObjectManager
 from DateTime import DateTime
 
 from Products.RhaptosCollection.Widget import URLWidget, LanguageWidget
-from Products.RhaptosCollection.config import LICENSES, LANGUAGES, LANGS_NOSUB, LANGS_COMBINED
+from Products.RhaptosCollection.config import LICENSES
 from Products.RhaptosCollection.types import Collection
 
 from Products.MasterSelectWidget.MasterSelectWidget import MasterSelectWidget
@@ -153,7 +153,6 @@ bannerColor = StringField('bannerColor',
                          )
 
 bannerForegroundColor = ComputedField('bannerForegroundColor',
-                accessor="bannerForegroundColor",
                 searchable=0,
                 index="lens_catalog/:brains",
                 expression="context.calculateForegroundColor()",
@@ -201,39 +200,6 @@ noTagCloud = BooleanField('noTagCloud',
                          widget=BooleanWidget(label="Don't show tags box on lens page",
                                               description=noTagClouddesc,)
                          )
-masterlanguagedesc = 'Select the primary language for this lens.'
-masterlanguage = StringField('master_language',
-               schemata='advanced',
-               searchable=0,
-               required=1,
-               vocabulary = LANGUAGES,
-               widget=LanguageWidget(slave_fields=({'name': 'language',
-                                                    'action': 'vocabulary',
-                                                    'vocab_method': 'getLanguageWithSubtypes',
-                                                    'control_param': 'lang'},
-                                                    {'name': 'language',
-                                                    'action': 'disable',
-                                                    'hide_values': LANGS_NOSUB
-                                                    },),
-                                         label = 'Language',
-                                         helper_css=('language_locale.css',),
-                                         description=masterlanguagedesc,
-                                         i18n_domain="rhaptos",)
-                            )
-
-languagedesc = 'The language subtype for this content, if applicable.'
-language = StringField('language',
-               schemata='advanced',
-               searchable=0,
-               vocabulary = LANGS_COMBINED,
-               widget=SelectionWidget(label='Regional Variant (optional)',
-                                             description=languagedesc,
-                                             helper_js=('language_locale.js',),
-                                             i18n_domain="rhaptos",
-                                             modes=('view',),  
-                                             ),
-                              )
-
 rightsdesc = ""
 rights = StringField('rights',             # override DC/default field
                 searchable=0,
@@ -284,7 +250,6 @@ creatorName = ComputedField('creatorName',
 # doesn't seem smart enough to know about other catalogs.
 review_state = ComputedField('review_state',
                 searchable=0,
-                accessor='review_state',
                 index="lens_catalog/:brains",
                 expression="context.calculateReviewState()",
                 widget=StringWidget(modes=()),
@@ -327,15 +292,16 @@ tagScheme = StringField('tagScheme',
 schema = OrderedBaseFolderSchema.copy()
 
 # for ordering purposes... language et al are default fields
-schema.delField('language')
 schema.delField('title')
 schema.delField('description')
 
-schema = schema +  Schema((shortname, title, displayname, desc, masterlanguage, language,
-                                      logo, hasLogo, banner, bannerColor, bannerForegroundColor, url,
-                                      urltext, category, rights, notifyOfChanges, noTagCloud,
-                                      count, creatorName, review_state, allowedRolesAndUsers, reviewers,tagScheme))
+schema = schema + Schema((shortname, title, displayname, desc, logo,
+    hasLogo, banner, bannerColor, bannerForegroundColor, url, urltext,
+    category, rights, notifyOfChanges, noTagCloud, count, creatorName,
+    review_state, allowedRolesAndUsers, reviewers, tagScheme))
+
 schema.moveField('noTagCloud', before='id') 
+schema.moveField('language', after='noTagCloud')
 
 class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BTree?  #! changed base class needs to change reindex hook
    """List of entries that select a set of content."""
@@ -391,9 +357,6 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
           'view'       : 'lens_view',
           'contents'   : 'lens_content_view',
           }
-
-   getLanguageWithSubtypes = Collection.getLanguageWithSubtypes  # this really should come from elsewhere
-   getLanguagesWithoutSubtypes = Collection.getLanguagesWithoutSubtypes
 
    security.declarePublic(View, 'workflowStateEditable')
    def workflowStateEditable(self):
@@ -825,5 +788,5 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
 
         return strForeground
 
-registerType(ContentSelectionLens)
+registerType(ContentSelectionLens, 'Lensmaker')
 
