@@ -20,7 +20,7 @@
 
   <subscriber
       for=".ContentSelectionLens.ContentSelectionLens
-          zope.app.container.interfaces.IObjectModifiedEvent"
+          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler=".events.onContentSelectionLensModified"/>  
 
   <subscriber
