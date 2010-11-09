@@ -1,6 +1,6 @@
 from zope.interface import Interface
-from zope.app.publisher.interfaces.browser import IBrowserView
-from zope.app.event.interfaces import IObjectEvent
+from zope.browser.interfaces import IBrowserView
+from zope.component.interfaces import IObjectEvent
 from zope.viewlet.interfaces import IViewletManager
 
 class IMiscView(IBrowserView):
