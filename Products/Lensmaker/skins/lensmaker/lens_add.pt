@@ -65,9 +65,7 @@
         <tal:anon condition="isAnon" metal:define-macro="anon"
                   tal:define="actions python:context.portal_actions.listFilteredActionsFor(context);
                               checkPermission nocall:context/portal_membership/checkPermission;
-                              portal_url nocall:context/portal_url;
-                              Iterator python:modules['Products.CMFPlone'].IndexIterator;
-                              tabindex python:Iterator(pos=30000, mainSlot=False)">
+                              portal_url nocall:context/portal_url">
           <h2 i18n:translate="heading_login_required">Login Required</h2>
           <p i18n:translate="text_login_required_lens">
             This feature requires you to be logged in.
