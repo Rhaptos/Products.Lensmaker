@@ -9,8 +9,10 @@
   <index name="Creator" meta_type="FieldIndex">
     <indexed_attr value="Creator"/>
   </index>
-  <index name="Title" meta_type="TextIndex">
+  <index name="Title" meta_type="ZCTextIndex">
     <indexed_attr value="Title"/>
+    <extra name="index_type" value="Okapi BM25 Rank"/>
+    <extra name="lexicon_id" value="lexicon"/>
   </index>
   <index name="Type" meta_type="FieldIndex">
     <indexed_attr value="Type"/>
