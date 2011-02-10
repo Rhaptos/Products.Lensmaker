@@ -8,8 +8,6 @@ This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 
-from zope.interface import implements
-
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from Products.Lensmaker.config import *
@@ -63,7 +61,6 @@ class TagNamespace(BaseContent):
     TagNamespace content type
     """
     security = ClassSecurityInfo()
-    implements(getattr(BaseContent,'__implements__',()),)
 
     # This name appears in the 'add' box
     archetype_name = 'Tag Vocabulary'
