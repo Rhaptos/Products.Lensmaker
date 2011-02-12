@@ -109,28 +109,22 @@ Listing of TagNamespace instances and buttons for editing, creation, deletion.
                type="submit"
                name="form.button.add"
                value="Create new tag vocabulary"
-               tabindex=""
                tal:condition="big"
-               i18n:attributes="value"
-               tal:attributes="tabindex tabindex/next;" />
+               i18n:attributes="value"/>
 
           <input class="context"
                type="submit"
                name="form.button.edit"
                value="Edit tag vocabularies"
-               tabindex=""
                i18n:attributes="value"
-               tal:condition="big"
-               tal:attributes="tabindex tabindex/next;" />
+               tal:condition="big"/>
 
           <input class="context"
                type="submit"
                name="form.button.delete"
                value="Remove tag vocabularies"
-               tabindex=""
                i18n:attributes="value"
-               tal:condition="big"
-               tal:attributes="tabindex tabindex/next;" />
+               tal:condition="big"/>
 
         <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
 
@@ -208,27 +202,21 @@ Listing of TagNamespace instances and buttons for editing, creation, deletion.
                  type="submit"
                  name="form.button.add"
                  value="Create new tag vocabulary"
-                 tabindex=""
-                 i18n:attributes="value"
-                 tal:attributes="tabindex tabindex/next;" />
+                 i18n:attributes="value"/>
 
             <input class="context"
                  type="submit"
                  name="form.button.edit"
                  value="Edit tag vocabularies"
-                 tabindex=""
                  tal:condition="batch"
-                 i18n:attributes="value"
-                 tal:attributes="tabindex tabindex/next;" />
+                 i18n:attributes="value"/>
 
             <input class="context"
                  type="submit"
                  name="form.button.delete"
                  value="Remove tag vocabularies"
-                 tabindex=""
                  tal:condition="batch"
-                 i18n:attributes="value"
-                 tal:attributes="tabindex tabindex/next;" />
+                 i18n:attributes="value"/>
         </div>
 
         <input type="hidden" name="form.submitted" value="1" />

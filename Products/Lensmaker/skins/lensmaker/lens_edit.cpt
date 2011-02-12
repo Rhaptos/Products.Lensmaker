@@ -310,9 +310,7 @@ function toggleColorChooser() {
                 type="submit"
                 name="form_submit"
                 value="Save"
-                tabindex=""
-                i18n:attributes="value"
-                tal:attributes="tabindex tabindex/next;" />
+                i18n:attributes="value"/>
 
           <input type="hidden" name="form.submitted" value="1" />
 

@@ -10,19 +10,6 @@
    <permission>View</permission>
   </action>
 
-  <!-- Highlight mydashboard portal tab when editing lenses; highlight Lenses tab when otherwise in lens area.
-       MyRhaptos tab cooperates with other actions in RhaptosSite and elsewhere.
-       see https://trac.rhaptos.org/trac/rhaptos/ticket/8813 for details -->
-  <action title="MyRhaptos" action_id="lenses" category="portal_tabs"
-     condition_expr="python:'lenses' in folder.getPhysicalPath() and object.inLensEdit()"
-     url_expr="string:$portal_url/mydashboard" visible="True">
-   <permission>View</permission>
-  </action>
-  <action title="MyRhaptos" action_id="lenses-unhighlight" category="portal_tabs"
-     condition_expr="python:'lenses' in folder.getPhysicalPath() and not object.inLensEdit()"
-     url_expr="string:$portal_url/mydashboard" visible="True">
-   <permission>View</permission>
-  </action>
   <action title="Lenses" action_id="lensestab-viewing" category="portal_tabs"
      condition_expr="python:not 'lenses' in folder.getPhysicalPath() or not object.inLensEdit()"
      url_expr="string:$portal_url/lenses" visible="True">

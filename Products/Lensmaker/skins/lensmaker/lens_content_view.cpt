@@ -186,18 +186,14 @@
                type="submit"
                name="form.button.edit"
                value="Edit tags, comments, etc."
-               tabindex=""
                tal:condition="big"
-               i18n:attributes="value"
-               tal:attributes="tabindex tabindex/next;" />
+               i18n:attributes="value"/>
         <input class="context"
                type="submit"
                name="form.button.delete"
                value="Remove from lens"
-               tabindex=""
                tal:condition="big"
-               i18n:attributes="value"
-               tal:attributes="tabindex tabindex/next;" />
+               i18n:attributes="value"/>
 
         <metal:block metal:use-macro="here/batch_macros/macros/navigation" />
 
@@ -327,16 +323,12 @@
                type="submit"
                name="form.button.edit"
                value="Edit tags, comments, etc."
-               tabindex=""
-               i18n:attributes="value"
-               tal:attributes="tabindex tabindex/next;" />
+               i18n:attributes="value"/>
         <input class="context"
                type="submit"
                name="form.button.delete"
                value="Remove from lens"
-               tabindex=""
-               i18n:attributes="value"
-               tal:attributes="tabindex tabindex/next;" />
+               i18n:attributes="value"/>
         </div>
 
         <input type="hidden" name="form.submitted" value="1" />

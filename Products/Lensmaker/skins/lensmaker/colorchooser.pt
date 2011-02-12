@@ -46,7 +46,6 @@
                id fieldName;
                value value;
                maxlength widget/maxlength;
-               tabindex tabindex/next;
                onchange string:Refresh.Web.ColorPicker.extjsUpdatePreview(this.value,'$fieldName-preview');"
                />
            <a href="javascript:colorchooserPopup(this.previousSibling);"

@@ -32,16 +32,12 @@
                 <tal:radios tal:repeat="item vocab">
 
                     <input class="noborder"
-                           tabindex=""
                            type="radio"
-                           tal:define="tabindex tabindex/next"
                            tal:attributes="name fieldName;
                                            id string:${fieldName}_${repeat/item/number};
                                            checked python:here.checkSelected(item, value);
                                            value item;
-                                           disabled python:not context.isTemporary() and 'disabled' or None;
-                                           tabindex tabindex;"
-                           />
+                                           disabled python:not context.isTemporary() and 'disabled' or None"/>
 
                    <span tal:content="python:here.translate(vocab.getMsgId(item), default=vocab.getValue(item))"
                            i18n:translate=""

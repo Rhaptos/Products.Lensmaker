@@ -114,14 +114,12 @@
         <input type="submit"
                class="context"
                name="form.button.save"
-               tal:attributes="tabindex tabindex/next;"
                i18n:attributes="value value_save"
                value="Save" />
 
         <input type="submit"
                class="standalone"
                name="form.button.cancel"
-               tal:attributes="tabindex tabindex/next;"
                i18n:attributes="value value_cancel"
                value="Cancel" />
 
