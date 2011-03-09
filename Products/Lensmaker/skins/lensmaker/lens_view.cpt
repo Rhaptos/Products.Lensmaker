@@ -1,5 +1,4 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<tal:border define="is_editable python:request.set('disable_border', 1)">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
       xmlns:metal="http://xml.zope.org/namespaces/metal" 
       xmlns:tal="http://xml.zope.org/namespaces/tal" 
@@ -76,6 +75,7 @@
                      qs request/environ/QUERY_STRING | nothing;
                      qs python:qs and '?%s' % qs or '';
                      review_state python:context.portal_workflow.getInfoFor(here, 'review_state');
+                     is_editable context/@@plone_context_state/is_editable;
                      private python:review_state == 'private';">
 
       <tal:recentview define="dummy python:context.setrecentview('viewed_lenses', context.aq_parent.getId(), context.getId())" />
@@ -249,4 +249,3 @@
     </div>
   </body>
 </html>
-</tal:border>
