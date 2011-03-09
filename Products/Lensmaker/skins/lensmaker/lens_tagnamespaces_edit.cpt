@@ -76,6 +76,7 @@ Present UI to edit multiple TagNamespace instances at once.
                tal:attributes="value b_size" />
 
         <div tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                            utool nocall:context/portal_url;
                             getRelativeContentURL nocall:utool/getRelativeContentURL">
             <tal:comment replace="nothing">
                 Somewhat Plone 2.5 'folder_contents' derived, but *heavily* modified.

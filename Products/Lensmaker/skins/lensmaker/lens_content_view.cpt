@@ -227,6 +227,7 @@
                 </tr>
             </thead>
             <tbody tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                               utool nocall:context/portal_url;
                                getRelativeContentURL nocall:utool/getRelativeContentURL;">
                 <tal:comment replace="nothing">
                    Table structure is mostly Plone 2.5 'folder_contents' derived, but *heavily* modified.
@@ -318,7 +319,7 @@
 
         <div style="margin-top: 1ex;">
         <input type="hidden" name="orig_template"
-               tal:attributes="value template_id"/>
+               tal:attributes="value template/getId"/>
         <input class="context"
                type="submit"
                name="form.button.edit"

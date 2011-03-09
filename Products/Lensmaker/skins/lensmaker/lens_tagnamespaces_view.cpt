@@ -150,6 +150,7 @@ Listing of TagNamespace instances and buttons for editing, creation, deletion.
                 </tr>
             </thead>
             <tbody tal:define="use_view_action site_properties/typesUseViewActionInListings|python:();
+                               utool nocall:context/portal_url;
                                getRelativeContentURL nocall:utool/getRelativeContentURL;">
                 <tal:comment replace="nothing">
                    Table structure is mostly Plone 2.5 'folder_contents' derived, but *heavily* modified.
