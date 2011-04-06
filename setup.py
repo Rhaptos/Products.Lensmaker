@@ -29,8 +29,10 @@ setup(name='Products.Lensmaker',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'Products.MasterSelectWidget',
           'Products.RhaptosCollection',
-      ],
+          'Products.RhaptosModuleStorage',
+          ],
       entry_points="""
       # -*- Entry points: -*-
       """,
