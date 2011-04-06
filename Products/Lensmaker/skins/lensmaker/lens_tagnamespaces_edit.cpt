@@ -210,6 +210,7 @@ Present UI to edit multiple TagNamespace instances at once.
                i18n:attributes="value" />
 
         <input type="hidden" name="form.submitted" value="1" />
+        <input tal:replace="structure context/@@authenticator/authenticator" />
        </form>
     </div>
   </body>
