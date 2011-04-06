@@ -10,8 +10,9 @@ version = read("Products", "Lensmaker", "version.txt").strip()
 setup(name='Products.Lensmaker',
       version=version,
       description="",
-      long_description=open("README.txt").read() + "\n" +
-                       open("CHANGES").read(),
+      long_description='\n'.join([read("Products", "Lensmaker","README.txt"),
+                                  read("CHANGES"),
+                                  ]),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Programming Language :: Python",
@@ -28,9 +29,7 @@ setup(name='Products.Lensmaker',
       zip_safe=False,
       install_requires=[
           'setuptools',
-      ],
-      tests_require = [
-           'zope.testing>=3.5',
+          'Products.RhaptosCollection',
       ],
       entry_points="""
       # -*- Entry points: -*-
