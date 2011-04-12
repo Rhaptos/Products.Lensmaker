@@ -18,9 +18,10 @@ jQuery(document).ready(function() {
         var brandindex = -1;
         jQuery('.cnx_branding_banner a').each(function(i,banner){
           var path = banner.pathname;
-          if (cookiePaths.indexOf(path) > brandindex )
+          if (cookiePaths.indexOf(path) > brandindex ) {
             brand = banner;
             brandindex = cookiePaths.indexOf(path);
+          }
         });
         if (brand){
             jQuery(brand).parent().show();
