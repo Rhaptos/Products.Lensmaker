@@ -5,16 +5,26 @@ jQuery(document).ready(function() {
     //Light-weight branding (LWB)
     var rawCookie = readCookie('lenses')
     if (rawCookie){
-        var cookieLenses = rawCookie ? rawCookie.replace(/"/g,'').split('|').reverse() : [];
-        var brander = null;
+        var cookieLenses = rawCookie.replace(/"/g,'').split('|');
+        var numcookies = cookieLenses.length
+        var cookiePaths = [];
+        a = document.createElement('a');
+        for ( i=0 ; i < numcookies; i++ ) {
+          a.href = cookieLenses[i];
+          cookiePaths.push(a.pathname)
+        }
+        
+        var brand = null;
+        var brandindex = -1;
         jQuery('.cnx_branding_banner a').each(function(i,banner){
-          var href = banner.getAttribute('href');
-          if (cookieLenses.indexOf(href) != -1)
-            brander = banner;
+          var path = banner.pathname;
+          if (cookiePaths.indexOf(path) > brandindex )
+            brand = banner;
+            brandindex = cookiePaths.indexOf(path);
         });
-        if (brander){
-            jQuery(brander).parent().show();
-            var href = brander.getAttribute('href');
+        if (brand){
+            jQuery(brand).parent().show();
+            var href = brand.getAttribute('href');
             jQuery(".cnx_branding_logo a[href='"+href+"']").parent().show();
             };
      }

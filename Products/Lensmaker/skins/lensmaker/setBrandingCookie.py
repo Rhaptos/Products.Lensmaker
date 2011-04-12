@@ -24,23 +24,14 @@ gotCookie = ( 'lenses' in request )
 
 if gotCookie:
     brandingCookie = request['lenses']
-    bFound = False
     newBrandingCookie = ''
-    for entry in brandingCookie.split('|'):
-        entry_location = entry.split('#')[0] # backwards compat wonk
-        if entry_location == location:
-            bFound = True
-        else:
-            newBrandingCookie = len(newBrandingCookie) == 0 and entry_location or \
-                                ( newBrandingCookie + '|' + entry_location )
-    newBrandingCookie = len(newBrandingCookie) == 0 and location or \
-                        ( newBrandingCookie + '|' + location )
+    cookies = [c.split('#')[0] for c in brandingCookie.split('|')]
+    if location in cookies: cookies.remove(location)
+    cookies.append(location)
+    newBrandingCookie = '|'.join(cookies)
 else:
-    brandingCookie = ''
     newBrandingCookie = location
 
-#context.plone_log("brandingCookie is '%s'." % str(brandingCookie))
-#context.plone_log("newBrandingCookie is '%s'." % str(newBrandingCookie))
 now = DateTime()
 # add a year ... perhaps the hard way
 expires = '%d/%d/%d %d:%d:%f %s' % (now.year()+1,now.month(),now.day(),now.hour(),now.minute(),now.second(),now.timezone())
