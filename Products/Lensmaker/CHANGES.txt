@@ -1,3 +1,6 @@
+Lensmaker-0.21
+  - convert LWB to a client-side display, in support of caching
+
 Lensmaker-0.20
   - upgrade jquery to 1.4.3
   - atom feed updated timestamp fix
