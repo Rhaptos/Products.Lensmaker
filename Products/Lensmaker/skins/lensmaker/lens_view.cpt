@@ -38,7 +38,7 @@
       <tal:set-branding-cookie tal:define="dummy python:context.setBrandingCookie()"/>
 
       <tal:banner tal:condition="context/banner">
-        <div id="cnx_branding_banner"
+        <div class="cnx_branding_banner"
             tal:define="brandingColor            context/bannerColor;
                         brandingForegroundColor  context/bannerForegroundColor;
                         brandingCategory         context/category;
