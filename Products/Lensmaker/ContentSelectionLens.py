@@ -416,7 +416,7 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
           'logo':self.getLogo() and 'true' or None,
           'banner':self.getBanner() and 'true' or None,
           'bannerColor':self.getBannerColor() or None,
-          'bannerForegroundColor':self.bannerForegroundColor() or None,
+          'bannerForegroundColor':self.getBannerForegroundColor() or None,
           #'url':self.getUrl(),
           #'urltext':self.getUrlText(),
           #'notifyOfChanges':self.getNotifyOfChanges(),
