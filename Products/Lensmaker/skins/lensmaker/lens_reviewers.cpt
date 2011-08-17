@@ -122,7 +122,7 @@ CNX note:
                   <img src="user.gif" />
                     <a href="" 
                        tal:attributes="href string:/member_profile/${user/id}"
-                       tal:content="python:user.getProperty('fullname')">[username]</a>
+                       tal:content="user/fullname">[username]</a>
                 </td>
                 <td>
                   <a href="" 
@@ -169,7 +169,7 @@ CNX note:
                 tal:attributes="class python:test(oddrow,'odd','even')">
               <tal:block tal:define="username u;
                                      user python:here.desecured.getMemberById(u);
-                                     fullname python:user.getProperty('fullname')">
+                                     fullname user/fullname">
                 <td class="checkbox">
                   <input type="checkbox"
                          class="noborder"
@@ -188,7 +188,7 @@ CNX note:
                       tal:attributes="href string:/member_profile/${user/id}"
                       tal:content="string:${user/id}">[userid]</a>
                 </td>
-                <td tal:define="email python:user.getProperty('email')">
+                <td tal:define="email user/email">
                   <a href="#" tal:attributes="href string:mailto:${email}">
                     <img src=""
                          tal:replace="structure portal/mail_icon.gif" />
