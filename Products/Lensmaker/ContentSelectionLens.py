@@ -276,7 +276,7 @@ count = ComputedField('count',
 creatorName = ComputedField('creatorName',
                 searchable=0,
                 index="lens_catalog/:brains",
-                expression='context.getCreatorMember().getProperty("fullname")',
+                expression='context.getCreatorMember() and context.getCreatorMember().getProperty("fullname")',
                 widget=StringWidget(modes=()),
                 )
 

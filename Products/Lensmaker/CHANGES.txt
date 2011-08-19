@@ -1,3 +1,6 @@
+Lensmaker-0.22.2
+  - one more missing member bit
+
 Lensmaker-0.22.1
   - deal w/ authors who do not have a member account mk. 2
 
