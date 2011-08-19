@@ -1,3 +1,6 @@
+Lensmaker-0.22.1
+  - deal w/ authors who do not have a member account mk. 2
+
 Lensmaker-0.22
   - deal w/ authors who do not have a member account
 
