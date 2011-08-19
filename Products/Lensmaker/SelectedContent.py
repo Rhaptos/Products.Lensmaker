@@ -260,7 +260,10 @@ class SelectedContent(BaseFolder):  # should it be BTree?
            
            for id in authorList:
                user = mship.getMemberById(id)
-               name = user.getProperty('fullname','')
+               if user:
+                   name = user.getProperty('fullname','')
+               else:
+                   name = '(%s)' % id
                if count < len(authorList) and len(authorList) > 1:
                    nameList += name
                    nameList += ', '

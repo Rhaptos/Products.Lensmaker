@@ -170,8 +170,12 @@ class LensFolder(BaseFolder, ObjectManager):
     security.declarePublic('getOwnerName')
     def getOwnerName(self):
         """Lookup the owner's fullname and return it."""
-        owner = str(self.getOwner())
-        return getToolByName(self, 'portal_membership').getMemberById(owner).getProperty('fullname', owner)
+        ownerid = str(self.getOwner())
+        owner = getToolByName(self, 'portal_membership').getMemberById(ownerid)
+        if owner:
+            return owner.getProperty('fullname')
+        else:
+            return '(%s)' % ownerid
     
     # A PUT on the folder is intentionally a no-op
     security.declareProtected(ModifyPortalContent, 'PUT')
