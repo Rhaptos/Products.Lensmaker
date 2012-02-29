@@ -32,10 +32,8 @@ if gotCookie:
 else:
     newBrandingCookie = location
 
-now = DateTime()
-# add a year ... perhaps the hard way
-expires = '%d/%d/%d %d:%d:%f %s' % (now.year()+1,now.month(),now.day(),now.hour(),now.minute(),now.second(),now.timezone())
+# add a year ... safe for leapday
 # The RFC-822/HTTP date-time format is required
-then = DateTime(expires).rfc822()
+then = (DateTime()+365).rfc822()
 expires = str(then)
 request.RESPONSE.setCookie('lenses', newBrandingCookie, path="/", expires=expires)
