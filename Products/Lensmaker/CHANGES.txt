@@ -1,3 +1,6 @@
+Lensmaker-0.22.3
+  - fix date math
+
 Lensmaker-0.22.2
   - one more missing member bit
 
