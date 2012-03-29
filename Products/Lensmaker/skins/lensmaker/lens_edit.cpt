@@ -97,6 +97,7 @@ var hider;
 var advcontent;
 var nodeBannerCheckboxInput;
 var nodeColorChooserDiv;
+var nodePermaBanner;
 
 function setExpand() {
     advcontent.style.display = "block";
@@ -129,12 +130,14 @@ function initialSettings() {
    // branding color chooser show/hide magic
    nodeBannerCheckboxInput = document.getElementById('banner');
    nodeColorChooserDiv = document.getElementById('archetypes-fieldname-bannerColor');
+   nodePermaBanner = document.getElementById('archetypes-fieldname-permanent');
    if ( nodeBannerCheckboxInput ) {
       // node is only present with the owner of the lens has the "branding" role
       // checkbox is used to turn on branding for a given lens.
       // set the initial display state of the color chooser, i.e show or hide it
       if ( !nodeBannerCheckboxInput.checked ) {
           nodeColorChooserDiv.style.display = 'none';
+          nodePermaBanner.style.display = 'none';
       }
       // set the onclick handler for the banner checkbox input
       //nodeBannerCheckboxInput.onclick = function(event){toggleColorChooser();return false;};
@@ -176,6 +179,11 @@ function toggleColorChooser() {
       nodeColorChooserDiv.style.display = '';
    } else {
       nodeColorChooserDiv.style.display = 'none';
+   }
+   if ( nodePermaBanner.style.display == 'none' ) {
+      nodePermaBanner.style.display = '';
+   } else {
+      nodePermaBanner.style.display = 'none';
    }
 }
 

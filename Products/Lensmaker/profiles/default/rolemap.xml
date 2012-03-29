@@ -2,6 +2,8 @@
 <rolemap>
   <roles>
     <role name="Endorser"/>
+    <role name="Branding"/>
+    <role name="PermaBranding"/>
   </roles>
   <permissions>
     <permission name="Add lens selected content" acquire="True">
@@ -16,6 +18,12 @@
       <role name="Manager"/>
       <role name="Owner"/>
       <role name="Reviewer"/>
+    </permission>
+    <permission name="Brand content" acquire="True">
+      <role name="Branding"/>
+    </permission>
+    <permission name="Permanently brand content" acquire="True">
+      <role name="PermaBranding"/>
     </permission>
   </permissions>
 </rolemap>

@@ -40,8 +40,7 @@ from Products.MasterSelectWidget.MasterSelectWidget import MasterSelectWidget
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Products.CMFCore.utils import _mergedLocalRoles
 
-from LensPermissions import AddQualityLens
-from LensPermissions import BrandContent
+from LensPermissions import AddQualityLens, BrandContent, PermaBrandContent
 
 from config import LENS_TYPES, TAGNAMESPACE_DELIMITER, TAG_SCHEMES
 from widgets import ColorWidget
@@ -141,6 +140,14 @@ banner = BooleanField('banner',
                 write_permission=BrandContent,
                 widget=BooleanWidget(label="Place a branding banner on pages in my lens.",
                                               description="Do you want to display an identification banner on pages inside this lens?")
+                       )
+permanent = BooleanField('permanent',
+                schemata='branding',
+                searchable=0,
+                default=0,
+                write_permission=PermaBrandContent,
+                widget=BooleanWidget(label="Make the branding always visible.",
+                                              description="Do you want to always display an identification banner on pages identified by this lens?")
                        )
 
 bannerColor = StringField('bannerColor',
@@ -332,7 +339,7 @@ schema.delField('title')
 schema.delField('description')
 
 schema = schema +  Schema((shortname, title, displayname, desc, masterlanguage, language,
-                                      logo, hasLogo, banner, bannerColor, bannerForegroundColor, url,
+                                      logo, hasLogo, banner, bannerColor, permanent, bannerForegroundColor, url,
                                       urltext, category, rights, notifyOfChanges, noTagCloud,
                                       count, creatorName, review_state, allowedRolesAndUsers, reviewers,tagScheme))
 schema.moveField('noTagCloud', before='id') 
@@ -452,6 +459,7 @@ class ContentSelectionLens(OrderedBaseFolder, ObjectManager):  # should it be BT
           #'description':self.Description(),
           'logo':self.getLogo() and 'true' or None,
           'banner':self.getBanner() and 'true' or None,
+          'permanent':self.getPermanent() and 'true' or None,
           'bannerColor':self.getBannerColor() or None,
           'bannerForegroundColor':self.bannerForegroundColor() or None,
           #'url':self.getUrl(),
