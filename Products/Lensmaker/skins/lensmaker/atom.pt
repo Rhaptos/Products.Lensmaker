@@ -64,6 +64,7 @@
                                         obj                  python:context.content.getRhaptosObject(item_id,item_version);
                                         obj_version          python:item_version == 'latest' and obj.version or
                                                                     item_version;
+                                        item_rights          python:obj.license;
                                         utils                python:modules['Products.CMFCore.utils'];
                                         ptool                python:utils.getToolByName(context, 'rhaptos_print');
                                         gotEpub              python:ptool.doesFileExist(item_id, obj_version, 'epub');
@@ -76,6 +77,9 @@
                                         tal:content="python:item_title">           
                     Item Title
                 </title>
+                <rights                         tal:content="item_rights">
+                    Item rights
+                </rights>
                 <content type="application/xhtml+xml" xml:lang="en">
                   <div class="comment" xmlns="http://www.w3.org/1999/xhtml">
                     <span tal:condition="python:len(item.comment) > 0 or gotEpub">
