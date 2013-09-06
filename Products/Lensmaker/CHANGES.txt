@@ -1,3 +1,6 @@
+Lensmaker-0.24
+  - added support for content specific licenses
+
 Lensmaker-0.23
   - permabranding for always-on branding lens.
 
