@@ -56,8 +56,8 @@
                    tal:define="portrait python:mtool.getPersonalPortrait('cnxorg');"
                    tal:replace="structure python:portrait.tag(style='float: right; margin: 0 0 5px 1em;')" />
                 <a href="#" tal:attributes="href string:${context/portal_url}/lenses/cnxorg/featured">
-                  <span i18n:translate="text_cnx_featured_content">Connexions Featured Content</span></a>
-                <p><b i18n:translate="text_lenses_by">Lens by:</b> Connexions</p>
+                  <span i18n:translate="text_cnx_featured_content">OpenStax CNX Featured Content</span></a>
+                <p><b i18n:translate="text_lenses_by">Lens by:</b> OpenStax CNX</p>
                 <p>
                   <b i18n:translate="text_content_count">Content:</b>
                   <tal:data content="python:str(featured.getCount()) or '?'">303</tal:data>
