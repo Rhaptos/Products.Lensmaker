@@ -24,7 +24,7 @@ Listing of TagNamespace instances and buttons for editing, creation, deletion.
     <div metal:fill-slot="main">
 
       <!-- Reuse the modified folder_contents from RhaptosSite -->
-      <!--<tal:def define="context nocall:python:here['tag-namespaces'];
+      <!--<tal:def define="context nocall:python:here.getProperty('tag-namespaces');
                        here nocall:context;
                        here_url here/absolute_url;
                        full_view python:False;
