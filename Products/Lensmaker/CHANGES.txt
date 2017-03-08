@@ -1,3 +1,6 @@
+Lensmaker-0.25
+  - Plone hotfix restricted attribute access to subobjects: convert property access to getProperty calls
+
 Lensmaker-0.24.1
   - Rename Connexions to OSCNX
 
